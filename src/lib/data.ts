@@ -49,22 +49,34 @@ export const DATA: Record<string, Record<string, any>> = {
 };
 
 export function getQuestions(subject: string, topic: string): Question[] {
-  const topicData = DATA[subject]?.[topic];
-  if (!topicData) return [];
+  let subjectsToSearch = [subject];
+  if (subject === "all" || !subject) {
+    subjectsToSearch = Object.keys(DATA);
+  }
 
   const questions: Question[] = [];
-  (Object.keys(topicData) as Difficulty[]).forEach((diff) => {
-    const list = topicData[diff];
-    if (Array.isArray(list)) {
-      list.forEach((q: any) => {
-        questions.push({
-          ...q,
-          difficulty: diff,
-          topic,
-          subject,
-        });
+
+  subjectsToSearch.forEach((sub) => {
+    const topicsToSearch = (topic === "all" || !topic) ? Object.keys(DATA[sub] || {}) : [topic];
+    
+    topicsToSearch.forEach((top) => {
+      const topicData = DATA[sub]?.[top];
+      if (!topicData) return;
+
+      (Object.keys(topicData) as Difficulty[]).forEach((diff) => {
+        const list = topicData[diff];
+        if (Array.isArray(list)) {
+          list.forEach((q: any) => {
+            questions.push({
+              ...q,
+              difficulty: diff,
+              topic: top,
+              subject: sub,
+            });
+          });
+        }
       });
-    }
+    });
   });
 
   return questions;
