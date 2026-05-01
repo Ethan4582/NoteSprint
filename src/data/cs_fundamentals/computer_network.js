@@ -1,4 +1,4 @@
-const networks = [
+const computer_network = [
   {
     id: 1,
     question: "What is an IP Address?",
@@ -11,4 +11,4 @@ const networks = [
   }
 ];
 
-export default networks;
+export default computer_network;

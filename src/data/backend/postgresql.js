@@ -1,4 +1,4 @@
-const postgres = [
+const postgresql = [
   {
     id: 1,
     question: "What is a Primary Key in PostgreSQL?",
@@ -12,4 +12,4 @@ const postgres = [
   }
 ];
 
-export default postgres;
+export default postgresql;

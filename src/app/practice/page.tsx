@@ -10,16 +10,16 @@ import BottomNav from "@/src/components/BottomNav";
 // Practice components
 import TimerConfig from "@/src/components/practice/TimerConfig";
 import ModeToggle from "@/src/components/practice/ModeToggle";
+import { getTechIcon } from "@/src/components/dashboard/TechIcons";
 
 function PracticeContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   
   // Initial selection from params
-  const initialSubject = searchParams.get("subject");
   const initialTopic = searchParams.get("topic");
 
-  const [selectedTopics, setSelectedTopics] = useState<Array<{subject: string, topic: string}>>([]);
+  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [count, setCount] = useState(10);
   const [time, setTime] = useState(5);
   const [mode, setMode] = useState<"flashcard" | "notes">("flashcard");
@@ -28,23 +28,23 @@ function PracticeContent() {
 
   // Populate initial selection
   useEffect(() => {
-    if (initialSubject && initialTopic) {
-      setSelectedTopics([{ subject: initialSubject, topic: initialTopic }]);
+    if (initialTopic) {
+      setSelectedTopics([initialTopic]);
     }
-  }, [initialSubject, initialTopic]);
+  }, [initialTopic]);
 
   // All available topics for filtering
   const allAvailableTopics = useMemo(() => {
-    return Object.entries(DATA).flatMap(([subject, topicsObj]) => 
-      Object.keys(topicsObj).map(topic => ({ subject, topic }))
-    );
+    return Object.keys(DATA).filter(topic => {
+      const qCount = getQuestions([], topic).length;
+      return qCount > 0;
+    });
   }, []);
 
   const filteredTopics = useMemo(() => {
     if (!filterQuery) return allAvailableTopics;
     return allAvailableTopics.filter(t => 
-      t.topic.toLowerCase().includes(filterQuery.toLowerCase()) ||
-      t.subject.toLowerCase().includes(filterQuery.toLowerCase())
+      t.toLowerCase().includes(filterQuery.toLowerCase())
     );
   }, [allAvailableTopics, filterQuery]);
 
@@ -52,8 +52,8 @@ function PracticeContent() {
   const totalAvailable = useMemo(() => {
     if (selectedTopics.length === 0) return 0;
     let sum = 0;
-    selectedTopics.forEach(t => {
-      sum += getQuestions(t.subject, t.topic).length;
+    selectedTopics.forEach(topic => {
+      sum += getQuestions([], topic).length;
     });
     return sum;
   }, [selectedTopics]);
@@ -64,22 +64,19 @@ function PracticeContent() {
     }
   }, [totalAvailable]);
 
-  const toggleTopic = (subject: string, topic: string) => {
+  const toggleTopic = (topic: string) => {
     setSelectedTopics(prev => {
-      const exists = prev.find(t => t.topic === topic && t.subject === subject);
-      if (exists) {
-        return prev.filter(t => !(t.topic === topic && t.subject === subject));
+      if (prev.includes(topic)) {
+        return prev.filter(t => t !== topic);
       }
-      return [...prev, { subject, topic }];
+      return [...prev, topic];
     });
   };
 
   const startSession = () => {
-    const subjects = selectedTopics.map(t => t.subject).join(",");
-    const topics = selectedTopics.map(t => t.topic).join(",");
+    const topics = selectedTopics.join(",");
     
     const params = new URLSearchParams({
-      subject: subjects,
       topic: topics,
       count: count.toString(),
       time: timerEnabled ? time.toString() : "0",
@@ -130,14 +127,14 @@ function PracticeContent() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {filteredTopics.map(({ subject, topic }) => {
-              const isSelected = selectedTopics.some(t => t.topic === topic && t.subject === subject);
-              const qCount = getQuestions(subject, topic).length;
+            {filteredTopics.map((topic) => {
+              const isSelected = selectedTopics.includes(topic);
+              const qCount = getQuestions([], topic).length;
               
               return (
                 <button
-                  key={`${subject}-${topic}`}
-                  onClick={() => toggleTopic(subject, topic)}
+                  key={topic}
+                  onClick={() => toggleTopic(topic)}
                   className={`flex items-center justify-between p-3.5 rounded-[12px] border-2 transition-all duration-300 ${
                     isSelected 
                       ? "bg-[var(--bg-surface)] border-[var(--accent)] shadow-sm" 
@@ -145,14 +142,19 @@ function PracticeContent() {
                   }`}
                 >
                   <div className="flex items-center gap-3 text-left">
-                    <div className={`w-8 h-8 rounded-[8px] flex items-center justify-center ${isSelected ? "bg-[var(--accent)] text-white" : "bg-[var(--bg-subtle)]"}`}>
-                      {isSelected ? <Check className="w-4 h-4" /> : <BookOpen className="w-3.5 h-3.5 text-[var(--text-muted)]" />}
+                    <div className={`w-10 h-10 rounded-[10px] flex items-center justify-center shrink-0 ${isSelected ? "bg-[var(--accent-subtle)]" : "bg-[var(--bg-subtle)]"}`}>
+                      {getTechIcon(topic)}
                     </div>
                     <div>
-                      <h4 className="text-xs font-bold text-[var(--text-primary)] leading-tight">{topic}</h4>
-                      <p className="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-tight">{subject} • {qCount} Cards</p>
+                      <h4 className="text-xs font-bold text-[var(--text-primary)] leading-tight capitalize">{topic.replace(/_/g, ' ')}</h4>
+                      <p className="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-tight">{qCount} Cards</p>
                     </div>
                   </div>
+                  {isSelected && (
+                    <div className="w-5 h-5 rounded-full bg-[var(--accent)] flex items-center justify-center shadow-sm">
+                      <Check className="w-3 h-3 text-white" />
+                    </div>
+                  )}
                 </button>
               );
             })}

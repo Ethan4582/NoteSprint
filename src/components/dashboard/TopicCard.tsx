@@ -14,7 +14,7 @@ export default function TopicCard({ subject, topic, qCount }: TopicCardProps) {
   const router = useRouter();
 
   const handleStart = () => {
-    const params = new URLSearchParams({ subject, topic });
+    const params = new URLSearchParams({ topic });
     router.push(`/practice?${params.toString()}`);
   };
 
@@ -29,7 +29,7 @@ export default function TopicCard({ subject, topic, qCount }: TopicCardProps) {
       <div className="flex items-start justify-between sm:mb-4 shrink-0">
         <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-[8px] sm:rounded-[12px] bg-[var(--bg-base)] border border-[var(--border)] flex items-center justify-center group-hover:scale-110 group-hover:rotate-2 transition-transform duration-500 shadow-inner">
           <div className="scale-75 sm:scale-100">
-            {getTechIcon(topic, subject)}
+            {getTechIcon(topic)}
           </div>
         </div>
         <div className="h-6 w-6 rounded-full border border-[var(--border)] hidden sm:flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0">
@@ -38,11 +38,8 @@ export default function TopicCard({ subject, topic, qCount }: TopicCardProps) {
       </div>
 
       <div className="flex-1 space-y-0 min-w-0">
-        <p className="text-[9px] font-black uppercase tracking-[0.15em] text-[var(--text-muted)] group-hover:text-[var(--accent)] transition-colors hidden sm:block">
-          {subject}
-        </p>
         <h3 className="text-[11px] sm:text-lg font-bold text-[var(--text-primary)] leading-tight tracking-tight truncate">
-          {topic}
+          {topic.replace(/_/g, ' ')}
         </h3>
         <div className="flex items-center gap-1 opacity-70 sm:mt-3">
           <span className="text-[8px] sm:text-xs font-black text-[var(--text-secondary)]">

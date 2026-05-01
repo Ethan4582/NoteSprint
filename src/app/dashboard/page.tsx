@@ -13,16 +13,19 @@ export default function Dashboard() {
   const [search, setSearch] = useState("");
 
   const getFilteredTopics = () => {
-    let topics = Object.entries(DATA).flatMap(([subject, topicsObj]) => 
-      Object.keys(topicsObj).map(topic => ({ subject, topic }))
-    );
+    let topics = Object.keys(DATA).map(topic => ({ topic }));
+    
     if (search) {
       topics = topics.filter(t => 
-        t.topic.toLowerCase().includes(search.toLowerCase()) || 
-        t.subject.toLowerCase().includes(search.toLowerCase())
+        t.topic.toLowerCase().includes(search.toLowerCase())
       );
     }
-    return topics;
+
+    // Filter out empty topics and format for rendering
+    return topics.filter(t => {
+      const qCount = getQuestions([], t.topic).length;
+      return qCount > 0;
+    });
   };
 
   return (
@@ -66,13 +69,13 @@ export default function Dashboard() {
           </div>
           
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-6">
-            {getFilteredTopics().map(({ subject, topic }) => {
-              const qCount = getQuestions(subject, topic).length;
+            {getFilteredTopics().map(({ topic }) => {
+              const qCount = getQuestions([], topic).length;
               
               return (
                 <TopicCard
-                  key={`${subject}-${topic}`}
-                  subject={subject}
+                  key={topic}
+                  subject=""
                   topic={topic}
                   qCount={qCount}
                 />

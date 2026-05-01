@@ -1,4 +1,4 @@
-const os = [
+const operating_systeam = [
   {
     id: 1,
     question: "What is a Process in an Operating System?",
@@ -11,4 +11,4 @@ const os = [
   }
 ];
 
-export default os;
+export default operating_systeam;
