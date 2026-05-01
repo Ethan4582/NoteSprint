@@ -21,19 +21,15 @@ function SessionContent() {
   const config = useMemo(() => ({
     subject: searchParams.get("subject") || "",
     topic: searchParams.get("topic") || "",
-    basic: parseInt(searchParams.get("basic") || "0"),
-    medium: parseInt(searchParams.get("medium") || "0"),
-    hard: parseInt(searchParams.get("hard") || "0"),
+    count: parseInt(searchParams.get("count") || "10"),
     time: parseInt(searchParams.get("time") || "5"),
     mode: (searchParams.get("mode") as "flashcard" | "notes") || "flashcard",
   }), [searchParams]);
 
   const questions = useMemo(() => {
     const all = getQuestions(config.subject, config.topic);
-    const basic = all.filter(q => q.difficulty === "Basic").sort(() => Math.random() - 0.5).slice(0, config.basic);
-    const medium = all.filter(q => q.difficulty === "Medium").sort(() => Math.random() - 0.5).slice(0, config.medium);
-    const hard = all.filter(q => q.difficulty === "Hard").sort(() => Math.random() - 0.5).slice(0, config.hard);
-    return [...basic, ...medium, ...hard].sort(() => Math.random() - 0.5);
+    // Shuffle and slice based on requested count
+    return all.sort(() => Math.random() - 0.5).slice(0, config.count);
   }, [config]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -129,6 +125,8 @@ function SessionContent() {
   }
 
   const currentQ = questions[currentIndex];
+
+  if (!currentQ) return null;
 
   return (
     <div className="min-h-screen bg-[var(--bg-base)] flex flex-col">

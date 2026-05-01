@@ -8,11 +8,9 @@ import nextjs from "../data/frontend/nextjs";
 import typescript from "../data/frontend/typescript";
 import state_management from "../data/frontend/state_management";
 
-import system_design from "../data/system_design/fundamentals";
+import system_design from "../data/system_design/lld";
 import os from "../data/cs_fundamentals/os";
 import networks from "../data/cs_fundamentals/networks";
-
-export type Difficulty = "Basic" | "Medium" | "Hard";
 
 export interface Question {
   id: number;
@@ -21,9 +19,9 @@ export interface Question {
   image?: string;
   image2?: string;
   code?: string;
-  difficulty: Difficulty;
   topic: string;
   subject: string;
+  category?: string;
 }
 
 export const DATA: Record<string, Record<string, any>> = {
@@ -63,19 +61,29 @@ export function getQuestions(subject: string, topic: string): Question[] {
       const topicData = DATA[sub]?.[top];
       if (!topicData) return;
 
-      (Object.keys(topicData) as Difficulty[]).forEach((diff) => {
-        const list = topicData[diff];
-        if (Array.isArray(list)) {
-          list.forEach((q: any) => {
-            questions.push({
-              ...q,
-              difficulty: diff,
-              topic: top,
-              subject: sub,
-            });
+      if (Array.isArray(topicData)) {
+        topicData.forEach((q: any) => {
+          questions.push({
+            ...q,
+            topic: top,
+            subject: sub,
           });
-        }
-      });
+        });
+      } else if (typeof topicData === 'object') {
+        // Handle structured topics like System Design (Theory/Coding)
+        Object.entries(topicData).forEach(([category, items]) => {
+          if (Array.isArray(items)) {
+            items.forEach((q: any) => {
+              questions.push({
+                ...q,
+                topic: top,
+                subject: sub,
+                category: category,
+              });
+            });
+          }
+        });
+      }
     });
   });
 

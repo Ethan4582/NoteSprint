@@ -1,19 +1,14 @@
-const networks = {
-  Basic: [
-    {
-      id: 1,
-      question: "What is an IP Address?",
-      answer: "An Internet Protocol address is a numerical label assigned to each device connected to a computer network that uses the Internet Protocol for communication."
-    }
-  ],
-  Medium: [
-    {
-      id: 2,
-      question: "Explain the difference between TCP and UDP.",
-      answer: "TCP is connection-oriented and ensures reliable, ordered delivery of data. UDP is connectionless and does not guarantee delivery, making it faster but less reliable."
-    }
-  ],
-  Hard: []
-};
+const networks = [
+  {
+    id: 1,
+    question: "What is an IP Address?",
+    answer: "An Internet Protocol (IP) address is a unique numerical label assigned to each device connected to a computer network that uses the Internet Protocol for communication. It identifies the host or network interface and provides the location of the device."
+  },
+  {
+    id: 2,
+    question: "Explain the primary differences between TCP and UDP.",
+    answer: "TCP (Transmission Control Protocol) is connection-oriented and ensures reliable, ordered delivery of data with error checking. UDP (User Datagram Protocol) is connectionless and faster as it lacks the overhead of reliability checks, making it ideal for real-time applications like streaming or gaming."
+  }
+];
 
 export default networks;

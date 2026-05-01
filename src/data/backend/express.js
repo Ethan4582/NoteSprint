@@ -1,21 +1,14 @@
-const express = {
-  Basic: [
-    {
-      id: 1,
-      question: "What is Middleware in Express?",
-      answer: "Middleware functions are functions that have access to the request object (req), the response object (res), and the next middleware function in the application’s request-response cycle. They can execute code, make changes to the request/response, and end the cycle.",
-      code: "app.use((req, res, next) => {\n  console.log('Time:', Date.now());\n  next();\n});"
-    }
-  ],
-  Medium: [
-    {
-      id: 2,
-      question: "How do you handle errors in Express?",
-      answer: "Error-handling middleware is defined with four arguments instead of three: (err, req, res, next). Express catches all errors that occur while running route handlers and middleware.",
-      code: "app.use((err, req, res, next) => {\n  console.error(err.stack);\n  res.status(500).send('Something broke!');\n});"
-    }
-  ],
-  Hard: []
-};
+const express = [
+  {
+    id: 1,
+    question: "What is Express.js?",
+    answer: "Express.js is a fast, unopinionated, minimalist web framework for Node.js. It provides a robust set of features for web and mobile applications, including simplified routing, middleware support, and integration with various template engines."
+  },
+  {
+    id: 2,
+    question: "What are the core features of Express.js?",
+    answer: "The core features of Express.js include: 1. Routing for handling different HTTP requests and URLs. 2. Middleware support to process requests before they reach the final handler. 3. Template engines for dynamic HTML generation. 4. Simplified HTTP utility methods for common tasks like setting status codes and headers."
+  }
+];
 
 export default express;

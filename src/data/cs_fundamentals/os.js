@@ -1,19 +1,14 @@
-const os = {
-  Basic: [
-    {
-      id: 1,
-      question: "What is a Process?",
-      answer: "A process is an instance of a program in execution. It includes the program code, its current activity, and its set of resources."
-    }
-  ],
-  Medium: [
-    {
-      id: 2,
-      question: "Explain Virtual Memory.",
-      answer: "Virtual memory is a memory management technique that provides an idealized abstraction of the storage resources that are actually available on a given machine which creates the illusion to users of a very large (main) memory."
-    }
-  ],
-  Hard: []
-};
+const os = [
+  {
+    id: 1,
+    question: "What is a Process in an Operating System?",
+    answer: "A process is an active instance of a program in execution. It contains the program code, its current state, memory, and system resources allocated to it."
+  },
+  {
+    id: 2,
+    question: "What is Virtual Memory?",
+    answer: "Virtual memory is a memory management technique that creates an abstraction of physical memory. It allows an operating system to use hardware storage (like a disk) as an extension of RAM, giving applications the illusion of having a much larger memory space available."
+  }
+];
 
 export default os;

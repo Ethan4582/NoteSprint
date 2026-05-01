@@ -1,16 +1,14 @@
-export default {
-  Basic: [
-    {
-      id: 1,
-      question: "What is React?",
-      answer: "React is a JavaScript library for building user interfaces. It is maintained by Facebook and a community of individual developers and companies."
-    },
-    {
-      id: 2,
-      question: "What is JSX?",
-      answer: "JSX is a syntax extension for JavaScript. It looks like HTML but is actually JavaScript. It allows you to write HTML-like code in your JavaScript files."
-    }
-  ],
-  Medium: [],
-  Hard: []
-};
+const react = [
+  {
+    id: 1,
+    question: "What is React?",
+    answer: "React is an open-source JavaScript library developed by Meta (formerly Facebook) for building user interfaces, specifically for single-page applications. It allows developers to create reusable UI components."
+  },
+  {
+    id: 2,
+    question: "What is JSX?",
+    answer: "JSX (JavaScript XML) is a syntax extension for JavaScript that allows you to write HTML-like structure directly within your JavaScript code. It is transformed into standard JavaScript function calls by tools like Babel."
+  }
+];
+
+export default react;

@@ -2,8 +2,6 @@
 
 import { motion } from "framer-motion";
 import { Question } from "@/src/lib/data";
-import { Copy, Check, RotateCcw } from "lucide-react";
-import { useState } from "react";
 
 interface FlashcardProps {
   question: Question;
@@ -17,21 +15,11 @@ interface FlashcardProps {
 
 export default function Flashcard({ 
   question, 
-  onAnswered, 
-  showFeedback, 
   isFlipped, 
   onFlip,
   total,
   current 
 }: FlashcardProps) {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = (e: React.MouseEvent, text: string) => {
-    e.stopPropagation();
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   return (
     <div className="w-full max-w-[560px] mx-auto">
@@ -40,15 +28,10 @@ export default function Flashcard({
         onClick={onFlip}
         whileHover={{ y: -4 }}
       >
-        <div className="flex justify-between items-start">
-          <span className={`text-[10px] font-semibold uppercase tracking-widest px-2 py-1 rounded-[6px] ${
-            question.difficulty === "Basic" ? "bg-[#DCFCE7] text-[#15803D]" :
-            question.difficulty === "Medium" ? "bg-[#FEF3C7] text-[#B45309]" :
-            "bg-[#FEE2E2] text-[#B91C1C]"
-          }`}>
-            {question.difficulty}
+        <div className="flex justify-end items-start">
+          <span className="text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-widest bg-[var(--bg-subtle)] px-2 py-1 rounded-[6px]">
+            Question {current} / {total}
           </span>
-          <span className="text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-widest bg-[var(--bg-subtle)] px-2 py-1 rounded-[6px]">Question {current} / {total}</span>
         </div>
 
         <div className="flex-1 flex items-center justify-center py-8">
@@ -58,7 +41,9 @@ export default function Flashcard({
         </div>
 
         <div className="text-center pt-5 border-t border-[var(--border)]">
-          <span className="text-[11px] font-semibold text-[var(--accent)] uppercase tracking-widest animate-pulse">Tap to reveal answer</span>
+          <span className="text-[11px] font-semibold text-[var(--accent)] uppercase tracking-widest animate-pulse">
+            Tap to reveal answer
+          </span>
         </div>
       </motion.div>
     </div>

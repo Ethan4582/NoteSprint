@@ -2,12 +2,11 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, Suspense, useMemo } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, BookOpen, Code2 } from "lucide-react";
 import { getQuestions } from "@/src/lib/data";
 import ThemeToggle from "@/src/components/ThemeToggle";
 
 // Practice components
-import QuestionStepper from "@/src/components/practice/QuestionStepper";
 import TimerConfig from "@/src/components/practice/TimerConfig";
 import ModeToggle from "@/src/components/practice/ModeToggle";
 
@@ -18,19 +17,19 @@ function PracticeContent() {
   const topic = searchParams.get("topic") || "all";
 
   const allQuestions = useMemo(() => getQuestions(subject, topic), [subject, topic]);
+  const totalAvailable = allQuestions.length;
 
-  const available = useMemo(() => ({
-    Basic: allQuestions.filter(q => q.difficulty === "Basic").length,
-    Medium: allQuestions.filter(q => q.difficulty === "Medium").length,
-    Hard: allQuestions.filter(q => q.difficulty === "Hard").length,
-  }), [allQuestions]);
+  const categories = useMemo(() => {
+    const counts: Record<string, number> = {};
+    allQuestions.forEach(q => {
+      if (q.category) {
+        counts[q.category] = (counts[q.category] || 0) + 1;
+      }
+    });
+    return Object.keys(counts).length > 0 ? counts : null;
+  }, [allQuestions]);
 
-  const [counts, setCounts] = useState({
-    Basic: Math.min(5, available.Basic),
-    Medium: Math.min(0, available.Medium),
-    Hard: Math.min(0, available.Hard),
-  });
-
+  const [count, setCount] = useState(Math.min(10, totalAvailable));
   const [time, setTime] = useState(5);
   const [mode, setMode] = useState<"flashcard" | "notes">("flashcard");
   const [timerEnabled, setTimerEnabled] = useState(true);
@@ -39,23 +38,17 @@ function PracticeContent() {
     const params = new URLSearchParams({
       subject,
       topic,
-      basic: counts.Basic.toString(),
-      medium: counts.Medium.toString(),
-      hard: counts.Hard.toString(),
+      count: count.toString(),
       time: timerEnabled ? time.toString() : "0",
       mode,
     });
     router.push(`/session?${params.toString()}`);
   };
 
-  const updateCount = (diff: keyof typeof counts, delta: number) => {
-    setCounts(prev => ({
-      ...prev,
-      [diff]: Math.max(0, Math.min(available[diff], prev[diff] + delta))
-    }));
+  const handleCountChange = (val: string) => {
+    const num = parseInt(val) || 0;
+    setCount(Math.min(totalAvailable, Math.max(0, num)));
   };
-
-  const totalSelected = Object.values(counts).reduce((a, b) => a + b, 0);
 
   return (
     <div className="min-h-screen bg-[var(--bg-base)] flex flex-col">
@@ -75,21 +68,46 @@ function PracticeContent() {
       </header>
 
       <main className="max-w-[720px] mx-auto w-full p-4 sm:p-8 space-y-8">
-        <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-[12px] p-6 shadow-sm space-y-8">
+        <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-[16px] p-6 shadow-md space-y-8">
           
-          <div className="space-y-4">
-            <h3 className="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider">
-              Question Limits
+          <div className="space-y-6">
+            <h3 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-[0.2em]">
+              Session Configuration
             </h3>
-            {(Object.keys(counts) as Array<keyof typeof counts>).map((diff) => (
-              <QuestionStepper
-                key={diff}
-                label={diff}
-                count={counts[diff]}
-                available={available[diff]}
-                onUpdate={(delta) => updateCount(diff, delta)}
-              />
-            ))}
+
+            {categories && (
+              <div className="grid grid-cols-2 gap-4">
+                {Object.entries(categories).map(([cat, num]) => (
+                  <div key={cat} className="bg-[var(--bg-subtle)] p-4 rounded-[12px] border border-[var(--border)] flex flex-col gap-1 items-center text-center">
+                    {cat.toLowerCase() === 'theory' ? <BookOpen className="w-4 h-4 text-[var(--accent)] mb-1" /> : <Code2 className="w-4 h-4 text-[var(--accent)] mb-1" />}
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">{cat}</span>
+                    <span className="text-lg font-bold text-[var(--text-primary)]">{num}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            <div className="space-y-3">
+              <label className="text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)]">Question Pool</label>
+              <div className="flex items-center gap-4 bg-[var(--bg-subtle)] p-4 rounded-[12px] border border-[var(--border)] focus-within:border-[var(--accent)] transition-all">
+                <input
+                  type="number"
+                  min="0"
+                  max={totalAvailable}
+                  value={count}
+                  onChange={(e) => handleCountChange(e.target.value)}
+                  className="w-full bg-transparent text-2xl font-bold text-[var(--text-primary)] focus:outline-none"
+                />
+                <div className="text-right">
+                  <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-tighter block whitespace-nowrap">
+                    Total Available
+                  </span>
+                  <span className="text-sm font-bold text-[var(--accent)]">
+                    {totalAvailable}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <ModeToggle mode={mode} setMode={setMode} />
@@ -103,10 +121,10 @@ function PracticeContent() {
 
           <button
             onClick={startSession}
-            disabled={totalSelected === 0}
-            className="w-full h-10 bg-[var(--accent)] text-white text-sm font-medium rounded-[8px] hover:bg-[var(--accent-hover)] transition-all shadow-sm disabled:opacity-30 disabled:cursor-not-allowed"
+            disabled={count === 0}
+            className="w-full h-12 bg-[var(--accent)] text-white text-sm font-bold uppercase tracking-[0.1em] rounded-[12px] hover:bg-[var(--accent-hover)] transition-all shadow-lg active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed"
           >
-            Start Session
+            Launch Session
           </button>
         </div>
       </main>
