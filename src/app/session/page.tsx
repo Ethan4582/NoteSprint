@@ -14,6 +14,8 @@ import SessionFooter from "@/src/components/session/SessionFooter";
 import FlashcardAnswer from "@/src/components/session/FlashcardAnswer";
 import RevisionView from "@/src/components/session/RevisionView";
 
+import SessionMain from "@/src/components/session/SessionMain";
+
 function SessionContent() {
   const searchParams = useSearchParams();
 
@@ -34,7 +36,6 @@ function SessionContent() {
       return all.sort(() => Math.random() - 0.5).slice(0, config.count);
     }
 
-    // Balanced distribution for multiple topics
     const perTopic = Math.floor(config.count / topics.length);
     const extra = config.count % topics.length;
     let selected: any[] = [];
@@ -72,16 +73,10 @@ function SessionContent() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (isFinished) return;
       if (config.mode === "flashcard") {
-        if (e.code === "Space") {
-          e.preventDefault();
-          setIsFlipped(prev => !prev);
-        } else if (e.code === "KeyY" && isFlipped && !showFeedback) {
-          handleAnswer(true);
-        } else if (e.code === "KeyN" && isFlipped && !showFeedback) {
-          handleAnswer(false);
-        } else if (e.code === "ArrowRight" && showFeedback) {
-          nextQuestion();
-        }
+        if (e.code === "Space") { e.preventDefault(); setIsFlipped(prev => !prev); }
+        else if (e.code === "KeyY" && isFlipped && !showFeedback) handleAnswer(true);
+        else if (e.code === "KeyN" && isFlipped && !showFeedback) handleAnswer(false);
+        else if (e.code === "ArrowRight" && showFeedback) nextQuestion();
       } else {
         if (e.code === "ArrowRight") nextQuestion();
         if (e.code === "ArrowLeft") prevQuestion();
@@ -137,13 +132,8 @@ function SessionContent() {
     return "text-[var(--text-secondary)]";
   };
 
-  if (isFinished) {
-    return <FinishedView stats={stats} />;
-  }
-
-  const currentQ = questions[currentIndex];
-
-  if (!currentQ) return null;
+  if (isFinished) return <FinishedView stats={stats} />;
+  if (!questions[currentIndex]) return null;
 
   return (
     <div className="min-h-screen bg-[var(--bg-base)] flex flex-col">
@@ -158,60 +148,18 @@ function SessionContent() {
         onEndSession={() => setIsFinished(true)}
       />
 
-      <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 pb-24 sm:pb-32">
-        <AnimatePresence mode="wait">
-          {config.mode === "flashcard" ? (
-            <motion.div
-              key={`flash-${currentIndex}-${isFlipped}`}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-              className="w-full flex flex-col items-center gap-8"
-            >
-              {!isFlipped ? (
-                  <Flashcard 
-                    question={currentQ} 
-                    onAnswered={handleAnswer} 
-                    showFeedback={showFeedback}
-                    isFlipped={isFlipped}
-                    onFlip={() => setIsFlipped(true)}
-                    total={questions.length}
-                    current={currentIndex + 1}
-                  />
-              ) : (
-                <FlashcardAnswer
-                  question={currentQ}
-                  currentIndex={currentIndex}
-                  totalQuestions={questions.length}
-                  showFeedback={showFeedback}
-                  handleAnswer={handleAnswer}
-                  setActiveImage={setActiveImage}
-                />
-              )}
-            </motion.div>
-          ) : (
-            <motion.div
-              key={`note-${currentIndex}`}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="w-full max-w-[800px] space-y-6"
-            >
-              <RevisionView
-                question={currentQ}
-                currentIndex={currentIndex}
-                totalQuestions={questions.length}
-                showAnswer={showAnswer}
-                setShowAnswer={setShowAnswer}
-                setActiveImage={setActiveImage}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* KeyboardHints removed per request */}
-      </main>
+      <SessionMain
+        mode={config.mode}
+        currentIndex={currentIndex}
+        isFlipped={isFlipped}
+        questions={questions}
+        handleAnswer={handleAnswer}
+        showFeedback={showFeedback}
+        setIsFlipped={setIsFlipped}
+        showAnswer={showAnswer}
+        setShowAnswer={setShowAnswer}
+        setActiveImage={setActiveImage}
+      />
 
       <SessionFooter
         currentIndex={currentIndex}

@@ -19,7 +19,6 @@ import socketio_ from "../data/backend/socketio_";
 import websocket_ from "../data/backend/websocket_";
 
 // Frontend
-import react_dark from "../data/frontend/react_dark";
 import typescript from "../data/frontend/typescript";
 import redux from "../data/frontend/redux";
 import javascript from "../data/frontend/javascript";
@@ -34,6 +33,11 @@ import dbms from "../data/cs_fundamentals/database_management";
 import oops from "../data/cs_fundamentals/oops";
 import sql from "../data/cs_fundamentals/sql";
 import nextjs from "../data/frontend/nextjs";
+import react from "../data/frontend/react";
+
+// System Design
+import lld from "../data/system_design/lld";
+import hld from "../data/system_design/hld";
 
 export interface Question {
   id: number;
@@ -67,7 +71,7 @@ export const DATA: Record<string, any> = {
   redis,
   socketio_,
   websocket_,
-  react_dark,
+  react,
   nextjs,
   typescript,
   redux,
@@ -80,6 +84,8 @@ export const DATA: Record<string, any> = {
   database_management: dbms,
   oops,
   sql,
+  lld,
+  hld,
 };
 
 export function getQuestions(subject: string | string[], topic: string | string[]): Question[] {
@@ -99,7 +105,20 @@ export function getQuestions(subject: string | string[], topic: string | string[
         questions.push({
           ...q,
           topic: top,
-          subject: "Tech", // Generic subject as categories are hidden
+          subject: "Tech",
+        });
+      });
+    } else if (topicData && typeof topicData === 'object') {
+      // Handle categorized structure (Theory, Coding)
+      const allQs = [
+        ...(topicData.Theory || []),
+        ...(topicData.Coding || [])
+      ];
+      allQs.forEach((q: any) => {
+        questions.push({
+          ...q,
+          topic: top,
+          subject: "Tech",
         });
       });
     }

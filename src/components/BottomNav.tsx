@@ -23,7 +23,7 @@ export default function BottomNav() {
           }`}>
             <Home className="w-4 h-4" />
           </div>
-          <span className="text-[10px] font-bold uppercase tracking-widest">Home</span>
+          <span className="text-[10px] font-bold tracking-widest">Home</span>
         </button>
         
         <button 
@@ -37,7 +37,7 @@ export default function BottomNav() {
           }`}>
             <LayoutList className="w-4 h-4" />
           </div>
-          <span className="text-[10px] font-bold uppercase tracking-widest">Practice</span>
+          <span className="text-[10px] font-bold tracking-widest">Practice</span>
         </button>
         </div>
       </div>
