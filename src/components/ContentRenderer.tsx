@@ -17,80 +17,96 @@ export default function ContentRenderer({
   image2,
   onImageClick,
 }: ContentRendererProps) {
-  // Regex to match ${image("path")} pattern
-  const imageRegex = /\${image\("([^"]+)"\)}/g;
-
-  // Split content by image tags and <br> tags
-  // We'll treat <br> as part of text chunks and let browser handle it via dangerouslySetInnerHTML
-  const parts = content.split(imageRegex);
   
-  // Extract all image paths found by the regex
-  const inlineImages: string[] = [];
-  let match;
-  while ((match = imageRegex.exec(content)) !== null) {
-    inlineImages.push(match[1].trim());
-  }
+  const parseContent = (text: string) => {
+    // Regex to match ${image("path")} pattern
+    const imageRegex = /\$\{image\("([^"]+)"\)\}/gi;
+    
+    // Split by the regex, capturing the path
+    const parts = text.split(imageRegex);
+    
+    const blocks: { type: 'text' | 'image', value: string }[] = [];
+    
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i];
+      if (i % 2 === 0) {
+        // Text part (even indices)
+        if (part) {
+          blocks.push({ type: 'text', value: part });
+        }
+      } else {
+        // Image path part (odd indices)
+        if (part) {
+          blocks.push({ type: 'image', value: part });
+        }
+      }
+    }
+
+    return blocks;
+  };
+
+  const hasInlineImages = content.includes('${image(');
+  const blocks = parseContent(content);
+
+  const resolveImagePath = (path: string) => {
+    if (path.startsWith('http') || path.startsWith('/')) return path;
+    if (path.startsWith('assets/')) return `/${path}`;
+    return `/assets/theory/${path}`;
+  };
 
   return (
-    <div className="space-y-6 w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="space-y-4">
-        {parts.map((part, index) => {
-          // Even indices are text chunks, odd are image paths (from split)
-          if (index % 2 === 0) {
-            if (!part.trim() && index !== 0) return null;
-            
-            // Format points: detect "1. ", "2. " etc or bullet points "• " or "- " 
-            // and ensure they start on a new line if they don't already.
-            const formattedPart = part
-              .replace(/(\d+\.\s+)/g, (match, p1, offset) => {
-                return offset > 0 ? `\n${p1}` : p1;
-              })
-              .replace(/([•\-]\s+)/g, (match, p1, offset) => {
-                return offset > 0 ? `\n${p1}` : p1;
-              });
-
+    <div className="w-full space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-8">
+      {/* Dynamic Content Rendering */}
+      <div className="flex flex-col gap-4">
+        {blocks.map((block, index) => {
+          if (block.type === 'text') {
             return (
               <div
                 key={`text-${index}`}
-                className="text-[15px] sm:text-[17px] leading-relaxed text-[var(--text-primary)] whitespace-pre-wrap break-words"
-                dangerouslySetInnerHTML={{ __html: formattedPart.replace(/\n/g, '<br/>') }}
+                className="text-[16px] sm:text-[18px] leading-relaxed text-[var(--text-primary)] font-medium break-words opacity-95"
+                dangerouslySetInnerHTML={{ 
+                  __html: block.value
+                    .replace(/(\d+\.\s+)/g, (match, p1, offset) => {
+                      return offset > 0 ? `<br/><strong>${p1}</strong>` : `<strong>${p1}</strong>`;
+                    })
+                }}
               />
             );
-          } else {
-            const imgPath = part.trim();
-            const fullPath = imgPath.startsWith('/') ? imgPath : `/assets/theory/${imgPath}`;
+          } else if (block.type === 'image') {
+            const fullPath = resolveImagePath(block.value.trim());
             return (
               <div
-                key={`inline-img-${index}`}
-                className="my-4 rounded-[8px] border border-[var(--border)] overflow-hidden bg-[var(--bg-base)] cursor-zoom-in hover:opacity-95 transition-all shadow-sm"
+                key={`img-${index}`}
+                className="w-full my-2 rounded-[16px] border-2 border-[var(--border)] overflow-hidden bg-[var(--bg-surface)] cursor-zoom-in hover:border-[var(--accent)] transition-all shadow-md group"
                 onClick={() => onImageClick?.(fullPath)}
               >
                 <img
                   src={fullPath}
-                  alt="Content reference"
-                  className="w-full h-auto object-contain"
-                  onError={(e) => (e.currentTarget.style.display = 'none')}
+                  alt="Content diagram"
+                  className="w-full h-auto object-contain group-hover:scale-[1.01] transition-transform duration-500"
+                  onError={(e) => (e.currentTarget.parentElement!.style.display = 'none')}
                 />
               </div>
             );
           }
+          return null;
         })}
       </div>
 
-      {/* Render legacy image properties if they aren't already included in the content */}
-      {(image || image2) && (
-        <div className="grid grid-cols-1 gap-4 pt-4 border-t border-[var(--border)] border-dashed">
-          {image && !content.includes(image) && (
+      {/* Legacy Fallback for images */}
+      {!hasInlineImages && (image || image2) && (
+        <div className="grid grid-cols-1 gap-6 pt-6 border-t border-[var(--border)] border-dashed">
+          {image && (
             <div
-              className="rounded-[12px] border border-[var(--border)] overflow-hidden bg-[var(--bg-base)] cursor-zoom-in shadow-sm"
+              className="rounded-[16px] border-2 border-[var(--border)] overflow-hidden bg-[var(--bg-surface)] cursor-zoom-in shadow-md hover:border-[var(--accent)] transition-all"
               onClick={() => onImageClick?.(image)}
             >
               <img src={image} className="w-full h-auto" alt="Reference" />
             </div>
           )}
-          {image2 && !content.includes(image2) && (
+          {image2 && (
             <div
-              className="rounded-[12px] border border-[var(--border)] overflow-hidden bg-[var(--bg-base)] cursor-zoom-in shadow-sm"
+              className="rounded-[16px] border-2 border-[var(--border)] overflow-hidden bg-[var(--bg-surface)] cursor-zoom-in shadow-md hover:border-[var(--accent)] transition-all"
               onClick={() => onImageClick?.(image2)}
             >
               <img src={image2} className="w-full h-auto" alt="Reference" />
@@ -99,16 +115,18 @@ export default function ContentRenderer({
         </div>
       )}
 
+      {/* Code Snippet */}
       {code && (
-        <div className="space-y-2 pt-4">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">
-              Code Snippet
+        <div className="space-y-3 pt-6">
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></div>
+            <span className="text-[11px] font-black text-[var(--text-muted)] uppercase tracking-widest">
+              Code Implementation
             </span>
           </div>
           <div className="relative group">
-            <pre className="bg-[#1a1a1a] p-4 rounded-[8px] text-[13px] border border-[var(--border)] font-mono overflow-x-auto text-gray-200 shadow-lg scrollbar-thin scrollbar-thumb-[var(--border)]">
-              <code className="block min-w-full">{code}</code>
+            <pre className="bg-[#0f0f0f] p-5 sm:p-6 rounded-[16px] text-[13px] sm:text-[14px] border-2 border-[var(--border)] font-mono overflow-x-auto text-gray-300 shadow-xl scrollbar-thin scrollbar-thumb-[var(--border)]">
+              <code className="block min-w-full leading-relaxed">{code}</code>
             </pre>
           </div>
         </div>
@@ -116,3 +134,5 @@ export default function ContentRenderer({
     </div>
   );
 }
+
+
