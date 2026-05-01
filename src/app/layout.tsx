@@ -3,9 +3,18 @@ import { Inter } from "next/font/google";
 
 const inter = Inter({ subsets: ["latin"] });
 
+export const dynamic = 'force-static';
+export const revalidate = false;
+
 export const metadata = {
-  title: "NoteSprint - Dev Practice",
+  title: "Note Sprints - Dev Practice",
   description: "Master technical concepts at lightning speed.",
+  //make the logo rounded
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  }
 };
 
 export default function RootLayout({

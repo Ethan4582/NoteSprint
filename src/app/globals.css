@@ -8,39 +8,45 @@
 }
 
 :root {
-  --bg-base: #FAFAFC;
-  --bg-surface: #FFFFFF;
-  --bg-subtle: #F3F4F6;
-  --border: #E5E7EB;
-  --text-primary: #111827;
-  --text-secondary: #4B5563;
-  --text-muted: #9CA3AF;
-  --accent: #1D4ED8;
-  --accent-hover: #1E40AF;
-  --accent-subtle: #EFF6FF;
-  --success: #10B981;
-  --error: #EF4444;
-  --warning: #F59E0B;
+  /* Light Mode: Skeuomorphic */
+  --bg-base: #E8ECEF; /* Soft gray base */
+  --bg-surface: #F0F3F6; /* Raised surface */
+  --bg-subtle: #D8DEE4;
+  --border: #FFFFFF; /* Highlighting border for 3D effect */
+  --text-primary: #2D3748;
+  --text-secondary: #4A5568;
+  --text-muted: #718096;
+  --accent: #3182CE;
+  --accent-hover: #2B6CB0;
+  --accent-subtle: #EBF8FF;
+  --success: #38A169;
+  --error: #E53E3E;
+  --warning: #DD6B20;
   
-  --shadow-xs: 0 1px 2px rgba(0,0,0,0.03);
-  --shadow-sm: 0 4px 12px rgba(0,0,0,0.05);
-  --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
+  --shadow-xs: inset 2px 2px 4px #d1d9e0, inset -2px -2px 4px #ffffff;
+  --shadow-sm: 4px 4px 10px #d1d9e0, -4px -4px 10px #ffffff;
+  --shadow-md: 6px 6px 12px #d1d9e0, -6px -6px 12px #ffffff;
 }
 
 [data-theme="dark"] {
-  --bg-base: #0F172A;
-  --bg-surface: #1E293B;
-  --bg-subtle: #334155;
-  --border: #475569;
-  --text-primary: #F8FAFC;
-  --text-secondary: #CBD5E1;
-  --text-muted: #94A3B8;
-  --accent: #3B82F6;
-  --accent-hover: #60A5FA;
-  --accent-subtle: #1E3A8A;
+  /* Dark Mode: Cyber-Minimal */
+  --bg-base: #050505; /* Deep black */
+  --bg-surface: #0A0A0A; /* Slightly lighter surface */
+  --bg-subtle: #141414;
+  --border: #1F1F1F;
+  --text-primary: #EDEDED;
+  --text-secondary: #A1A1AA;
+  --text-muted: #71717A;
+  --accent: #FF4500; /* Vibrant Orange/Red from reference */
+  --accent-hover: #FF5A1F;
+  --accent-subtle: #3A1000;
   --success: #10B981;
-  --error: #F87171;
+  --error: #F43F5E;
   --warning: #FBBF24;
+
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.8);
+  --shadow-sm: 0 4px 12px rgba(255, 69, 0, 0.05); /* Slight accent glow */
+  --shadow-md: 0 8px 24px rgba(255, 69, 0, 0.1); /* Accent glow */
 }
 
 @utility perspective-1000 {

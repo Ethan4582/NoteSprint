@@ -1,10 +1,11 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useState, Suspense, useMemo } from "react";
-import { ArrowLeft, BookOpen, Code2 } from "lucide-react";
-import { getQuestions } from "@/src/lib/data";
+import { useState, Suspense, useMemo, useEffect } from "react";
+import { ArrowLeft, BookOpen, Code2, Check, Filter, Trash2, LayoutGrid } from "lucide-react";
+import { DATA, getQuestions } from "@/src/lib/data";
 import ThemeToggle from "@/src/components/ThemeToggle";
+import BottomNav from "@/src/components/BottomNav";
 
 // Practice components
 import TimerConfig from "@/src/components/practice/TimerConfig";
@@ -13,31 +14,73 @@ import ModeToggle from "@/src/components/practice/ModeToggle";
 function PracticeContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const subject = searchParams.get("subject") || "all";
-  const topic = searchParams.get("topic") || "all";
+  
+  // Initial selection from params
+  const initialSubject = searchParams.get("subject");
+  const initialTopic = searchParams.get("topic");
 
-  const allQuestions = useMemo(() => getQuestions(subject, topic), [subject, topic]);
-  const totalAvailable = allQuestions.length;
-
-  const categories = useMemo(() => {
-    const counts: Record<string, number> = {};
-    allQuestions.forEach(q => {
-      if (q.category) {
-        counts[q.category] = (counts[q.category] || 0) + 1;
-      }
-    });
-    return Object.keys(counts).length > 0 ? counts : null;
-  }, [allQuestions]);
-
-  const [count, setCount] = useState(Math.min(10, totalAvailable));
+  const [selectedTopics, setSelectedTopics] = useState<Array<{subject: string, topic: string}>>([]);
+  const [count, setCount] = useState(10);
   const [time, setTime] = useState(5);
   const [mode, setMode] = useState<"flashcard" | "notes">("flashcard");
   const [timerEnabled, setTimerEnabled] = useState(true);
+  const [filterQuery, setFilterQuery] = useState("");
+
+  // Populate initial selection
+  useEffect(() => {
+    if (initialSubject && initialTopic) {
+      setSelectedTopics([{ subject: initialSubject, topic: initialTopic }]);
+    }
+  }, [initialSubject, initialTopic]);
+
+  // All available topics for filtering
+  const allAvailableTopics = useMemo(() => {
+    return Object.entries(DATA).flatMap(([subject, topicsObj]) => 
+      Object.keys(topicsObj).map(topic => ({ subject, topic }))
+    );
+  }, []);
+
+  const filteredTopics = useMemo(() => {
+    if (!filterQuery) return allAvailableTopics;
+    return allAvailableTopics.filter(t => 
+      t.topic.toLowerCase().includes(filterQuery.toLowerCase()) ||
+      t.subject.toLowerCase().includes(filterQuery.toLowerCase())
+    );
+  }, [allAvailableTopics, filterQuery]);
+
+  // Calculate total available based on selection
+  const totalAvailable = useMemo(() => {
+    if (selectedTopics.length === 0) return 0;
+    let sum = 0;
+    selectedTopics.forEach(t => {
+      sum += getQuestions(t.subject, t.topic).length;
+    });
+    return sum;
+  }, [selectedTopics]);
+
+  useEffect(() => {
+    if (count > totalAvailable && totalAvailable > 0) {
+      setCount(totalAvailable);
+    }
+  }, [totalAvailable]);
+
+  const toggleTopic = (subject: string, topic: string) => {
+    setSelectedTopics(prev => {
+      const exists = prev.find(t => t.topic === topic && t.subject === subject);
+      if (exists) {
+        return prev.filter(t => !(t.topic === topic && t.subject === subject));
+      }
+      return [...prev, { subject, topic }];
+    });
+  };
 
   const startSession = () => {
+    const subjects = selectedTopics.map(t => t.subject).join(",");
+    const topics = selectedTopics.map(t => t.topic).join(",");
+    
     const params = new URLSearchParams({
-      subject,
-      topic,
+      subject: subjects,
+      topic: topics,
       count: count.toString(),
       time: timerEnabled ? time.toString() : "0",
       mode,
@@ -45,89 +88,136 @@ function PracticeContent() {
     router.push(`/session?${params.toString()}`);
   };
 
-  const handleCountChange = (val: string) => {
-    const num = parseInt(val) || 0;
-    setCount(Math.min(totalAvailable, Math.max(0, num)));
-  };
-
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] flex flex-col">
-      <header className="sticky top-0 z-10 h-12 bg-[var(--bg-surface)] border-b border-[var(--border)] flex items-center justify-between px-4">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => router.back()}
-            className="w-8 h-8 flex items-center justify-center hover:bg-[var(--bg-subtle)] rounded-[6px]"
-          >
-            <ArrowLeft className="w-[18px] h-[18px]" />
+    <div className="min-h-screen bg-[var(--bg-base)] flex flex-col pb-32 overflow-x-hidden">
+      {/* Header */}
+      <header className="sticky top-0 z-40 bg-[var(--bg-surface)]/80 backdrop-blur-md border-b border-[var(--border)] px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <button onClick={() => router.back()} className="p-2 hover:bg-[var(--bg-subtle)] rounded-full transition-colors">
+            <ArrowLeft className="w-5 h-5" />
           </button>
-          <span className="text-sm font-medium capitalize truncate max-w-[150px]">
-            {topic === "all" ? "Random Practice" : topic}
-          </span>
+          <div>
+            <h1 className="text-sm sm:text-lg font-black uppercase tracking-widest text-[var(--text-primary)]">Practice</h1>
+            <p className="text-[9px] font-bold text-[var(--accent)] uppercase tracking-tighter hidden sm:block">Configure your session</p>
+          </div>
         </div>
         <ThemeToggle />
       </header>
 
-      <main className="max-w-[720px] mx-auto w-full p-4 sm:p-8 space-y-8">
-        <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-[16px] p-6 shadow-md space-y-8">
-          
-          <div className="space-y-6">
-            <h3 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-[0.2em]">
-              Session Configuration
+      <main className="max-w-[1100px] mx-auto w-full p-4 sm:p-8 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10">
+        
+        {/* Left Column: Topic Selection */}
+        <div className="lg:col-span-7 space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <h2 className="text-lg font-bold flex items-center gap-2">
+              <LayoutGrid className="w-4 h-4 text-[var(--accent)]" />
+              Topics
+              <span className="px-2 py-0.5 bg-[var(--accent-subtle)] text-[var(--accent)] text-[10px] rounded-full">
+                {selectedTopics.length}
+              </span>
+            </h2>
+            
+            <div className="relative">
+              <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-muted)]" />
+              <input 
+                type="text" 
+                placeholder="Filter topics..."
+                value={filterQuery}
+                onChange={e => setFilterQuery(e.target.value)}
+                className="pl-9 pr-4 py-1.5 bg-[var(--bg-surface)] border border-[var(--border)] rounded-[8px] text-xs focus:border-[var(--accent)] outline-none w-full sm:w-56"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {filteredTopics.map(({ subject, topic }) => {
+              const isSelected = selectedTopics.some(t => t.topic === topic && t.subject === subject);
+              const qCount = getQuestions(subject, topic).length;
+              
+              return (
+                <button
+                  key={`${subject}-${topic}`}
+                  onClick={() => toggleTopic(subject, topic)}
+                  className={`flex items-center justify-between p-3.5 rounded-[12px] border-2 transition-all duration-300 ${
+                    isSelected 
+                      ? "bg-[var(--bg-surface)] border-[var(--accent)] shadow-sm" 
+                      : "bg-[var(--bg-surface)] border-[var(--border)] hover:border-[var(--text-muted)]"
+                  }`}
+                >
+                  <div className="flex items-center gap-3 text-left">
+                    <div className={`w-8 h-8 rounded-[8px] flex items-center justify-center ${isSelected ? "bg-[var(--accent)] text-white" : "bg-[var(--bg-subtle)]"}`}>
+                      {isSelected ? <Check className="w-4 h-4" /> : <BookOpen className="w-3.5 h-3.5 text-[var(--text-muted)]" />}
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-[var(--text-primary)] leading-tight">{topic}</h4>
+                      <p className="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-tight">{subject} • {qCount} Cards</p>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {selectedTopics.length > 0 && (
+            <button 
+              onClick={() => setSelectedTopics([])}
+              className="flex items-center gap-1.5 text-[9px] font-bold text-[var(--error)] uppercase tracking-widest hover:opacity-80 transition-all ml-1"
+            >
+              <Trash2 className="w-3 h-3" /> Clear Selection
+            </button>
+          )}
+        </div>
+
+        {/* Right Column: Configuration Sidebar */}
+        <div className="lg:col-span-5 space-y-6">
+          <div className="lg:sticky lg:top-24 bg-[var(--bg-surface)] border border-[var(--border)] rounded-[20px] p-6 sm:p-8 shadow-lg space-y-6 sm:space-y-8">
+            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] border-b border-[var(--border)] pb-3">
+              Session Config
             </h3>
 
-            {categories && (
-              <div className="grid grid-cols-2 gap-4">
-                {Object.entries(categories).map(([cat, num]) => (
-                  <div key={cat} className="bg-[var(--bg-subtle)] p-4 rounded-[12px] border border-[var(--border)] flex flex-col gap-1 items-center text-center">
-                    {cat.toLowerCase() === 'theory' ? <BookOpen className="w-4 h-4 text-[var(--accent)] mb-1" /> : <Code2 className="w-4 h-4 text-[var(--accent)] mb-1" />}
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">{cat}</span>
-                    <span className="text-lg font-bold text-[var(--text-primary)]">{num}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-            
             <div className="space-y-3">
-              <label className="text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)]">Question Pool</label>
-              <div className="flex items-center gap-4 bg-[var(--bg-subtle)] p-4 rounded-[12px] border border-[var(--border)] focus-within:border-[var(--accent)] transition-all">
+              <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)]">Question Count</label>
+              <div className="flex items-center gap-4 bg-[var(--bg-subtle)] px-4 sm:px-5 h-12 sm:h-14 rounded-[12px] border border-[var(--border)] focus-within:border-[var(--accent)] transition-all">
                 <input
                   type="number"
-                  min="0"
-                  max={totalAvailable}
+                  min="1"
+                  max={totalAvailable || 1}
                   value={count}
-                  onChange={(e) => handleCountChange(e.target.value)}
-                  className="w-full bg-transparent text-2xl font-bold text-[var(--text-primary)] focus:outline-none"
+                  onChange={(e) => setCount(Math.min(totalAvailable, Math.max(1, parseInt(e.target.value) || 1)))}
+                  className="w-full bg-transparent text-xl sm:text-2xl font-black text-[var(--text-primary)] focus:outline-none"
                 />
-                <div className="text-right">
-                  <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-tighter block whitespace-nowrap">
-                    Total Available
-                  </span>
-                  <span className="text-sm font-bold text-[var(--accent)]">
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className="text-[8px] font-black text-[var(--text-muted)] uppercase tracking-tighter">Max</span>
+                  <span className="px-2 py-0.5 bg-[var(--bg-base)] border border-[var(--border)] rounded-full text-[9px] font-bold text-[var(--accent)]">
                     {totalAvailable}
                   </span>
                 </div>
               </div>
             </div>
+
+            <ModeToggle mode={mode} setMode={setMode} />
+            <TimerConfig time={time} setTime={setTime} timerEnabled={timerEnabled} setTimerEnabled={setTimerEnabled} />
+
+            <div className="space-y-3">
+              <button
+                onClick={startSession}
+                disabled={selectedTopics.length === 0 || totalAvailable === 0}
+                className="w-full h-11 sm:h-12 bg-[var(--accent)] text-white text-[11px] sm:text-xs font-black uppercase tracking-[0.2em] rounded-[12px] hover:bg-[var(--accent-hover)] transition-all shadow-md active:scale-[0.97] disabled:opacity-30 disabled:grayscale disabled:cursor-not-allowed"
+              >
+                Launch Session
+              </button>
+
+              {selectedTopics.length === 0 && (
+                <p className="text-center text-[9px] font-bold text-[var(--error)] uppercase animate-pulse">
+                  Select a topic to start
+                </p>
+              )}
+            </div>
           </div>
-
-          <ModeToggle mode={mode} setMode={setMode} />
-
-          <TimerConfig
-            time={time}
-            setTime={setTime}
-            timerEnabled={timerEnabled}
-            setTimerEnabled={setTimerEnabled}
-          />
-
-          <button
-            onClick={startSession}
-            disabled={count === 0}
-            className="w-full h-12 bg-[var(--accent)] text-white text-sm font-bold uppercase tracking-[0.1em] rounded-[12px] hover:bg-[var(--accent-hover)] transition-all shadow-lg active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            Launch Session
-          </button>
         </div>
       </main>
+
+      <BottomNav />
     </div>
   );
 }

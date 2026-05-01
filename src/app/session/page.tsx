@@ -13,7 +13,6 @@ import SessionHeader from "@/src/components/session/SessionHeader";
 import SessionFooter from "@/src/components/session/SessionFooter";
 import FlashcardAnswer from "@/src/components/session/FlashcardAnswer";
 import RevisionView from "@/src/components/session/RevisionView";
-import KeyboardHints from "@/src/components/session/KeyboardHints";
 
 function SessionContent() {
   const searchParams = useSearchParams();
@@ -27,9 +26,27 @@ function SessionContent() {
   }), [searchParams]);
 
   const questions = useMemo(() => {
-    const all = getQuestions(config.subject, config.topic);
-    // Shuffle and slice based on requested count
-    return all.sort(() => Math.random() - 0.5).slice(0, config.count);
+    const subjects = config.subject.split(",");
+    const topics = config.topic.split(",");
+    
+    if (topics.length <= 1) {
+      const all = getQuestions(config.subject, config.topic);
+      return all.sort(() => Math.random() - 0.5).slice(0, config.count);
+    }
+
+    // Balanced distribution for multiple topics
+    const perTopic = Math.floor(config.count / topics.length);
+    const extra = config.count % topics.length;
+    let selected: any[] = [];
+
+    topics.forEach((t, i) => {
+      const s = subjects[i] || subjects[0];
+      const topicQuestions = getQuestions(s, t).sort(() => Math.random() - 0.5);
+      const countToTake = i < extra ? perTopic + 1 : perTopic;
+      selected = [...selected, ...topicQuestions.slice(0, countToTake)];
+    });
+
+    return selected.sort(() => Math.random() - 0.5);
   }, [config]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -138,6 +155,7 @@ function SessionContent() {
         timerEnabled={config.time > 0}
         formatTime={formatTime}
         getTimeColor={getTimeColor}
+        onEndSession={() => setIsFinished(true)}
       />
 
       <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 pb-24 sm:pb-32">
@@ -152,15 +170,15 @@ function SessionContent() {
               className="w-full flex flex-col items-center gap-8"
             >
               {!isFlipped ? (
-                <Flashcard 
-                  question={currentQ} 
-                  onAnswered={handleAnswer} 
-                  showFeedback={showFeedback}
-                  isFlipped={isFlipped}
-                  onFlip={() => setIsFlipped(true)}
-                  total={questions.length}
-                  current={currentIndex + 1}
-                />
+                  <Flashcard 
+                    question={currentQ} 
+                    onAnswered={handleAnswer} 
+                    showFeedback={showFeedback}
+                    isFlipped={isFlipped}
+                    onFlip={() => setIsFlipped(true)}
+                    total={questions.length}
+                    current={currentIndex + 1}
+                  />
               ) : (
                 <FlashcardAnswer
                   question={currentQ}
@@ -192,11 +210,7 @@ function SessionContent() {
           )}
         </AnimatePresence>
 
-        <KeyboardHints
-          mode={config.mode}
-          isFlipped={isFlipped}
-          showFeedback={showFeedback}
-        />
+        {/* KeyboardHints removed per request */}
       </main>
 
       <SessionFooter

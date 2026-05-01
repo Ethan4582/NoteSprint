@@ -38,11 +38,22 @@ export default function ContentRenderer({
           // Even indices are text chunks, odd are image paths (from split)
           if (index % 2 === 0) {
             if (!part.trim() && index !== 0) return null;
+            
+            // Format points: detect "1. ", "2. " etc or bullet points "• " or "- " 
+            // and ensure they start on a new line if they don't already.
+            const formattedPart = part
+              .replace(/(\d+\.\s+)/g, (match, p1, offset) => {
+                return offset > 0 ? `\n${p1}` : p1;
+              })
+              .replace(/([•\-]\s+)/g, (match, p1, offset) => {
+                return offset > 0 ? `\n${p1}` : p1;
+              });
+
             return (
               <div
                 key={`text-${index}`}
                 className="text-[15px] sm:text-[17px] leading-relaxed text-[var(--text-primary)] whitespace-pre-wrap break-words"
-                dangerouslySetInnerHTML={{ __html: part.replace(/\n/g, '<br/>') }}
+                dangerouslySetInnerHTML={{ __html: formattedPart.replace(/\n/g, '<br/>') }}
               />
             );
           } else {

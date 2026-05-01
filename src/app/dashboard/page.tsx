@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, Home, LayoutList } from "lucide-react";
-import { DATA } from "@/src/lib/data";
+import { DATA, getQuestions } from "@/src/lib/data";
+import BottomNav from "@/src/components/BottomNav";
+import ThemeToggle from "@/src/components/ThemeToggle";
 import TopicCard from "@/src/components/dashboard/TopicCard";
 
 export default function Dashboard() {
@@ -24,42 +26,48 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] flex flex-col pb-24 font-sans">
-      <main className="max-w-[600px] mx-auto w-full p-6 space-y-8 mt-4">
-        {/* Header */}
-        <div className="flex justify-between items-center">
-          <div>
-            <p className="text-sm text-[var(--text-secondary)] font-medium">Welcome back,</p>
-            <h1 className="text-3xl font-extrabold text-[var(--text-primary)]">Developer</h1>
+    <div className="min-h-screen bg-[var(--bg-base)] flex flex-col pb-32 font-sans overflow-x-hidden">
+      <main className="max-w-[1100px] mx-auto w-full p-4 sm:p-10 space-y-6 sm:space-y-12 mt-2 sm:mt-6">
+        {/* Header Section */}
+        <div className="flex flex-row justify-between items-start gap-4 sm:gap-6">
+          <div className="flex items-center gap-4">
+            <img src="/logo.png" className="w-10 h-10 sm:w-14 sm:h-14 drop-shadow-md rounded-lg" alt="Logo" />
+            <div className="space-y-0.5 sm:space-y-1">
+              <p className="text-[10px] sm:text-xs font-bold text-[var(--accent)] uppercase tracking-[0.3em]">Note Sprints</p>
+              <h1 className="text-2xl sm:text-5xl font-black text-[var(--text-primary)] tracking-tight">
+                Master the Stack
+              </h1>
+            </div>
           </div>
-          <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-md">
-            D
+          <div className="bg-[var(--bg-surface)] p-1.5 sm:p-2 rounded-[12px] shadow-sm border border-[var(--border)] shrink-0">
+            <ThemeToggle />
           </div>
         </div>
 
-        {/* Search Bar */}
-        <div className="relative">
-          <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-            <Search className="w-5 h-5 text-[var(--text-muted)]" />
+        {/* Search Bar - Modern Style */}
+        <div className="relative group">
+          <div className="absolute inset-y-0 left-4 sm:left-5 flex items-center pointer-events-none">
+            <Search className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--text-muted)] group-focus-within:text-[var(--accent)] transition-colors" />
           </div>
           <input 
             type="text" 
-            placeholder="Search a topic or subject..." 
+            placeholder="Search topics..." 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-14 pl-12 pr-4 bg-[var(--bg-subtle)] border-none rounded-full text-[var(--text-primary)] font-medium focus:ring-2 focus:ring-[var(--accent)] outline-none"
+            className="w-full h-12 sm:h-16 pl-11 sm:pl-14 pr-4 sm:pr-6 bg-[var(--bg-surface)] border-2 border-[var(--border)] rounded-[12px] sm:rounded-[16px] text-[var(--text-primary)] font-semibold text-base sm:text-lg focus:border-[var(--accent)] outline-none transition-all shadow-md placeholder:text-[var(--text-muted)] placeholder:font-normal"
           />
         </div>
 
-        {/* Discover Grid */}
-        <div className="space-y-4">
-          <h2 className="text-lg font-bold text-[var(--text-primary)] tracking-tight">Discover Topics</h2>
-          <div className="grid grid-cols-2 gap-4">
+        {/* Discover Grid - Expanded */}
+        <div className="space-y-4 sm:space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-[var(--text-primary)] opacity-60">Discover Topics</h2>
+            <div className="h-px flex-1 bg-[var(--border)] ml-4 sm:ml-6 opacity-40"></div>
+          </div>
+          
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-6">
             {getFilteredTopics().map(({ subject, topic }) => {
-              const topicData = DATA[subject][topic];
-              const qCount = Object.values(topicData).reduce((acc: number, cur: any) => 
-                acc + (Array.isArray(cur) ? cur.length : 0), 0
-              );
+              const qCount = getQuestions(subject, topic).length;
               
               return (
                 <TopicCard
@@ -74,30 +82,7 @@ export default function Dashboard() {
         </div>
       </main>
 
-      {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 w-full bg-[var(--bg-surface)] border-t border-[var(--border)] pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-50">
-        <div className="max-w-[600px] mx-auto flex justify-evenly items-center px-4 h-16">
-          <button 
-            onClick={() => router.push("/dashboard")} 
-            className="flex flex-col items-center gap-1 text-[var(--accent)] flex-1"
-          >
-            <div className="w-8 h-8 rounded-[8px] bg-[var(--accent-subtle)] flex items-center justify-center">
-              <Home className="w-4 h-4" />
-            </div>
-            <span className="text-[10px] font-semibold">Home</span>
-          </button>
-          
-          <button 
-            onClick={() => router.push("/practice")} 
-            className="flex flex-col items-center gap-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors flex-1"
-          >
-            <div className="w-8 h-8 flex items-center justify-center">
-              <LayoutList className="w-4 h-4" />
-            </div>
-            <span className="text-[10px] font-semibold">Practice</span>
-          </button>
-        </div>
-      </div>
+      <BottomNav />
     </div>
   );
 }

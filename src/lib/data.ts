@@ -46,16 +46,17 @@ export const DATA: Record<string, Record<string, any>> = {
   },
 };
 
-export function getQuestions(subject: string, topic: string): Question[] {
-  let subjectsToSearch = [subject];
-  if (subject === "all" || !subject) {
-    subjectsToSearch = Object.keys(DATA);
-  }
+export function getQuestions(subject: string | string[], topic: string | string[]): Question[] {
+  const subjectsToSearch = Array.isArray(subject) 
+    ? subject 
+    : (subject === "all" || !subject ? Object.keys(DATA) : [subject]);
 
   const questions: Question[] = [];
 
   subjectsToSearch.forEach((sub) => {
-    const topicsToSearch = (topic === "all" || !topic) ? Object.keys(DATA[sub] || {}) : [topic];
+    const topicsToSearch = Array.isArray(topic)
+      ? topic.filter(t => DATA[sub]?.[t])
+      : (topic === "all" || !topic ? Object.keys(DATA[sub] || {}) : [topic]);
     
     topicsToSearch.forEach((top) => {
       const topicData = DATA[sub]?.[top];
@@ -70,7 +71,6 @@ export function getQuestions(subject: string, topic: string): Question[] {
           });
         });
       } else if (typeof topicData === 'object') {
-        // Handle structured topics like System Design (Theory/Coding)
         Object.entries(topicData).forEach(([category, items]) => {
           if (Array.isArray(items)) {
             items.forEach((q: any) => {

@@ -33,6 +33,11 @@ export default function LandingPage() {
       </header>
 
       <main className="flex-1 flex flex-col items-center justify-center p-6 text-center z-10 relative mt-[-10vh]">
+        <div className="mb-8 relative group">
+          <div className="absolute inset-0 bg-[var(--accent)] blur-[40px] opacity-20 group-hover:opacity-40 transition-opacity" />
+          <img src="/logo.png" className="w-20 h-20 relative z-10 drop-shadow-2xl" alt="Note Sprints Logo" />
+        </div>
+        
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-[6px] bg-[var(--bg-surface)] text-[var(--text-secondary)] text-[11px] font-semibold tracking-widest shadow-sm mb-6 border border-[var(--border)] uppercase">
           <Sparkles className="w-3 h-3 text-[var(--accent)]" />
           <span>Curated for Developers</span>

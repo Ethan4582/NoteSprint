@@ -22,28 +22,28 @@ export default function RevisionView({
   setActiveImage,
 }: RevisionViewProps) {
   return (
-    <div className="w-full max-w-[800px] space-y-8 pb-20">
-      <div className="flex justify-between items-center mb-2 px-2">
+    <div className="w-full max-w-[700px] mx-auto space-y-10 pb-20">
+      <div className="flex justify-between items-center px-4">
         {question.category && (
-          <span className="text-[10px] font-bold text-[var(--accent)] uppercase tracking-[0.2em] bg-[var(--accent)]/10 px-3 py-1 rounded-full border border-[var(--accent)]/20">
+          <span className="text-[10px] font-bold text-[var(--accent)] uppercase tracking-widest">
             {question.category}
           </span>
         )}
-        <span className="text-sm text-[var(--text-muted)] font-medium bg-[var(--bg-subtle)] px-2 py-0.5 rounded-[4px] ml-auto">
+        <span className="text-[10px] font-medium text-[var(--text-muted)] uppercase tracking-widest ml-auto">
           Q {currentIndex + 1} / {totalQuestions}
         </span>
       </div>
 
-      <div className="px-2">
-        <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] leading-snug tracking-tight">
+      <div className="space-y-4 px-4">
+        <h2 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] leading-snug tracking-tight">
           {question.question}
         </h2>
       </div>
 
-      <div className="space-y-6 px-2">
+      <div className="space-y-8 px-4">
         <button
           onClick={() => setShowAnswer(!showAnswer)}
-          className="text-xs font-bold uppercase tracking-widest text-[var(--accent)] hover:text-[var(--accent-hover)] transition-all flex items-center gap-2 group bg-[var(--accent)]/5 px-4 py-2 rounded-full border border-[var(--accent)]/10"
+          className="text-xs font-bold uppercase tracking-widest text-[var(--accent)] hover:text-[var(--accent-hover)] transition-all flex items-center gap-2 group"
         >
           {showAnswer ? "Hide Explanation" : "Reveal Explanation"}
           <ChevronRight
@@ -56,7 +56,7 @@ export default function RevisionView({
             showAnswer ? "max-h-[5000px] opacity-100" : "max-h-0 opacity-0"
           }`}
         >
-          <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-[16px] p-5 sm:p-8 shadow-md">
+          <div className="pt-2">
             <ContentRenderer
               content={question.answer}
               code={question.code}

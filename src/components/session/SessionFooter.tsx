@@ -44,39 +44,43 @@ export default function SessionFooter({
         !isFlipped ? (
           <button
             onClick={() => setIsFlipped(true)}
-            className="h-8 px-6 bg-[var(--accent)] text-white text-sm font-medium rounded-[6px] hover:bg-[var(--accent-hover)] transition-all shadow-sm"
+            className="h-8 px-4 bg-[var(--accent)] text-white text-[10px] font-bold uppercase tracking-widest rounded-[6px] hover:bg-[var(--accent-hover)] transition-all shadow-sm active:scale-95"
           >
             Reveal
           </button>
         ) : showFeedback ? (
           <button
+            //reduce the button size to match the reveal button
             onClick={nextQuestion}
-            className="h-8 px-4 bg-[var(--accent)] text-white text-sm font-medium rounded-[6px] hover:bg-[var(--accent-hover)] transition-all flex items-center gap-1 shadow-sm"
+            className="h-8 px-4 bg-[var(--accent)] text-white text-[10px] font-bold uppercase tracking-widest rounded-[8px] hover:bg-[var(--accent-hover)] transition-all flex items-center gap-2 shadow-md active:scale-95"
           >
             Next <ChevronRight className="w-4 h-4" />
           </button>
         ) : (
-          <div className="flex gap-2">
+          <div className="flex items-center gap-3">
+            <span className="hidden sm:block text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-tighter mr-1">
+              Mark Progress:
+            </span>
             <button
               onClick={() => handleAnswer(false)}
-              className="h-8 px-3 border border-[var(--error)] text-[var(--error)] text-xs font-medium rounded-[6px] hover:bg-[var(--bg-subtle)]"
+              className="h-9 px-5 bg-[var(--error)]/10 text-[var(--error)] text-[10px] font-bold uppercase tracking-widest rounded-[8px] hover:bg-[var(--error)] hover:text-white transition-all border border-[var(--error)]/20 shadow-sm"
             >
-              No
+              Incorrect
             </button>
             <button
               onClick={() => handleAnswer(true)}
-              className="h-8 px-3 border border-[var(--success)] text-[var(--success)] text-xs font-medium rounded-[6px] hover:bg-[var(--bg-subtle)]"
+              className="h-9 px-5 bg-[var(--success)]/10 text-[var(--success)] text-[10px] font-bold uppercase tracking-widest rounded-[8px] hover:bg-[var(--success)] hover:text-white transition-all border border-[var(--success)]/20 shadow-sm"
             >
-              Yes
+              Correct
             </button>
           </div>
         )
       ) : (
         <button
           onClick={nextQuestion}
-          className="h-8 px-4 bg-[var(--accent)] text-white text-sm font-medium rounded-[6px] hover:bg-[var(--accent-hover)] transition-all flex items-center gap-1 shadow-sm"
+          className="h-9 px-6 bg-[var(--accent)] text-white text-sm font-bold uppercase tracking-widest rounded-[8px] hover:bg-[var(--accent-hover)] transition-all flex items-center gap-2 shadow-md active:scale-95"
         >
-          {currentIndex === totalQuestions - 1 ? "Finish" : "Next"}{" "}
+          {currentIndex === totalQuestions - 1 ? "Finish Session" : "Next Note"}{" "}
           <ChevronRight className="w-4 h-4" />
         </button>
       )}
