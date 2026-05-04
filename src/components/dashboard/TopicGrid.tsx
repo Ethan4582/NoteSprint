@@ -5,9 +5,10 @@ import TopicCard from "./TopicCard";
 
 interface TopicGridProps {
   topics: { topic: string }[];
+  basePath?: string;
 }
 
-export default function TopicGrid({ topics }: TopicGridProps) {
+export default function TopicGrid({ topics, basePath }: TopicGridProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -25,6 +26,7 @@ export default function TopicGrid({ topics }: TopicGridProps) {
               subject=""
               topic={topic}
               qCount={qCount}
+              basePath={basePath}
             />
           );
         })}

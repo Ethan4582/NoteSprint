@@ -93,7 +93,14 @@ function PracticeContent() {
         />
       </main>
 
-      <BottomNav />
+      <BottomNav 
+        onRead={() => {
+          if (selectedTopics.length === 1) {
+            router.push(`/preview/${selectedTopics[0]}`);
+          }
+        }}
+        isReadDisabled={selectedTopics.length !== 1}
+      />
     </div>
   );
 }

@@ -98,7 +98,7 @@ export default function ContentRenderer({
         <div className="grid grid-cols-1 gap-6 pt-6 border-t border-[var(--border)] border-dashed">
           {image && (
             <div
-              className="rounded-[16px] border-2 border-[var(--border)] overflow-hidden bg-[var(--bg-surface)] cursor-zoom-in shadow-md hover:border-[var(--accent)] transition-all"
+              className="rounded-xl border border-[var(--border)] overflow-hidden bg-[var(--bg-surface)] cursor-zoom-in shadow-sm hover:border-[var(--accent)] transition-all"
               onClick={() => onImageClick?.(image)}
             >
               <img src={image} className="w-full h-auto" alt="Reference" />
@@ -106,7 +106,7 @@ export default function ContentRenderer({
           )}
           {image2 && (
             <div
-              className="rounded-[16px] border-2 border-[var(--border)] overflow-hidden bg-[var(--bg-surface)] cursor-zoom-in shadow-md hover:border-[var(--accent)] transition-all"
+              className="rounded-xl border border-[var(--border)] overflow-hidden bg-[var(--bg-surface)] cursor-zoom-in shadow-sm hover:border-[var(--accent)] transition-all"
               onClick={() => onImageClick?.(image2)}
             >
               <img src={image2} className="w-full h-auto" alt="Reference" />
@@ -125,7 +125,7 @@ export default function ContentRenderer({
             </span>
           </div>
           <div className="relative group">
-            <pre className="bg-[#0f0f0f] p-5 sm:p-6 rounded-[16px] text-[13px] sm:text-[14px] border-2 border-[var(--border)] font-mono overflow-x-auto text-gray-300 shadow-xl scrollbar-thin scrollbar-thumb-[var(--border)]">
+            <pre className="bg-[#0f0f0f] p-5 sm:p-6 rounded-xl text-[13px] sm:text-[14px] border border-[var(--border)] font-mono overflow-x-auto text-gray-300 shadow-xl scrollbar-thin scrollbar-thumb-[var(--border)]">
               <code className="block min-w-full leading-relaxed">{code}</code>
             </pre>
           </div>

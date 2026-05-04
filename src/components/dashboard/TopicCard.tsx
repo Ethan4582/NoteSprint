@@ -7,14 +7,19 @@ interface TopicCardProps {
   subject: string;
   topic: string;
   qCount: number;
+  basePath?: string;
 }
 
-export default function TopicCard({ subject, topic, qCount }: TopicCardProps) {
+export default function TopicCard({ subject, topic, qCount, basePath = "/practice" }: TopicCardProps) {
   const router = useRouter();
 
   const handleStart = () => {
-    const params = new URLSearchParams({ topic });
-    router.push(`/practice?${params.toString()}`);
+    if (basePath === "/preview") {
+      router.push(`/preview/${topic}`);
+    } else {
+      const params = new URLSearchParams({ topic });
+      router.push(`${basePath}?${params.toString()}`);
+    }
   };
 
   const formattedTopic = topic.replace(/_/g, ' ');
