@@ -252,6 +252,179 @@ const nodejs = [
     question: "How to handle errors while using async-await?",
     answer: "We use 'try-catch' blocks to handle errors while using async-await, wrapping the awaited code in the 'try' block and handling errors in the 'catch' block.",
     image: "/assets/theory/node/45.png"
+  },{
+    id:46,
+    question:" What is event loop in nodejs? ",
+    answer: "The event loop in Node.js is a crucial mechanism that enables its single-threaded, non-blocking I/O architecture. It allows Node.js to handle multiple concurrent operations efficiently without getting blocked by I/O tasks. The event loop works in conjunction with the call stack and the callback queue to manage asynchronous operations. In essence, the event loop is an infinite loop that continuously checks if there are any pending tasks in the callback queue. If there are, it executes them one by one, pushing them onto the call stack. If the call stack is empty, it waits for new tasks to arrive.",
+  },{
+    id:47,
+    question:"What is Call Stack in NodeJs?",
+    answer: "It keep the track of the functions that are currently executing or are paused because they are waiting for an operation to complete. It follow LIFO and only synchonous calls are allowed in call stack.If is block node.js cannot excute anything else. This is the reason why nodejs is single threaded."
+  },{
+    id:48,
+    question:"What is libuv in Node.js?",
+    answer: "Libuv is a C-language library that provides asynchronous I/O capabilities to Node.js.It handles Event loop, File System, Network and Child Processes, Thread pool ."
+  },{
+    id:49,
+    question:"What is Thread pool in nodejs?",
+    answer: "Thread pool in nodejs is a pool of threads that are used to handle asynchronous I/O operations (via libuv). It is used to handle file system operations, DNS lookups, and other I/O operations that are not handled by the event loop. By default, thread pool size is 4."
+  },{
+    id:50,
+    question:"What is a blocking code ?",
+    answer: "Blocking code is a code that blocks the execution of other code. It is synchronous code. It is not good for performance.",
+    code:`
+
+const fs = require("fs");
+// blockigng code
+const data = fs.readFileSync("file.txt");
+console.log(data);
+
+// non-blockigng code
+fs.readFile("file.txt", (err, data) => {
+console.log(data);
+});
+    `,
+   
+  },{
+    id:51,
+    question:"difference between Javascript and Node.js",
+    answer: "1. JS is programming language, Node.js is runtime environment. 2. JS is used for client side development, Node.js is used for server side development. 3. JS is single threaded, Node.js is single threaded but it uses event loop to handle asynchronous operations. 4. JS is interpreted language, Node.js is compiled language.  "
+  },{
+    id:52,
+    question:"What is Streaming in nodejs? ",
+    answer: "It is used to handle large chunks of data in small chunks. Types: Readable (You can read data from it),Writable (You can write data to it),Duplex (You can read and write data to it),Transform (You can read and write data to it, but it also transform the data)  "
+  },{
+    id:53,
+    question:"What is Buffers in nodejs? ",
+    answer: "A buffer is a temporary memory location that is used to store binary data. It is used to handle binary data in nodejs. It is a fixed-size array of bytes. Buffers are mainly used for file I/O operations, network I/O operations, and cryptography operations."
+  },{
+    id:54,
+    question:"Explain Event Loop phases and their priority?",
+    answer: "Call Stack → process.nextTick() → Promise microtasks → Event Loop phases (timers → I/O → check → close)",
+    code:`
+console.log("start");
+
+setTimeout(() => console.log("timeout"), 0);
+
+Promise.resolve().then(() => console.log("promise"));
+
+process.nextTick(() => console.log("nextTick"));
+
+console.log("end");
+
+Execution flow:
+Stack: start → end → nextTick queue → promise microtask → event loop (timers)
+Output: start → end → nextTick → promise → timeout
+
+`
+  },{
+    id:55,
+    question:"What is the different between require() and import() in nodejs?",
+    answer: "1. require()[ CommonJS module mode] is synchronous, ES6 [ES module mode] import is Asynchronous 2. Can be used anywhere in code but import can only be used at the top level. 3. older but import is modern way ",
+    code:`
+   // CommonJS (require) — synchronous
+const { log } = require("console");
+
+// ES6 (import) — asynchronous  and Import needs "type": "module" in package.json
+import { log } from "console";
+    `
+  },{
+    id:56,
+    question:"Difference between module.exports vs exports?",
+    answer: "module.exports → actual object returned by require(); use when exporting single value/function/class. exports → just a reference to module.exports; use for adding multiple properties (don’t reassign it). <br><br> When to use: <br> Multiple things → exports.x = ... <br> Single thing → module.exports = ... <br> Why wrong? → exports no longer points to module.exports, so require() gets empty {}.",
+    code:`
+ // math.js
+
+// ✅ RIGHT → multiple exports (use exports)
+exports.add = (a, b) => a + b;
+exports.sub = (a, b) => a - b;
+
+// OR ✅ RIGHT → single export (use module.exports)
+// module.exports = function (a, b) { return a + b; };
+
+// ❌ WRONG → reassigning exports (breaks link)
+exports = function () {
+  console.log("won’t work");
+};
+  `
+  },{
+    id:57,
+    question:"What are Callbacks, Promises, and Async/Await",
+    answer: "1. Callbacks → pass a function to run after async work (older pattern, can get messy) <br>Use: simple async tasks <br>Avoid: multiple nested ops (callback hell) 2. Promises → cleaner chaining + built-in error handling . 3. Async/Await → syntactic sugar over Promises, makes async code look synchronous ",
+    code:`
+    // Callback
+    fs.readFile("file.txt", "utf8", (err, data) => {
+  if (err) return console.log(err);
+  console.log(data);
+}); 
+
+ // Promises
+ fetch(url)
+  .then(res => res.json())
+  .then(data => console.log(data))
+  .catch(err => console.log(err));
+
+  //Asyn/Await
+  try {
+  const res = await fetch(url);
+  const data = await res.json();
+  console.log(data);
+} catch (err) {
+  console.log(err);
+}
+    `
+  },{
+    id:53,
+    question:"",
+    answer: ""
+  },{
+    id:53,
+    question:"",
+    answer: ""
+  },{
+    id:53,
+    question:"",
+    answer: ""
+  },{
+    id:53,
+    question:"",
+    answer: ""
+  },{
+    id:53,
+    question:"",
+    answer: ""
+  },{
+    id:53,
+    question:"",
+    answer: ""
+  },{
+    id:53,
+    question:"",
+    answer: ""
+  },{
+    id:53,
+    question:"",
+    answer: ""
+  },{
+    id:53,
+    question:"",
+    answer: ""
+  },{
+    id:53,
+    question:"",
+    answer: ""
+  },{
+    id:53,
+    question:"",
+    answer: ""
+  },{
+    id:53,
+    question:"",
+    answer: ""
+  },{
+    id:53,
+    question:"",
+    answer: ""
   }
 ];
 

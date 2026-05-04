@@ -1,9 +1,9 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
-import { Home, LayoutList } from "lucide-react";
+import { Home, LayoutList, BookOpen } from "lucide-react";
 
-export default function BottomNav() {
+export default function BottomNav({ onRead, isReadDisabled = false }: { onRead?: () => void, isReadDisabled?: boolean }) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -23,7 +23,28 @@ export default function BottomNav() {
           }`}>
             <Home className="w-4 h-4" />
           </div>
-          <span className="text-[10px] font-bold tracking-widest">Home</span>
+          <span className="text-[10px] font-bold tracking-widest uppercase">Home</span>
+        </button>
+
+        <button 
+          onClick={() => {
+            if (onRead) {
+              onRead();
+            } else {
+              router.push("/read");
+            }
+          }} 
+          className={`flex flex-col items-center gap-1 flex-1 transition-all ${
+            pathname.startsWith("/preview") || pathname === "/read" ? "text-[var(--accent)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+          } ${isReadDisabled && onRead ? "opacity-30 grayscale cursor-not-allowed" : ""}`}
+          disabled={isReadDisabled && !!onRead}
+        >
+          <div className={`w-8 h-8 rounded-[8px] flex items-center justify-center ${
+            pathname.startsWith("/preview") || pathname === "/read" ? "bg-[var(--accent-subtle)]" : "bg-[var(--bg-subtle)]"
+          }`}>
+            <BookOpen className="w-4 h-4" />
+          </div>
+          <span className="text-[10px] font-bold tracking-widest uppercase">Read</span>
         </button>
         
         <button 
@@ -37,7 +58,7 @@ export default function BottomNav() {
           }`}>
             <LayoutList className="w-4 h-4" />
           </div>
-          <span className="text-[10px] font-bold tracking-widest">Practice</span>
+          <span className="text-[10px] font-bold tracking-widest uppercase">Practice</span>
         </button>
         </div>
       </div>
