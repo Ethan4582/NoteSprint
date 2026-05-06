@@ -9,6 +9,13 @@ interface TopicGridProps {
 }
 
 export default function TopicGrid({ topics, basePath }: TopicGridProps) {
+  const sortedTopics = topics
+    .map(({ topic }) => ({
+      topic,
+      qCount: getQuestions([], topic).length,
+    }))
+    .sort((a, b) => b.qCount - a.qCount);
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -17,19 +24,15 @@ export default function TopicGrid({ topics, basePath }: TopicGridProps) {
       </div>
       
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4">
-        {topics.map(({ topic }) => {
-          const qCount = getQuestions([], topic).length;
-          
-          return (
-            <TopicCard
-              key={topic}
-              subject=""
-              topic={topic}
-              qCount={qCount}
-              basePath={basePath}
-            />
-          );
-        })}
+        {sortedTopics.map(({ topic, qCount }) => (
+          <TopicCard
+            key={topic}
+            subject=""
+            topic={topic}
+            qCount={qCount}
+            basePath={basePath}
+          />
+        ))}
       </div>
     </div>
   );

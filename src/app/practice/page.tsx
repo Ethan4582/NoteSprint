@@ -34,7 +34,11 @@ function PracticeContent() {
   }, [initialTopic]);
 
   const allAvailableTopics = useMemo(() => {
-    return Object.keys(DATA).filter(topic => getQuestions([], topic).length > 0);
+    return Object.keys(DATA)
+      .map((topic) => ({ topic, count: getQuestions([], topic).length }))
+      .filter((t) => t.count > 0)
+      .sort((a, b) => b.count - a.count)
+      .map((t) => t.topic);
   }, []);
 
   const filteredTopics = useMemo(() => {
