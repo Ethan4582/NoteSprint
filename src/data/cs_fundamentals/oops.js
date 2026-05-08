@@ -168,10 +168,11 @@ public:
   ,{
     id:29,
     question: "What is Virtual Function",
-    answer: ""
+    answer: "A virtual function is a member function in the base class that we expect to redefine in derived classes When a virtual function is defined in a base class, then in runtime on the basis of type of object assigned to it, the respective class function is called <br> It helps write generic but flexible code. You can use a base class pointer (Payment*) and C++ automatically runs the correct derived class logic (UPI, Card, PayPal) at runtime.So you don’t need lots of if(paymentType == ...) conditions — adding new types becomes easy and existing code stays unchanged.",
+    image:"/assets/theory/oops/29.png"
   }
   ,{
-    id:28,
+    id:30,
     question: "",
     answer: ""
   }

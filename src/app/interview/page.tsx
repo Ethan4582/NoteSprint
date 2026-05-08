@@ -2,21 +2,15 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, Suspense, useMemo, useEffect } from "react";
-import { ArrowLeft, BookOpen, Code2, Check, Filter, Trash2, LayoutGrid } from "lucide-react";
 import { DATA, getQuestions } from "@/src/lib/data";
-import ThemeToggle from "@/src/components/ThemeToggle";
 import BottomNav from "@/src/components/BottomNav";
 
-// Practice components
-import TimerConfig from "@/src/components/practice/TimerConfig";
-import ModeToggle from "@/src/components/practice/ModeToggle";
-import { getTechIcon } from "@/src/components/dashboard/TechIcons";
-
-import PracticeHeader from "@/src/components/practice/PracticeHeader";
+// Interview components
+import InterviewHeader from "@/src/components/interview/InterviewHeader";
 import TopicSelector from "@/src/components/practice/TopicSelector";
-import PracticeSidebar from "@/src/components/practice/PracticeSidebar";
+import InterviewSidebar from "@/src/components/interview/InterviewSidebar";
 
-function PracticeContent() {
+function InterviewContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   
@@ -25,7 +19,6 @@ function PracticeContent() {
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [count, setCount] = useState(10);
   const [time, setTime] = useState(5);
-  const [mode, setMode] = useState<"flashcard" | "notes">("flashcard");
   const [timerEnabled, setTimerEnabled] = useState(true);
   const [filterQuery, setFilterQuery] = useState("");
 
@@ -35,7 +28,7 @@ function PracticeContent() {
 
   const allAvailableTopics = useMemo(() => {
     return Object.keys(DATA)
-      .filter(topic => !topic.startsWith("interview_"))
+      .filter(topic => topic.startsWith("interview_"))
       .map((topic) => ({ topic, count: getQuestions([], topic).length }))
       .filter((t) => t.count > 0)
       .sort((a, b) => b.count - a.count)
@@ -64,14 +57,14 @@ function PracticeContent() {
       topic: selectedTopics.join(","),
       count: count.toString(),
       time: timerEnabled ? time.toString() : "0",
-      mode,
+      mode: "flashcard",
     });
     router.push(`/session?${params.toString()}`);
   };
 
   return (
     <div className="min-h-screen bg-[var(--bg-base)] flex flex-col pb-32 overflow-x-hidden">
-      <PracticeHeader />
+      <InterviewHeader />
 
       <main className="max-w-[1600px] mx-auto w-full p-4 sm:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10">
         <TopicSelector 
@@ -83,12 +76,10 @@ function PracticeContent() {
           setFilterQuery={setFilterQuery}
         />
 
-        <PracticeSidebar 
+        <InterviewSidebar 
           totalAvailable={totalAvailable}
           count={count}
           setCount={setCount}
-          mode={mode}
-          setMode={setMode}
           time={time}
           setTime={setTime}
           timerEnabled={timerEnabled}
@@ -98,22 +89,15 @@ function PracticeContent() {
         />
       </main>
 
-      <BottomNav 
-        onRead={() => {
-          if (selectedTopics.length === 1) {
-            router.push(`/preview/${selectedTopics[0]}`);
-          }
-        }}
-        isReadDisabled={selectedTopics.length !== 1}
-      />
+      <BottomNav />
     </div>
   );
 }
 
-export default function PracticePage() {
+export default function InterviewPage() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-[var(--bg-base)] flex items-center justify-center font-mono text-xs uppercase tracking-widest text-[var(--text-muted)]">Loading Config...</div>}>
-      <PracticeContent />
+      <InterviewContent />
     </Suspense>
   );
 }

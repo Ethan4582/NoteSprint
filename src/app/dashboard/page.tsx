@@ -25,7 +25,9 @@ export default function Dashboard() {
   };
 
   const getFilteredTopics = () => {
-    let topics = Object.keys(DATA).map(topic => ({ topic }));
+    let topics = Object.keys(DATA)
+      .filter(topic => !topic.startsWith("interview_"))
+      .map(topic => ({ topic }));
     
     if (activeTab !== "ALL") {
       const categoryTopics = CATEGORY_MAP[activeTab] || [];

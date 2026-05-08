@@ -39,6 +39,12 @@ import react from "../data/frontend/react";
 import lld from "../data/system_design/lld";
 import hld from "../data/system_design/hld";
 
+// Interview
+import interview_ai from "../data/interview/ai/ai";
+import interview_backend from "../data/interview/backend/backend";
+import interview_frontend from "../data/interview/frontend/frontend";
+import interview_hr from "../data/interview/hr-manger/hr-manger";
+
 export interface Question {
   id: number;
   question: string;
@@ -86,6 +92,10 @@ export const DATA: Record<string, any> = {
   sql,
   lld,
   hld,
+  interview_ai,
+  interview_backend,
+  interview_frontend,
+  interview_hr,
 };
 
 export function getQuestions(subject: string | string[], topic: string | string[]): Question[] {

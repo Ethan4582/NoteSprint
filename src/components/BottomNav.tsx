@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
-import { Home, LayoutList, BookOpen } from "lucide-react";
+import { Home, Briefcase, BookOpen } from "lucide-react";
 
 export default function BottomNav({ onRead, isReadDisabled = false }: { onRead?: () => void, isReadDisabled?: boolean }) {
   const router = useRouter();
@@ -48,17 +48,17 @@ export default function BottomNav({ onRead, isReadDisabled = false }: { onRead?:
         </button>
         
         <button 
-          onClick={() => router.push("/practice")} 
+          onClick={() => router.push("/interview")} 
           className={`flex flex-col items-center gap-1 flex-1 transition-all ${
-            pathname === "/practice" ? "text-[var(--accent)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+            pathname === "/interview" ? "text-[var(--accent)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           }`}
         >
           <div className={`w-8 h-8 rounded-[8px] flex items-center justify-center ${
-            pathname === "/practice" ? "bg-[var(--accent-subtle)]" : ""
+            pathname === "/interview" ? "bg-[var(--accent-subtle)]" : ""
           }`}>
-            <LayoutList className="w-4 h-4" />
+            <Briefcase className="w-4 h-4" />
           </div>
-          <span className="text-[10px] font-bold tracking-widest uppercase">Practice</span>
+          <span className="text-[10px] font-bold tracking-widest uppercase">Interview</span>
         </button>
         </div>
       </div>

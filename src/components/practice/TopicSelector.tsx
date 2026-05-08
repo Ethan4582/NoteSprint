@@ -50,7 +50,7 @@ export default function TopicSelector({
         {filteredTopics.map((topic) => {
           const isSelected = selectedTopics.includes(topic);
           const qCount = getQuestions([], topic).length;
-          const formattedTopic = topic.replace(/_/g, ' ');
+          const formattedTopic = topic.replace(/^interview_/, '').replace(/_/g, ' ');
           const capitalizedTopic = formattedTopic.charAt(0).toUpperCase() + formattedTopic.slice(1).toLowerCase();
           
           return (
