@@ -173,46 +173,30 @@ public:
   }
   ,{
     id:30,
-    question: "",
-    answer: ""
+    question: "What is Abstract Class",
+    answer: "Abstract Class is a class that cannot be instantiated and is designed to be a base class, often containing pure virtual functions that must be implemented by derived classes.<br><br>Real-World Terminology: It’s like a template or blueprint—you can’t use it directly, but other classes can follow its design and implement the details.",
+    image: "/assets/theory/oops/30.png"
   }
   ,{
-    id:28,
-    question: "",
-    answer: ""
+    id:31,
+    question: "What is Pure Virtual Function?",
+    answer: "Pure Virtual Function is a function declared in a base class with = 0 and must be overridden by derived classes, making the base class abstract.<br><br>Real-World Terminology: It’s like a promise or placeholder—the base class says “every subclass must provide its own version of this function."
   }
   ,{
-    id:28,
-    question: "",
-    answer: ""
+    id:32,
+    question: "What is a Friend Class & Friend Function?",
+    answer: "Friend Function: A function that is declared outside a class but has permission to access its private and protected members.<br>Friend Class: A class whose functions have special access to another class’s private/protected members.",
+    image: "/assets/theory/oops/32.png"
   }
   ,{
-    id:28,
-    question: "",
-    answer: ""
+    id:33,
+    question: "What is Interface?",
+    answer: "Interface in C++ is a class that contains only pure virtual functions and no member variables. It is a way to achieve abstraction and polymorphism in C++."
   },{
-    id:28,
-    question: "",
-    answer: ""
+    id:34,
+    question: "What is Access Modifiers ",
+    answer: "Access Modifiers are keywords that control the visibility of class members (variables and methods) to other parts of the program.<br>Real-World Terminology: They act like permission levels—deciding who can see, modify, or use certain data.",
+    image: "/assets/theory/oops/34.png"
   }
-  ,{
-    id:28,
-    question: "",
-    answer: ""
-  }
-  ,{
-    id:28,
-    question: "",
-    answer: ""
-  }
-  ,{
-    id:28,
-    question: "",
-    answer: ""
-  }
-  ,{
-    id:28,
-    question: "",
-    answer: ""
-  }
+ 
 ];
