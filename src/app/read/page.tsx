@@ -7,6 +7,8 @@ import DashboardHeader from "@/src/components/dashboard/DashboardHeader";
 import DashboardSearch from "@/src/components/dashboard/DashboardSearch";
 import TopicGrid from "@/src/components/dashboard/TopicGrid";
 import { BookOpen } from "lucide-react";
+import ThemeToggle from "@/src/components/ThemeToggle";
+import SystemDesignReadView from "@/src/components/read/SystemDesignReadView";
 
 export default function ReadPage() {
   const [search, setSearch] = useState("");
@@ -56,6 +58,9 @@ export default function ReadPage() {
               Select a topic to preview all questions and answers in a clean, blog-style format.
             </p>
           </div>
+          <div className="bg-[var(--bg-surface)] p-1.5 sm:p-2 rounded-[12px] shadow-sm border border-[var(--border)] shrink-0 self-start sm:self-center">
+            <ThemeToggle />
+          </div>
         </div>
         
         <DashboardSearch 
@@ -66,7 +71,11 @@ export default function ReadPage() {
           setActiveTab={setActiveTab} 
         />
 
-        <TopicGrid topics={getFilteredTopics()} basePath="/preview" />
+        {activeTab === "System Design" ? (
+          <SystemDesignReadView />
+        ) : (
+          <TopicGrid topics={getFilteredTopics()} basePath="/preview" />
+        )}
       </main>
 
       <BottomNav />
