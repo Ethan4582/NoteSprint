@@ -30,7 +30,7 @@ export default function ModeToggle({ mode, setMode }: ModeToggleProps) {
               : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           }`}
         >
-          Revision
+          Read
         </button>
       </div>
     </div>

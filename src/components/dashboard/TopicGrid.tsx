@@ -6,9 +6,11 @@ import TopicCard from "./TopicCard";
 interface TopicGridProps {
   topics: { topic: string }[];
   basePath?: string;
+  selectedTopics?: string[];
+  onToggleTopic?: (topic: string) => void;
 }
 
-export default function TopicGrid({ topics, basePath }: TopicGridProps) {
+export default function TopicGrid({ topics, basePath, selectedTopics = [], onToggleTopic }: TopicGridProps) {
   const sortedTopics = topics
     .map(({ topic }) => ({
       topic,
@@ -31,6 +33,8 @@ export default function TopicGrid({ topics, basePath }: TopicGridProps) {
             topic={topic}
             qCount={qCount}
             basePath={basePath}
+            isSelected={selectedTopics.includes(topic)}
+            onToggle={onToggleTopic ? () => onToggleTopic(topic) : undefined}
           />
         ))}
       </div>

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Home, LayoutList } from "lucide-react";
+import { Search, Home, LayoutList, Play } from "lucide-react";
 import { DATA, getQuestions } from "@/src/lib/data";
 import BottomNav from "@/src/components/BottomNav";
 import ThemeToggle from "@/src/components/ThemeToggle";
@@ -11,11 +11,15 @@ import TopicCard from "@/src/components/dashboard/TopicCard";
 import DashboardHeader from "@/src/components/dashboard/DashboardHeader";
 import DashboardSearch from "@/src/components/dashboard/DashboardSearch";
 import TopicGrid from "@/src/components/dashboard/TopicGrid";
+import SessionConfigModal from "@/src/components/dashboard/SessionConfigModal";
+import SystemDesignReadView from "@/src/components/read/SystemDesignReadView";
 
 export default function Dashboard() {
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("ALL");
+  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const CATEGORY_MAP: Record<string, string[]> = {
     "Frontend": ["react", "nextjs", "typescript", "redux", "javascript", "playwright_", "testing"],
@@ -43,10 +47,18 @@ export default function Dashboard() {
     return topics.filter(t => getQuestions([], t.topic).length > 0);
   };
 
+  const toggleTopic = (topic: string) => {
+    setSelectedTopics(prev => prev.includes(topic) ? prev.filter(t => t !== topic) : [...prev, topic]);
+  };
+
+  const totalSelectedQuestions = selectedTopics.reduce((acc, topic) => {
+    return acc + getQuestions([], topic).length;
+  }, 0);
+
   const tabs = ["ALL", "Frontend", "Backend", "Fundamentals", "System Design"];
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] flex flex-col pb-32 font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-[var(--bg-base)] flex flex-col pb-32 font-sans overflow-x-hidden relative">
       <main className="max-w-[1600px] mx-auto w-full p-4 sm:p-10 space-y-8 sm:space-y-10">
         <DashboardHeader />
         
@@ -58,8 +70,35 @@ export default function Dashboard() {
           setActiveTab={setActiveTab} 
         />
 
-        <TopicGrid topics={getFilteredTopics()} />
+        {activeTab === "System Design" ? (
+          <SystemDesignReadView />
+        ) : (
+          <TopicGrid 
+            topics={getFilteredTopics()} 
+            selectedTopics={selectedTopics}
+            onToggleTopic={toggleTopic}
+          />
+        )}
       </main>
+
+      {selectedTopics.length > 0 && (
+        <div className="fixed bottom-24 left-0 right-0 flex justify-center z-40 pointer-events-none px-4">
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="pointer-events-auto bg-[var(--accent)] text-white px-6 py-3 rounded-full shadow-lg shadow-[var(--accent)]/30 font-bold tracking-widest uppercase text-xs flex items-center gap-2 hover:scale-105 active:scale-95 transition-all"
+          >
+            <Play size={14} fill="currentColor" />
+            Configure Session ({selectedTopics.length})
+          </button>
+        </div>
+      )}
+
+      <SessionConfigModal 
+        topic={selectedTopics.join(",")}
+        totalAvailable={totalSelectedQuestions}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
 
       <BottomNav />
     </div>

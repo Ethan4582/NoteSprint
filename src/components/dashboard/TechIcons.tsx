@@ -1,6 +1,6 @@
 "use client";
 
-import { FileCode } from "lucide-react";
+import { FileCode, BrainCircuit, Server, MonitorSmartphone, Users } from "lucide-react";
 
 const ICON_EXTENSIONS: Record<string, string> = {
   "react": "svg",
@@ -55,6 +55,20 @@ export function getTechIcon(topic: string, subject?: string) {
         alt={topic}
       />
     );
+  }
+
+  // Visuals for Interview Topics
+  if (topic === "interview_ai") {
+    return <BrainCircuit className="w-8 h-8 text-purple-500 drop-shadow-[0_0_8px_rgba(168,85,247,0.4)]" />;
+  }
+  if (topic === "interview_backend") {
+    return <Server className="w-8 h-8 text-blue-500 drop-shadow-[0_0_8px_rgba(59,130,246,0.4)]" />;
+  }
+  if (topic === "interview_frontend") {
+    return <MonitorSmartphone className="w-8 h-8 text-pink-500 drop-shadow-[0_0_8px_rgba(236,72,153,0.4)]" />;
+  }
+  if (topic === "interview_hr") {
+    return <Users className="w-8 h-8 text-orange-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.4)]" />;
   }
 
   return <FileCode className="w-6 h-6 text-[var(--accent)]" />;

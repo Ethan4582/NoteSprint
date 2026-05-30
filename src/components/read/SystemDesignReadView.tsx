@@ -2,16 +2,29 @@
 
 import { useState, useEffect } from "react";
 import { getMarkdownFiles, MarkdownMeta } from "@/src/lib/markdown";
-import { ChevronRight, FileText, Clock, BarChart } from "lucide-react";
+import { ChevronRight, FileText, Clock, BarChart, Play } from "lucide-react";
 import { useRouter } from "next/navigation";
 import TopicCard from "@/src/components/dashboard/TopicCard";
 import { getQuestions } from "@/src/lib/data";
+import SessionConfigModal from "@/src/components/dashboard/SessionConfigModal";
 
 export default function SystemDesignReadView() {
   const [activeTab, setActiveTab] = useState<"HLD" | "LLD" | "Quiz">("HLD");
   const [docs, setDocs] = useState<MarkdownMeta[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  
+  // For Quiz Multi-select
+  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const toggleTopic = (topic: string) => {
+    setSelectedTopics(prev => prev.includes(topic) ? prev.filter(t => t !== topic) : [...prev, topic]);
+  };
+
+  const totalSelectedQuestions = selectedTopics.reduce((acc, topic) => {
+    return acc + getQuestions([], topic).length;
+  }, 0);
 
   useEffect(() => {
     if (activeTab === "Quiz") return;
@@ -55,18 +68,43 @@ export default function SystemDesignReadView() {
       {/* Tab Content */}
       <div className="pt-2">
         {activeTab === "Quiz" ? (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            <TopicCard
-              subject="System Design"
-              topic="hld"
-              qCount={getQuestions([], "hld").length}
-              basePath="/practice"
-            />
-            <TopicCard
-              subject="System Design"
-              topic="lld"
-              qCount={getQuestions([], "lld").length}
-              basePath="/practice"
+          <div className="relative pb-24">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              <TopicCard
+                subject="System Design"
+                topic="hld"
+                qCount={getQuestions([], "hld").length}
+                basePath="/practice"
+                isSelected={selectedTopics.includes("hld")}
+                onToggle={() => toggleTopic("hld")}
+              />
+              <TopicCard
+                subject="System Design"
+                topic="lld"
+                qCount={getQuestions([], "lld").length}
+                basePath="/practice"
+                isSelected={selectedTopics.includes("lld")}
+                onToggle={() => toggleTopic("lld")}
+              />
+            </div>
+            
+            {selectedTopics.length > 0 && (
+              <div className="fixed bottom-24 left-0 right-0 flex justify-center z-40 pointer-events-none px-4">
+                <button 
+                  onClick={() => setIsModalOpen(true)}
+                  className="pointer-events-auto bg-[var(--accent)] text-white px-6 py-3 rounded-full shadow-lg shadow-[var(--accent)]/30 font-bold tracking-widest uppercase text-xs flex items-center gap-2 hover:scale-105 active:scale-95 transition-all"
+                >
+                  <Play size={14} fill="currentColor" />
+                  Configure Session ({selectedTopics.length})
+                </button>
+              </div>
+            )}
+
+            <SessionConfigModal 
+              topic={selectedTopics.join(",")}
+              totalAvailable={totalSelectedQuestions}
+              isOpen={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
             />
           </div>
         ) : (
@@ -84,7 +122,7 @@ export default function SystemDesignReadView() {
                 {docs.map((doc, index) => (
                   <button
                     key={doc.slug}
-                    onClick={() => router.push(`/read/${activeTab.toLowerCase()}/${doc.slug}`)}
+                    onClick={() => router.push(`/system-design/${activeTab.toLowerCase()}/${doc.slug}`)}
                     className="group relative flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 p-5 sm:p-6 bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl hover:border-[var(--accent)] transition-all duration-300 text-left shadow-sm hover:shadow-md active:scale-[0.99] overflow-hidden"
                   >
                     <div className="w-10 h-10 rounded-xl bg-[var(--bg-base)] border border-[var(--border)] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-500 hidden sm:flex">
