@@ -56,7 +56,7 @@ const components: Components = {
   ),
   img: ({ node, ...props }) => {
     let src = props.src;
-    if (src && src.includes('/public/')) {
+    if (typeof src === 'string' && src.includes('/public/')) {
       src = src.split('/public')[1];
     }
     return (
