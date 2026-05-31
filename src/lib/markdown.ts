@@ -9,6 +9,8 @@ export interface MarkdownMeta {
   description: string;
   readingTime: number;
   difficulty: "Easy" | "Medium" | "Hard";
+  tags?: string[];
+  type?: "lld" | "hld";
 }
 
 const mockDir = path.join(process.cwd(), "src/data/mock");
@@ -26,6 +28,17 @@ export async function getMarkdownFiles(type: "lld" | "hld"): Promise<MarkdownMet
 
   const files = fs.readdirSync(dirPath);
   const mds = files.filter(f => f.endsWith('.md'));
+
+  // Load manual metadata
+  let metadata: Record<string, Partial<MarkdownMeta>> = {};
+  const metaPath = path.join(mockDir, `${type}_metadata.json`);
+  if (fs.existsSync(metaPath)) {
+    try {
+      metadata = JSON.parse(fs.readFileSync(metaPath, "utf-8"));
+    } catch (e) {
+      console.error(`Failed to parse ${type}_metadata.json`, e);
+    }
+  }
 
   const results: MarkdownMeta[] = mds.map(file => {
     const slug = file.replace(/\.md$/, "");
@@ -52,16 +65,19 @@ export async function getMarkdownFiles(type: "lld" | "hld"): Promise<MarkdownMet
     }
 
     const wordCount = content.split(/\s+/).length;
-    const readingTime = Math.max(1, Math.ceil(wordCount / 200));
-    
-    const difficulty = generateDifficulty(content);
+    const fallbackReadingTime = Math.max(1, Math.ceil(wordCount / 200));
+    const fallbackDifficulty = generateDifficulty(content);
+
+    const fileMeta = metadata[slug] || {};
 
     return {
       slug,
       title,
       description,
-      readingTime,
-      difficulty,
+      readingTime: fileMeta.readingTime || fallbackReadingTime,
+      difficulty: fileMeta.difficulty || fallbackDifficulty,
+      tags: fileMeta.tags || [],
+      type,
     };
   });
 

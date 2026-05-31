@@ -37,18 +37,20 @@ export default function TopicCard({ subject, topic, qCount, basePath = "/practic
     <>
       <button
         onClick={handleStart}
-        className={`group relative flex items-center p-2.5 sm:p-2.5 bg-[var(--bg-surface)] border rounded-[12px] sm:rounded-[14px] hover:border-[var(--accent)] transition-all duration-300 text-left shadow-sm hover:shadow-md active:scale-[0.98] overflow-hidden gap-4 sm:gap-3 w-full ${
-          isSelected ? "border-[var(--accent)] bg-[var(--accent-subtle)] ring-1 ring-[var(--accent)]/50" : "border-[var(--border)]"
+        className={`group relative flex items-center p-2.5 sm:p-2.5 bg-raised rounded-[12px] sm:rounded-[14px] transition-all duration-300 text-left active:scale-[0.98] overflow-hidden gap-4 sm:gap-3 w-full border border-[var(--border)] ${
+          isSelected ? "shadow-raised ring-1 ring-[var(--accent)]" : "shadow-raised-crisp"
         }`}
       >
-        <div className="w-9 h-9 sm:w-9 sm:h-9 rounded-[10px] sm:rounded-[11px] bg-[var(--bg-base)] border border-[var(--border)] flex items-center justify-center group-hover:scale-105 transition-transform duration-500 shrink-0 shadow-inner">
+        <div className={`w-10 h-10 sm:w-10 sm:h-10 rounded-[10px] bg-raised flex items-center justify-center group-hover:scale-105 transition-transform duration-500 shrink-0 border border-[var(--border-strong)] ${
+          isSelected ? "shadow-inset-cavity" : "shadow-raised"
+        }`}>
           <div className="scale-75 sm:scale-75">
             {getTechIcon(topic)}
           </div>
         </div>
 
         <div className="flex-1 space-y-0 min-w-0 pr-1">
-          <h3 className="text-[12px] sm:text-[13px] font-bold text-[var(--text-primary)] leading-tight tracking-tight truncate">
+          <h3 className={`text-[12px] sm:text-[13px] font-bold leading-tight tracking-tight truncate ${isSelected ? "text-[var(--accent)] drop-shadow-[0_0_8px_rgba(255,69,0,0.4)]" : "text-[var(--text-primary)]"}`}>
             {capitalizedTopic}
           </h3>
           <div className="flex items-center gap-1 opacity-60">

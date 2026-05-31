@@ -8,7 +8,7 @@ export default function ThemeToggle() {
 
   useEffect(() => {
     const currentTheme = document.documentElement.getAttribute("data-theme") as "light" | "dark";
-    setTheme(currentTheme || "light");
+    setTheme(currentTheme || "dark");
   }, []);
 
   const toggleTheme = () => {
@@ -25,9 +25,9 @@ export default function ThemeToggle() {
       aria-label="Toggle theme"
     >
       {theme === "light" ? (
-        <Moon className="w-[18px] h-[18px] text-[var(--text-secondary)]" />
+        <Moon className="w-[18px] h-[18px] text-[var(--text-secondary)] drop-shadow-md" />
       ) : (
-        <Sun className="w-[18px] h-[18px] text-[var(--text-secondary)]" />
+        <Sun className="w-[18px] h-[18px] text-[var(--accent)] drop-shadow-[0_0_5px_rgba(255,69,0,0.5)]" />
       )}
     </button>
   );

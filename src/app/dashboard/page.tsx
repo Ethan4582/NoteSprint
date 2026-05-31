@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Search, Home, LayoutList, Play } from "lucide-react";
 import { DATA, getQuestions } from "@/src/lib/data";
@@ -13,6 +13,8 @@ import DashboardSearch from "@/src/components/dashboard/DashboardSearch";
 import TopicGrid from "@/src/components/dashboard/TopicGrid";
 import SessionConfigModal from "@/src/components/dashboard/SessionConfigModal";
 import SystemDesignReadView from "@/src/components/read/SystemDesignReadView";
+import SystemDesignDocCard from "@/src/components/read/SystemDesignDocCard";
+import { getMarkdownFiles, MarkdownMeta } from "@/src/lib/markdown";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -20,6 +22,7 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("ALL");
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [systemDocs, setSystemDocs] = useState<MarkdownMeta[]>([]);
 
   const CATEGORY_MAP: Record<string, string[]> = {
     "Frontend": ["react", "nextjs", "typescript", "redux", "javascript", "playwright_", "testing"],
@@ -27,6 +30,22 @@ export default function Dashboard() {
     "Fundamentals": ["operating_systeam", "computer_network", "c++", "database_management", "oops", "sql"],
     "System Design": ["lld", "hld"]
   };
+
+  useEffect(() => {
+    let isMounted = true;
+    Promise.all([
+      getMarkdownFiles("lld"),
+      getMarkdownFiles("hld")
+    ]).then(([lld, hld]) => {
+      if (isMounted) {
+        setSystemDocs([
+          ...lld.map(d => ({ ...d, type: "lld" as const })),
+          ...hld.map(d => ({ ...d, type: "hld" as const }))
+        ]);
+      }
+    });
+    return () => { isMounted = false; };
+  }, []);
 
   const getFilteredTopics = () => {
     let topics = Object.keys(DATA)
@@ -71,13 +90,41 @@ export default function Dashboard() {
         />
 
         {activeTab === "System Design" ? (
-          <SystemDesignReadView />
+          <SystemDesignReadView search={search} />
         ) : (
-          <TopicGrid 
-            topics={getFilteredTopics()} 
-            selectedTopics={selectedTopics}
-            onToggleTopic={toggleTopic}
-          />
+          <div className="space-y-8">
+            <TopicGrid 
+              topics={getFilteredTopics()} 
+              selectedTopics={selectedTopics}
+              onToggleTopic={toggleTopic}
+            />
+            {search && systemDocs.filter(doc => {
+              const lowerSearch = search.toLowerCase();
+              const titleMatch = doc.title.toLowerCase().includes(lowerSearch);
+              const tagMatch = doc.tags?.some(tag => tag.toLowerCase().includes(lowerSearch));
+              return titleMatch || tagMatch;
+            }).length > 0 && (
+              <div className="space-y-4">
+                <h3 className="text-sm font-black text-[var(--text-muted)] uppercase tracking-widest px-1">
+                  System Design Matches
+                </h3>
+                <div className="grid grid-cols-1 gap-4">
+                  {systemDocs.filter(doc => {
+                    const lowerSearch = search.toLowerCase();
+                    const titleMatch = doc.title.toLowerCase().includes(lowerSearch);
+                    const tagMatch = doc.tags?.some(tag => tag.toLowerCase().includes(lowerSearch));
+                    return titleMatch || tagMatch;
+                  }).map((doc, index) => (
+                    <SystemDesignDocCard 
+                      key={doc.slug} 
+                      doc={doc} 
+                      index={index} 
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         )}
       </main>
 

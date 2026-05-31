@@ -1,0 +1,7 @@
+{
+  "Music_Leaderboard_System_Design": {
+    "difficulty": "Medium",
+    "readingTime": 15,
+    "tags": ["music", "leaderboard", "redis", "system design"]
+  }
+}
