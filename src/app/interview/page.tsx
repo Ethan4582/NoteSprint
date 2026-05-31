@@ -4,7 +4,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useState, Suspense, useMemo, useEffect } from "react";
 import { DATA, getQuestions } from "@/src/lib/data";
 import BottomNav from "@/src/components/BottomNav";
-import { Play } from "lucide-react";
+import { Play, Search } from "lucide-react";
 
 // Interview components
 import InterviewHeader from "@/src/components/interview/InterviewHeader";
@@ -19,6 +19,7 @@ function InterviewContent() {
 
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     if (initialTopic) setSelectedTopics([initialTopic]);
@@ -33,6 +34,11 @@ function InterviewContent() {
       .map((t) => ({ topic: t.topic }));
   }, []);
 
+  const filteredTopics = useMemo(() => {
+    if (!search) return allAvailableTopics;
+    return allAvailableTopics.filter(t => t.topic.toLowerCase().replace("interview_", "").includes(search.toLowerCase()));
+  }, [allAvailableTopics, search]);
+
   const toggleTopic = (topic: string) => {
     setSelectedTopics(prev => prev.includes(topic) ? prev.filter(t => t !== topic) : [...prev, topic]);
   };
@@ -46,8 +52,21 @@ function InterviewContent() {
       <InterviewHeader />
 
       <main className="max-w-[1600px] mx-auto w-full p-4 sm:p-10 space-y-8 sm:space-y-10">
+        <div className="relative group">
+          <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none z-10">
+            <Search className="w-4 h-4 sm:w-5 text-[var(--text-muted)] group-focus-within:text-[var(--accent)] transition-colors drop-shadow-md" />
+          </div>
+          <input 
+            type="text" 
+            placeholder="Search interview topics..." 
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full h-12 sm:h-14 pl-11 sm:pl-14 pr-4 bg-[var(--bg-subtle)] rounded-2xl text-[var(--text-primary)] font-semibold text-base outline-none transition-all shadow-inset-cavity placeholder:text-[var(--text-muted)] placeholder:font-medium border border-[var(--border-inner)] focus:border-[var(--border-strong)]"
+          />
+        </div>
+
         <TopicGrid 
-          topics={allAvailableTopics}
+          topics={filteredTopics}
           selectedTopics={selectedTopics}
           onToggleTopic={toggleTopic}
         />

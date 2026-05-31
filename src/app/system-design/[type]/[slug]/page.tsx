@@ -4,6 +4,7 @@ import { ArrowLeft, Clock } from "lucide-react";
 import Link from "next/link";
 import ThemeToggle from "@/src/components/ThemeToggle";
 import ClientMarkdownRenderer from "@/src/components/read/ClientMarkdownRenderer";
+import TableOfContents from "@/src/components/read/TableOfContents";
 
 // Note: Next.js page params might be async in newer versions, so we await them.
 export async function generateStaticParams() {
@@ -32,11 +33,10 @@ export default async function MarkdownReaderPage({
     notFound();
   }
 
-  // Extract title and reading time for the header
-  const titleMatch = content.match(/^#\s+(.+)$/m);
-  const title = titleMatch ? titleMatch[1].trim() : slug.replace(/_/g, " ");
-  const wordCount = content.split(/\s+/).length;
-  const readingTime = Math.max(1, Math.ceil(wordCount / 200));
+  const files = await getMarkdownFiles(type as "lld" | "hld");
+  const meta = files.find((f) => f.slug === slug);
+  const title = meta?.title || slug.replace(/_/g, " ");
+  const readingTime = meta?.readingTime || Math.max(1, Math.ceil(content.split(/\s+/).length / 200));
 
   return (
     <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] transition-colors duration-300 selection:bg-[var(--accent)] selection:text-white">
@@ -66,8 +66,19 @@ export default async function MarkdownReaderPage({
       </header>
 
       {/* Reader Content */}
-      <main className="max-w-3xl mx-auto px-6 py-12 pb-32">
-        <ClientMarkdownRenderer content={content} />
+      {/* Reader Content */}
+      <main className="max-w-[1400px] mx-auto w-full px-4 sm:px-6 py-6 sm:py-12 pb-32">
+        <div className="relative flex justify-center">
+          <aside className="hidden xl:block absolute right-[calc(50%+24rem+2rem)] w-[220px] top-0 h-full">
+            <div className="sticky top-24">
+              <TableOfContents content={content} />
+            </div>
+          </aside>
+          
+          <div className="w-full max-w-3xl">
+            <ClientMarkdownRenderer content={content} />
+          </div>
+        </div>
       </main>
     </div>
   );

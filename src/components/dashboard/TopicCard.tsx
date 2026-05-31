@@ -30,7 +30,8 @@ export default function TopicCard({ subject, topic, qCount, basePath = "/practic
     }
   };
 
-  const formattedTopic = topic.replace(/_/g, ' ');
+  const cleanTopic = topic.startsWith('interview_') ? topic.replace('interview_', '') : topic;
+  const formattedTopic = cleanTopic.replace(/_/g, ' ');
   const capitalizedTopic = formattedTopic.charAt(0).toUpperCase() + formattedTopic.slice(1).toLowerCase();
 
   return (

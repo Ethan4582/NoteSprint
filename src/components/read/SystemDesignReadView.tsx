@@ -11,12 +11,11 @@ import SystemDesignDocCard from "@/src/components/read/SystemDesignDocCard";
 
 interface SystemDesignReadViewProps {
   search?: string;
+  systemDocs: MarkdownMeta[];
 }
 
-export default function SystemDesignReadView({ search = "" }: SystemDesignReadViewProps) {
+export default function SystemDesignReadView({ search = "", systemDocs }: SystemDesignReadViewProps) {
   const [activeTab, setActiveTab] = useState<"HLD" | "LLD" | "Quiz">("HLD");
-  const [docs, setDocs] = useState<MarkdownMeta[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   
   // For Quiz Multi-select
@@ -31,25 +30,7 @@ export default function SystemDesignReadView({ search = "" }: SystemDesignReadVi
     return acc + getQuestions([], topic).length;
   }, 0);
 
-  useEffect(() => {
-    if (activeTab === "Quiz") return;
-    
-    let isMounted = true;
-    setIsLoading(true);
-    
-    getMarkdownFiles(activeTab.toLowerCase() as "lld" | "hld")
-      .then((data) => {
-        if (isMounted) {
-          setDocs(data);
-          setIsLoading(false);
-        }
-      })
-      .catch(() => {
-        if (isMounted) setIsLoading(false);
-      });
-
-    return () => { isMounted = false; };
-  }, [activeTab]);
+  const docs = systemDocs.filter(d => d.type === activeTab.toLowerCase());
 
   const filteredDocs = docs.filter(doc => {
     if (!search) return true;
@@ -122,11 +103,7 @@ export default function SystemDesignReadView({ search = "" }: SystemDesignReadVi
           </div>
         ) : (
           <div className="space-y-4">
-            {isLoading ? (
-              <div className="p-8 text-center text-[var(--text-muted)] animate-pulse">
-                Loading documents...
-              </div>
-            ) : filteredDocs.length === 0 ? (
+            {filteredDocs.length === 0 ? (
               <div className="p-8 text-center border border-[var(--border-strong)] border-dashed rounded-2xl text-[var(--text-muted)]">
                 No documents found for {activeTab}.
               </div>

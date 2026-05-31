@@ -46,7 +46,7 @@ Given an API to track when a certain user listened to a certain song, build a sy
 
 ### Architecture Diagram
 
-![Music Leaderboard System Design](../../Assets/Design_Music_leaderboard_API.png)
+![Music Leaderboard System Design](../../../../public/assets/mock/lld/Design_Music_leaderboard_API.png)
 
 > 📐 View interactive diagram on [Excalidraw](https://excalidraw.com/#json=lnYPNWD_AvwZr3JnFWAmF,1-jxxQ6ZlC7artKVouBElg)
 
@@ -137,22 +137,29 @@ After enrichment, the data has to be aggregated. Options include:
 ## Glossary
 
 **Why Kafka?**
+
 Distributed, replicated, fault tolerant, pub-sub system.
 
 **Why HDFS?**
+
 Good for batch processing, can store petabytes of data, distributed, replicated data, fault tolerant, cost effective, scales well for batch processing.
 
 **Why BigQuery?**
+
 BigQuery is a fully managed, serverless data warehouse that enables super-fast SQL queries using the power of Google's distributed infrastructure.
 
 **What is ETL?**
+
 Extract, Transform, Load (ETL) is a type of data integration process that involves extracting data from one or more sources, transforming it into the required format, and loading it into a destination system. ETL is good for batch processing and can be scheduled.
 
 **What is RDBMS?**
+
 A relational database management system (RDBMS) is software that allows you to create, manage, and query a relational database. It provides a way to store data in tables with rows and columns, and to define relationships between tables.
 
 **What is Batch Processing?**
+
 Batch processing is a method of processing data in batches or chunks, rather than processing each data item individually as it arrives. Data is collected over a period of time and then processed together as a single batch.
 
 **What is OLAP?**
+
 OLAP (Online Analytical Processing) is a type of data processing that allows users to analyze data from multiple perspectives. It is used to analyze large datasets and identify trends and patterns. OLAP is widely used in data analytics and business intelligence.
