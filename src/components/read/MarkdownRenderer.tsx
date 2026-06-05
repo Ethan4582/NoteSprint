@@ -60,8 +60,8 @@ const components: Components = {
       src = src.split('/public')[1];
     }
     return (
-      <span className="block my-6 sm:my-8">
-        <img src={src} className="max-w-full h-auto rounded-xl border border-[var(--border-outer)] shadow-md mx-auto object-contain max-h-[70vh]" loading="lazy" alt={props.alt || ''} />
+      <span className="flex flex-col items-center my-6 sm:my-8">
+        <img src={src} className="max-w-full h-auto rounded-xl border border-[var(--border-outer)] shadow-md object-contain max-h-[40vh] sm:max-h-[50vh]" loading="lazy" alt={props.alt || ''} />
         {props.alt && <span className="block text-center text-xs sm:text-sm text-[var(--text-muted)] mt-2 sm:mt-3 italic">{props.alt}</span>}
       </span>
     );

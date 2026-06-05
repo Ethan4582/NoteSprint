@@ -77,13 +77,13 @@ export default function ContentRenderer({
             return (
               <div
                 key={`img-${index}`}
-                className="w-full my-2 rounded-[16px] border-2 border-[var(--border)] overflow-hidden bg-[var(--bg-surface)] cursor-zoom-in hover:border-[var(--accent)] transition-all shadow-md group"
+                className="w-full max-w-2xl mx-auto my-4 rounded-[16px] border-2 border-[var(--border)] overflow-hidden bg-[var(--bg-surface)] cursor-zoom-in hover:border-[var(--accent)] transition-all shadow-md group flex justify-center"
                 onClick={() => onImageClick?.(fullPath)}
               >
                 <img
                   src={fullPath}
                   alt="Content diagram"
-                  className="w-full h-auto object-contain group-hover:scale-[1.01] transition-transform duration-500"
+                  className="max-w-full max-h-[40vh] sm:max-h-[50vh] w-auto h-auto object-contain group-hover:scale-[1.01] transition-transform duration-500"
                   onError={(e) => (e.currentTarget.parentElement!.style.display = 'none')}
                 />
               </div>
@@ -95,21 +95,21 @@ export default function ContentRenderer({
 
       {/* Legacy Fallback for images */}
       {!hasInlineImages && (image || image2) && (
-        <div className="grid grid-cols-1 gap-6 pt-6 border-t border-[var(--border)] border-dashed">
+        <div className="flex flex-col gap-6 pt-6 border-t border-[var(--border)] border-dashed items-center">
           {image && (
             <div
-              className="rounded-xl border border-[var(--border)] overflow-hidden bg-[var(--bg-surface)] cursor-zoom-in shadow-sm hover:border-[var(--accent)] transition-all"
+              className="w-full max-w-2xl rounded-xl border border-[var(--border)] overflow-hidden bg-[var(--bg-surface)] cursor-zoom-in shadow-sm hover:border-[var(--accent)] transition-all flex justify-center"
               onClick={() => onImageClick?.(image)}
             >
-              <img src={image} className="w-full h-auto" alt="Reference" />
+              <img src={image} className="max-w-full max-h-[40vh] sm:max-h-[50vh] w-auto h-auto object-contain" alt="Reference" />
             </div>
           )}
           {image2 && (
             <div
-              className="rounded-xl border border-[var(--border)] overflow-hidden bg-[var(--bg-surface)] cursor-zoom-in shadow-sm hover:border-[var(--accent)] transition-all"
+              className="w-full max-w-2xl rounded-xl border border-[var(--border)] overflow-hidden bg-[var(--bg-surface)] cursor-zoom-in shadow-sm hover:border-[var(--accent)] transition-all flex justify-center"
               onClick={() => onImageClick?.(image2)}
             >
-              <img src={image2} className="w-full h-auto" alt="Reference" />
+              <img src={image2} className="max-w-full max-h-[40vh] sm:max-h-[50vh] w-auto h-auto object-contain" alt="Reference" />
             </div>
           )}
         </div>
