@@ -47,7 +47,7 @@ const lld = {
     }, {
       id: 11,
       question: "What is Interface Segregation Principle ?",
-      answer: "This principle states that clients should not be forced to depend upon interfaces that they do not use. In simple terms, it means that instead of having one large interface, it should be broken down into smaller, more specific interfaces so that each interface is only responsible for one particular functionality.<br><br>Why it matters?<br> 1.Ensures reliable polymorphism. <br> 2.Makes code easier to extend and maintain. <br> 3.Prevents subclasses from breaking parent class behavior.<br><br>Example:\${image(\"assets/lld/3.png\")}  \${image(\"assets/lld/4.png\")}"
+      answer: "This principle states that clients should not be forced to depend upon interfaces that they do not use. In simple terms, it means that instead of having one large interface, it should be broken down into smaller, more specific interfaces so that each interface is only responsible for one particular functionality.<br><br>Why it matters?<br> 1.Ensures reliable polymorphism. <br> 2.Makes code easier to extend and maintain. <br> 3.Prevents subclasses from breaking parent class behavior.<br><br>Example:\${image(\"assets/lld/5.png\")}  \${image(\"assets/lld/6.png\")}"
     }, {
       id: 12,
       question:"",
