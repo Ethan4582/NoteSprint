@@ -35,7 +35,9 @@ const ICON_EXTENSIONS: Record<string, string> = {
   "testing": "png",
   "websocket_": "png",
   "lld": "png",
-  "hld": "png"
+  "hld": "png",
+  "docker": "png",
+  "kubernetes": "png"
 };
 
 export function getTechIcon(topic: string, subject?: string) {

@@ -163,3 +163,71 @@ Batch processing is a method of processing data in batches or chunks, rather tha
 **What is OLAP?**
 
 OLAP (Online Analytical Processing) is a type of data processing that allows users to analyze data from multiple perspectives. It is used to analyze large datasets and identify trends and patterns. OLAP is widely used in data analytics and business intelligence.
+
+
+
+
+
+
+
+## Problem Statement
+
+How does Instagram/Twiiter  like System work  to support 500 Million active users, with celebrities like Taylor Swift/ELon Musk  having 100 Million followers.
+
+### X and Instgram have different need 
+-> one is more microblogging platform  and other is more visul media platform 
+->X is more write 
+->instgram is more read
+
+## Explain first what happen what happen when a normal person with less follower uploads a photo.
+-
+-
+-
+-
+-
+
+# Design arithecure for sittuation 1:  when a normal person with less follower uploads a photo.
+
+
+
+
+## Solutions   
+
+1. keep cache for each user   post get push in each person followe imeedagtely 
+2. the followe read from the cache isnitally  when they load the app 
+
+
+This sysyteam break when you have 100 million  of follower 
+
+if you go by the abover menthod this may strike server loads and minutes to propagate to all
+
+So what to do  
+
+Solution -> Hybrid apprach 
+
+-> regalur user get same fanout when write their post is precomputer in their follower feed caches 
+
+for celebrate we can special case in your systeam 
+
+-> when the user load their feed we look any new post from celebertry 
+-> this make the write load stays flat no matter what Elon musk or Taylor swift post 
+
+Trade slight more complex read logic  
+
+## Explain the complex read logic 
+
+
+
+
+
+# result 
+the speed latency still reamin under 500ms  becuase the celbetry merge is a small operation  on already cached feed 
+
+Their is not universaly fannout on wirte or Fanout on read strategy 
+The write answer depend the data you sysyteam is hadnling 
+
+
+
+
+
+## Design architecture for  when a celeb with 500M followers uploads a photo.
