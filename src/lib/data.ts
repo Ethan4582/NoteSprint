@@ -17,6 +17,7 @@ import python from "../data/backend/python";
 import redis from "../data/backend/redis";
 import socketio_ from "../data/backend/socketio_";
 import websocket_ from "../data/backend/websocket_";
+import docker from "../data/backend/docker";
 
 // Frontend
 import typescript from "../data/frontend/typescript";
@@ -96,6 +97,7 @@ export const DATA: Record<string, any> = {
   interview_backend,
   interview_frontend,
   interview_hr,
+  docker,
 };
 
 export function getQuestions(subject: string | string[], topic: string | string[]): Question[] {
