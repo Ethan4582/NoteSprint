@@ -6,10 +6,11 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/src
 import { Input } from "@/src/components/ui/input";
 import { Button } from "@/src/components/ui/button";
 import { adminLogin } from "@/src/lib/admin-api";
-import { Lock, Loader2, KeyRound } from "lucide-react";
+import { Lock, Loader2, KeyRound, Eye, EyeOff } from "lucide-react";
 
 export default function AdminLoginPage() {
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -57,15 +58,27 @@ export default function AdminLoginPage() {
               </label>
               <div className="relative">
                 <Input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter admin password..."
                   required
                   autoFocus
-                  className="pl-10 text-sm tracking-widest font-mono"
+                  className="pl-10 pr-10 text-sm tracking-wide font-mono"
                 />
                 <KeyRound className="absolute left-3 top-3 h-4 w-4 text-[var(--text-muted)]" />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-3 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors focus:outline-none"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
               </div>
             </div>
 

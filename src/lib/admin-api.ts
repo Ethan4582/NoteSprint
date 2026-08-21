@@ -8,6 +8,15 @@ function getAuthHeader(): Record<string, string> {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
+async function parseResponse<T = unknown>(res: Response): Promise<T> {
+  const text = await res.text();
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    throw new Error(res.ok ? "Invalid server response" : `Server error: ${res.status} ${res.statusText}`);
+  }
+}
+
 export async function adminLogin(password: string): Promise<{ success: boolean; token?: string; error?: string }> {
   try {
     const res = await fetch(`${API_BASE}/admin/auth`, {
@@ -15,7 +24,7 @@ export async function adminLogin(password: string): Promise<{ success: boolean; 
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ password }),
     });
-    const data = await res.json();
+    const data = await parseResponse<{ token?: string; error?: string }>(res);
     if (!res.ok) {
       return { success: false, error: data.error || "Login failed" };
     }
@@ -48,7 +57,7 @@ export async function getAdminStats(): Promise<{
     headers: { ...getAuthHeader() },
   });
   if (!res.ok) throw new Error("Failed to fetch admin stats");
-  return res.json();
+  return parseResponse(res);
 }
 
 export async function createQuestion(payload: {
@@ -67,10 +76,10 @@ export async function createQuestion(payload: {
     body: JSON.stringify(payload),
   });
   if (!res.ok) {
-    const err = await res.json();
+    const err = await parseResponse<{ error?: string }>(res);
     throw new Error(err.error || "Failed to create question");
   }
-  return res.json();
+  return parseResponse<Question>(res);
 }
 
 export async function updateQuestion(
@@ -91,10 +100,10 @@ export async function updateQuestion(
     body: JSON.stringify(payload),
   });
   if (!res.ok) {
-    const err = await res.json();
+    const err = await parseResponse<{ error?: string }>(res);
     throw new Error(err.error || "Failed to update question");
   }
-  return res.json();
+  return parseResponse<Question>(res);
 }
 
 export async function deleteQuestion(id: number): Promise<void> {
@@ -123,10 +132,10 @@ export async function createArticle(payload: {
     body: JSON.stringify(payload),
   });
   if (!res.ok) {
-    const err = await res.json();
+    const err = await parseResponse<{ error?: string }>(res);
     throw new Error(err.error || "Failed to create article");
   }
-  return res.json();
+  return parseResponse<Article>(res);
 }
 
 export async function updateArticle(
@@ -149,10 +158,10 @@ export async function updateArticle(
     body: JSON.stringify(payload),
   });
   if (!res.ok) {
-    const err = await res.json();
+    const err = await parseResponse<{ error?: string }>(res);
     throw new Error(err.error || "Failed to update article");
   }
-  return res.json();
+  return parseResponse<Article>(res);
 }
 
 export async function deleteArticle(slug: string): Promise<void> {
@@ -174,8 +183,8 @@ export async function uploadImage(file: File): Promise<{ url: string; key: strin
   });
 
   if (!res.ok) {
-    const err = await res.json();
+    const err = await parseResponse<{ error?: string }>(res);
     throw new Error(err.error || "Failed to upload image");
   }
-  return res.json();
+  return parseResponse<{ url: string; key: string }>(res);
 }
