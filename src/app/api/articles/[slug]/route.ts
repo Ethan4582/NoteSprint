@@ -1,6 +1,14 @@
 import { NextResponse } from "next/server";
 import { getMarkdownContent, getMarkdownFiles } from "@/src/lib/markdown";
 
+export const dynamic = "force-static";
+
+export async function generateStaticParams() {
+  const lld = await getMarkdownFiles("lld");
+  const hld = await getMarkdownFiles("hld");
+  return [...lld, ...hld].map((a) => ({ slug: a.slug }));
+}
+
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ slug: string }> }

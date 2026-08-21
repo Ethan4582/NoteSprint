@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { DATA } from "@/src/lib/data";
 
+export const dynamic = "force-static";
+
 const TOPIC_METADATA: Record<string, { name: string; category: string }> = {
   nodejs: { name: "Node.js", category: "backend" },
   express: { name: "Express.js", category: "backend" },

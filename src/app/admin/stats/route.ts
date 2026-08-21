@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { DATA } from "@/src/lib/data";
 import { getMarkdownFiles } from "@/src/lib/markdown";
 
+export const dynamic = "force-static";
+
 export async function GET() {
   const totalTopics = Object.keys(DATA).length;
 

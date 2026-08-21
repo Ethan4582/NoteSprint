@@ -8,7 +8,7 @@ export interface TopicWithCount extends Topic {
 
 export async function fetchTopics(): Promise<TopicWithCount[]> {
   try {
-    const res = await fetch(`${API_BASE}/api/topics`, { next: { revalidate: 60 } });
+    const res = await fetch(`${API_BASE}/api/topics`);
     if (!res.ok) return [];
     return res.json();
   } catch {
@@ -18,7 +18,7 @@ export async function fetchTopics(): Promise<TopicWithCount[]> {
 
 export async function fetchTopicQuestions(slug: string): Promise<{ topic: Topic; questions: Question[] } | null> {
   try {
-    const res = await fetch(`${API_BASE}/api/topics/${slug}/questions`, { next: { revalidate: 60 } });
+    const res = await fetch(`${API_BASE}/api/topics/${slug}/questions`);
     if (!res.ok) return null;
     return res.json();
   } catch {
@@ -28,7 +28,7 @@ export async function fetchTopicQuestions(slug: string): Promise<{ topic: Topic;
 
 export async function fetchQuestion(id: number): Promise<(Question & { topicSlug: string; topicName: string; category: string }) | null> {
   try {
-    const res = await fetch(`${API_BASE}/api/questions/${id}`, { next: { revalidate: 60 } });
+    const res = await fetch(`${API_BASE}/api/questions/${id}`);
     if (!res.ok) return null;
     return res.json();
   } catch {
@@ -38,10 +38,13 @@ export async function fetchQuestion(id: number): Promise<(Question & { topicSlug
 
 export async function fetchArticles(category?: string): Promise<Article[]> {
   try {
-    const url = category ? `${API_BASE}/api/articles?category=${encodeURIComponent(category)}` : `${API_BASE}/api/articles`;
-    const res = await fetch(url, { next: { revalidate: 60 } });
+    const res = await fetch(`${API_BASE}/api/articles`);
     if (!res.ok) return [];
-    return res.json();
+    const list: Article[] = await res.json();
+    if (category && category !== "all") {
+      return list.filter((a) => a.category === category);
+    }
+    return list;
   } catch {
     return [];
   }
@@ -49,7 +52,7 @@ export async function fetchArticles(category?: string): Promise<Article[]> {
 
 export async function fetchArticleBySlug(slug: string): Promise<Article | null> {
   try {
-    const res = await fetch(`${API_BASE}/api/articles/${slug}`, { next: { revalidate: 60 } });
+    const res = await fetch(`${API_BASE}/api/articles/${slug}`);
     if (!res.ok) return null;
     return res.json();
   } catch {

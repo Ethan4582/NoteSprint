@@ -1,14 +1,13 @@
 import { NextResponse } from "next/server";
 import { getMarkdownFiles } from "@/src/lib/markdown";
 
-export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const category = searchParams.get("category");
+export const dynamic = "force-static";
 
-  let lldFiles = await getMarkdownFiles("lld");
-  let hldFiles = await getMarkdownFiles("hld");
+export async function GET() {
+  const lldFiles = await getMarkdownFiles("lld");
+  const hldFiles = await getMarkdownFiles("hld");
 
-  let all = [
+  const all = [
     ...lldFiles.map((f, i) => ({
       id: i + 1,
       slug: f.slug,
@@ -34,10 +33,6 @@ export async function GET(req: Request) {
       updatedAt: new Date(),
     })),
   ];
-
-  if (category && category !== "all") {
-    all = all.filter((a) => a.category === category);
-  }
 
   return NextResponse.json(all);
 }

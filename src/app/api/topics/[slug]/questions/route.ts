@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import { DATA } from "@/src/lib/data";
 
+export const dynamic = "force-static";
+
+export function generateStaticParams() {
+  return Object.keys(DATA).map((slug) => ({ slug }));
+}
+
 interface RawQ {
   id?: number;
   question?: string;
