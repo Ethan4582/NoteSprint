@@ -22,13 +22,16 @@ import {
   SelectValue,
 } from "@/src/components/ui/select";
 import QuestionEditor from "@/src/components/admin/QuestionEditor";
-import { Plus, Search, Edit2, Trash2, ImageIcon, HelpCircle, Loader2 } from "lucide-react";
+import { Plus, Search, Edit2, Trash2, ImageIcon, HelpCircle, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+
+const PAGE_SIZE = 10;
 
 export default function AdminQuestionsPage() {
   const [topics, setTopics] = useState<Topic[]>([]);
-  const [selectedTopic, setSelectedTopic] = useState<string>("all");
+  const [selectedTopic, setSelectedTopic] = useState<string>("");
   const [questions, setQuestions] = useState<Question[]>([]);
   const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
 
   // Modals state
@@ -47,13 +50,9 @@ export default function AdminQuestionsPage() {
   }, []);
 
   useEffect(() => {
-    if (!selectedTopic || selectedTopic === "all") {
-      setQuestions([]);
-      setLoading(false);
-      return;
-    }
-
+    if (!selectedTopic) return;
     setLoading(true);
+    setCurrentPage(1);
     fetchTopicQuestions(selectedTopic)
       .then((res) => {
         setQuestions(res?.questions || []);
@@ -62,7 +61,7 @@ export default function AdminQuestionsPage() {
   }, [selectedTopic]);
 
   const handleRefresh = async () => {
-    if (selectedTopic && selectedTopic !== "all") {
+    if (selectedTopic) {
       const res = await fetchTopicQuestions(selectedTopic);
       setQuestions(res?.questions || []);
     }
@@ -111,6 +110,10 @@ export default function AdminQuestionsPage() {
       q.answer.toLowerCase().includes(search.toLowerCase())
   );
 
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const startIndex = (currentPage - 1) * PAGE_SIZE;
+  const paginatedQuestions = filtered.slice(startIndex, startIndex + PAGE_SIZE);
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -119,7 +122,7 @@ export default function AdminQuestionsPage() {
             Questions Manager
           </h1>
           <p className="text-xs text-[var(--text-secondary)] mt-0.5">
-            Create, edit, and organize flashcards by topic.
+            Manage questions with topic filtering and pagination.
           </p>
         </div>
 
@@ -129,7 +132,7 @@ export default function AdminQuestionsPage() {
       </div>
 
       <div className="flex flex-col sm:flex-row items-center gap-3">
-        <div className="w-full sm:w-64">
+        <div className="w-full sm:w-72">
           <Select value={selectedTopic} onValueChange={setSelectedTopic}>
             <SelectTrigger>
               <SelectValue placeholder="Select topic" />
@@ -147,8 +150,11 @@ export default function AdminQuestionsPage() {
         <div className="relative w-full flex-1">
           <Input
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search questions or answers..."
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1);
+            }}
+            placeholder="Search questions..."
             className="pl-9 text-xs"
           />
           <Search className="absolute left-3 top-3 h-3.5 w-3.5 text-[var(--text-muted)]" />
@@ -162,47 +168,80 @@ export default function AdminQuestionsPage() {
       ) : filtered.length === 0 ? (
         <Card className="py-16 text-center text-xs text-[var(--text-muted)]">
           <HelpCircle className="h-8 w-8 mx-auto mb-2 opacity-40 text-[var(--accent)]" />
-          No questions found for this topic. Click &quot;Add Question&quot; to create one.
+          No questions found. Click &quot;Add Question&quot; to create one.
         </Card>
       ) : (
-        <div className="grid grid-cols-1 gap-3">
-          {filtered.map((q) => (
-            <Card key={q.id} className="p-4 flex flex-col sm:flex-row items-start justify-between gap-4 hover:border-[var(--border)] transition-all">
-              <div className="space-y-1.5 flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono font-bold text-[var(--text-muted)]">#{q.id}</span>
-                  <h4 className="text-sm font-bold text-[var(--text-primary)]">{q.question}</h4>
+        <div className="space-y-3">
+          <div className="grid grid-cols-1 gap-2.5">
+            {paginatedQuestions.map((q) => (
+              <Card key={q.id} className="p-3.5 flex items-center justify-between gap-4 hover:border-[var(--border-strong)] transition-all">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <span className="text-xs font-mono font-bold text-[var(--text-muted)] w-8 flex-shrink-0">
+                    #{q.id}
+                  </span>
+                  <span className="text-sm font-semibold text-[var(--text-primary)] truncate flex-1">
+                    {q.question}
+                  </span>
                   {q.imageUrl && (
-                    <Badge variant="outline" className="text-[10px] gap-1 py-0 text-[var(--accent)] border-[var(--accent)]/30">
+                    <Badge variant="outline" className="text-[10px] gap-1 py-0 text-[var(--accent)] border-[var(--accent)]/30 flex-shrink-0">
                       <ImageIcon className="h-3 w-3" /> Image
                     </Badge>
                   )}
                 </div>
-                <p className="text-xs text-[var(--text-secondary)] line-clamp-2 leading-relaxed">
-                  {q.answer}
-                </p>
-              </div>
 
-              <div className="flex items-center gap-1 self-end sm:self-center">
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setEditingQuestion(q)}
+                    className="h-8 w-8 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  >
+                    <Edit2 className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setDeletingId(q.id)}
+                    className="h-8 w-8 text-[var(--text-muted)] hover:text-[var(--error)]"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </Card>
+            ))}
+          </div>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between pt-4 border-t border-[var(--border)] text-xs text-[var(--text-secondary)]">
+              <span>
+                Showing {startIndex + 1} - {Math.min(startIndex + PAGE_SIZE, filtered.length)} of {filtered.length}
+              </span>
+              <div className="flex items-center gap-2">
                 <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setEditingQuestion(q)}
-                  className="h-8 w-8 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="h-8 px-2"
                 >
-                  <Edit2 className="h-3.5 w-3.5" />
+                  <ChevronLeft className="h-4 w-4" />
                 </Button>
+                <span className="font-mono font-bold px-2">
+                  {currentPage} / {totalPages}
+                </span>
                 <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setDeletingId(q.id)}
-                  className="h-8 w-8 text-[var(--text-muted)] hover:text-[var(--error)]"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="h-8 px-2"
                 >
-                  <Trash2 className="h-3.5 w-3.5" />
+                  <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
-            </Card>
-          ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -244,7 +283,7 @@ export default function AdminQuestionsPage() {
             <DialogTitle>Delete Question?</DialogTitle>
           </DialogHeader>
           <p className="text-xs text-[var(--text-secondary)] py-2">
-            Are you sure you want to permanently delete this question from Cloudflare D1?
+            Are you sure you want to delete this question?
           </p>
           <div className="flex justify-center gap-3 pt-2">
             <Button variant="outline" size="sm" onClick={() => setDeletingId(null)}>
