@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchArticles, fetchArticleBySlug } from "@/src/lib/api";
-import { createArticle, updateArticle, deleteArticle } from "@/src/lib/admin-api";
+import Link from "next/link";
+import { fetchArticles } from "@/src/lib/api";
+import { deleteArticle } from "@/src/lib/admin-api";
 import type { Article } from "@/src/db/schema";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
@@ -21,7 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/src/components/ui/select";
-import ArticleEditor from "@/src/components/admin/ArticleEditor";
 import { Plus, Search, Edit2, Trash2, FileText, Clock, Loader2 } from "lucide-react";
 
 export default function AdminArticlesPage() {
@@ -29,10 +29,6 @@ export default function AdminArticlesPage() {
   const [category, setCategory] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
-
-  // Modals state
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [editingArticle, setEditingArticle] = useState<Article | null>(null);
   const [deletingSlug, setDeletingSlug] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
@@ -49,42 +45,6 @@ export default function AdminArticlesPage() {
   useEffect(() => {
     loadArticles();
   }, [category]);
-
-  const handleEditClick = async (slug: string) => {
-    const fullArticle = await fetchArticleBySlug(slug);
-    if (fullArticle) {
-      setEditingArticle(fullArticle);
-    }
-  };
-
-  const handleCreate = async (data: {
-    slug: string;
-    title: string;
-    content: string;
-    category: string;
-    readingTime: number;
-    difficulty: "Easy" | "Medium" | "Hard";
-    tags?: string;
-  }) => {
-    await createArticle(data);
-    setIsCreateOpen(false);
-    await loadArticles();
-  };
-
-  const handleUpdate = async (data: {
-    slug: string;
-    title: string;
-    content: string;
-    category: string;
-    readingTime: number;
-    difficulty: "Easy" | "Medium" | "Hard";
-    tags?: string;
-  }) => {
-    if (!editingArticle) return;
-    await updateArticle(editingArticle.slug, data);
-    setEditingArticle(null);
-    await loadArticles();
-  };
 
   const handleDelete = async () => {
     if (!deletingSlug) return;
@@ -118,9 +78,11 @@ export default function AdminArticlesPage() {
           </p>
         </div>
 
-        <Button onClick={() => setIsCreateOpen(true)} size="sm">
-          <Plus className="h-4 w-4 mr-1" /> Add Article
-        </Button>
+        <Link href="/admin/articles/new">
+          <Button size="sm">
+            <Plus className="h-4 w-4 mr-1" /> Add Article
+          </Button>
+        </Link>
       </div>
 
       <div className="flex flex-col sm:flex-row items-center gap-3">
@@ -181,14 +143,15 @@ export default function AdminArticlesPage() {
               </div>
 
               <div className="flex items-center gap-1 self-end sm:self-center">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleEditClick(a.slug)}
-                  className="h-8 w-8 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                >
-                  <Edit2 className="h-3.5 w-3.5" />
-                </Button>
+                <Link href={`/admin/articles/${a.slug}/edit`}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  >
+                    <Edit2 className="h-3.5 w-3.5" />
+                  </Button>
+                </Link>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -202,35 +165,6 @@ export default function AdminArticlesPage() {
           ))}
         </div>
       )}
-
-      {/* Create Dialog */}
-      <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-        <DialogContent className="max-w-4xl max-h-[95vh]">
-          <DialogHeader>
-            <DialogTitle>Create New Article</DialogTitle>
-          </DialogHeader>
-          <ArticleEditor
-            onSave={handleCreate}
-            onCancel={() => setIsCreateOpen(false)}
-          />
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Dialog */}
-      <Dialog open={Boolean(editingArticle)} onOpenChange={(open) => !open && setEditingArticle(null)}>
-        <DialogContent className="max-w-4xl max-h-[95vh]">
-          <DialogHeader>
-            <DialogTitle>Edit Article: {editingArticle?.title}</DialogTitle>
-          </DialogHeader>
-          {editingArticle && (
-            <ArticleEditor
-              initialData={editingArticle}
-              onSave={handleUpdate}
-              onCancel={() => setEditingArticle(null)}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
 
       {/* Delete Dialog */}
       <Dialog open={Boolean(deletingSlug)} onOpenChange={(open) => !open && setDeletingSlug(null)}>

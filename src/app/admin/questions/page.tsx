@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { fetchTopics, fetchTopicQuestions } from "@/src/lib/api";
-import { createQuestion, updateQuestion, deleteQuestion } from "@/src/lib/admin-api";
+import { deleteQuestion } from "@/src/lib/admin-api";
 import type { Topic, Question } from "@/src/db/schema";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
@@ -21,7 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/src/components/ui/select";
-import QuestionEditor from "@/src/components/admin/QuestionEditor";
 import { Plus, Search, Edit2, Trash2, ImageIcon, HelpCircle, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 
 const PAGE_SIZE = 10;
@@ -33,10 +33,6 @@ export default function AdminQuestionsPage() {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
-
-  // Modals state
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
@@ -59,36 +55,6 @@ export default function AdminQuestionsPage() {
       })
       .finally(() => setLoading(false));
   }, [selectedTopic]);
-
-  const handleRefresh = async () => {
-    if (selectedTopic) {
-      const res = await fetchTopicQuestions(selectedTopic);
-      setQuestions(res?.questions || []);
-    }
-  };
-
-  const handleCreate = async (data: {
-    topicId: number;
-    question: string;
-    answer: string;
-    imageUrl?: string | null;
-  }) => {
-    await createQuestion(data);
-    setIsCreateOpen(false);
-    await handleRefresh();
-  };
-
-  const handleUpdate = async (data: {
-    topicId: number;
-    question: string;
-    answer: string;
-    imageUrl?: string | null;
-  }) => {
-    if (!editingQuestion) return;
-    await updateQuestion(editingQuestion.id, data);
-    setEditingQuestion(null);
-    await handleRefresh();
-  };
 
   const handleDelete = async () => {
     if (!deletingId) return;
@@ -122,13 +88,15 @@ export default function AdminQuestionsPage() {
             Questions Manager
           </h1>
           <p className="text-xs text-[var(--text-secondary)] mt-0.5">
-            Manage questions with topic filtering and pagination.
+            Manage flashcards with full-page editing and pagination.
           </p>
         </div>
 
-        <Button onClick={() => setIsCreateOpen(true)} size="sm">
-          <Plus className="h-4 w-4 mr-1" /> Add Question
-        </Button>
+        <Link href="/admin/questions/new">
+          <Button size="sm">
+            <Plus className="h-4 w-4 mr-1" /> Add Question
+          </Button>
+        </Link>
       </div>
 
       <div className="flex flex-col sm:flex-row items-center gap-3">
@@ -190,14 +158,15 @@ export default function AdminQuestionsPage() {
                 </div>
 
                 <div className="flex items-center gap-1 flex-shrink-0">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setEditingQuestion(q)}
-                    className="h-8 w-8 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                  >
-                    <Edit2 className="h-3.5 w-3.5" />
-                  </Button>
+                  <Link href={`/admin/questions/${q.id}/edit`}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                    >
+                      <Edit2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </Link>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -211,7 +180,7 @@ export default function AdminQuestionsPage() {
             ))}
           </div>
 
-          {/* Pagination Controls */}
+          {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-4 border-t border-[var(--border)] text-xs text-[var(--text-secondary)]">
               <span>
@@ -244,37 +213,6 @@ export default function AdminQuestionsPage() {
           )}
         </div>
       )}
-
-      {/* Create Dialog */}
-      <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Add New Question</DialogTitle>
-          </DialogHeader>
-          <QuestionEditor
-            topics={topics}
-            onSave={handleCreate}
-            onCancel={() => setIsCreateOpen(false)}
-          />
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Dialog */}
-      <Dialog open={Boolean(editingQuestion)} onOpenChange={(open) => !open && setEditingQuestion(null)}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Edit Question #{editingQuestion?.id}</DialogTitle>
-          </DialogHeader>
-          {editingQuestion && (
-            <QuestionEditor
-              initialData={editingQuestion}
-              topics={topics}
-              onSave={handleUpdate}
-              onCancel={() => setEditingQuestion(null)}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
 
       {/* Delete Dialog */}
       <Dialog open={Boolean(deletingId)} onOpenChange={(open) => !open && setDeletingId(null)}>
