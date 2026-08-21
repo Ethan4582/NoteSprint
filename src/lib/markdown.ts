@@ -1,6 +1,5 @@
 import fs from "fs";
 import path from "path";
-import { fetchArticles, fetchArticleBySlug } from "./api";
 
 export interface MarkdownMeta {
   slug: string;
@@ -40,33 +39,6 @@ function extractDescription(content: string): string {
 }
 
 export async function getMarkdownFiles(type: "lld" | "hld"): Promise<MarkdownMeta[]> {
-  try {
-    const remoteArticles = await fetchArticles(type);
-    if (remoteArticles && remoteArticles.length > 0) {
-      return remoteArticles.map((a) => {
-        let tags: string[] = [];
-        if (a.tags) {
-          try {
-            tags = JSON.parse(a.tags);
-          } catch {
-            tags = [];
-          }
-        }
-        return {
-          slug: a.slug,
-          title: a.title,
-          description: extractDescription(a.content),
-          readingTime: a.readingTime,
-          difficulty: a.difficulty as "Easy" | "Medium" | "Hard",
-          tags,
-          type,
-        };
-      });
-    }
-  } catch {
-    // Fall back to local filesystem
-  }
-
   const dirPath = path.join(mockDir, type);
   if (!fs.existsSync(dirPath)) return [];
 
@@ -109,15 +81,6 @@ export async function getMarkdownFiles(type: "lld" | "hld"): Promise<MarkdownMet
 }
 
 export async function getMarkdownContent(type: "lld" | "hld", slug: string): Promise<string | null> {
-  try {
-    const remote = await fetchArticleBySlug(slug);
-    if (remote?.content) {
-      return remote.content;
-    }
-  } catch {
-    // Fall back to local file
-  }
-
   const filePath = path.join(mockDir, type, `${slug}.md`);
   if (!fs.existsSync(filePath)) return null;
 

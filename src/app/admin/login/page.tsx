@@ -24,7 +24,7 @@ export default function AdminLoginPage() {
 
     const res = await adminLogin(password.trim());
     if (res.success) {
-      router.replace("/admin");
+      router.push("/admin");
     } else {
       setError(res.error || "Invalid password");
       setLoading(false);
@@ -56,7 +56,8 @@ export default function AdminLoginPage() {
               <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
                 Password
               </label>
-              <div className="relative">
+              <div className="relative flex items-center">
+                <KeyRound className="absolute left-3.5 h-4 w-4 text-[var(--text-muted)] pointer-events-none z-10" />
                 <Input
                   type={showPassword ? "text" : "password"}
                   value={password}
@@ -64,13 +65,12 @@ export default function AdminLoginPage() {
                   placeholder="Enter admin password..."
                   required
                   autoFocus
-                  className="pl-10 pr-10 text-sm tracking-wide font-mono"
+                  className="pl-10 pr-10 text-sm tracking-wide font-mono w-full"
                 />
-                <KeyRound className="absolute left-3 top-3 h-4 w-4 text-[var(--text-muted)]" />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors focus:outline-none"
+                  className="absolute right-3.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors focus:outline-none p-1 z-10"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? (
