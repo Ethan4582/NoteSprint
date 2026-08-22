@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
-import { exec } from "child_process";
-import { promisify } from "util";
-
-const execAsync = promisify(exec);
+import { insertArticle } from "@/src/db";
 
 export async function POST(req: Request) {
   try {
@@ -42,13 +39,16 @@ export async function POST(req: Request) {
     fs.writeFileSync(metaPath, JSON.stringify(metaRecord, null, 2), "utf-8");
 
     try {
-      const sanitizedTitle = (body.title || "").replace(/'/g, "''");
-      const sanitizedContent = (body.content || "").replace(/'/g, "''");
-      const sanitizedCategory = (body.category || "lld").replace(/'/g, "''");
-      const tagsJson = (typeof body.tags === "string" ? body.tags : JSON.stringify(body.tags || [])).replace(/'/g, "''");
-      const sql = `INSERT INTO articles (slug, title, content, category, reading_time, difficulty, tags) VALUES ('${slug}', '${sanitizedTitle}', '${sanitizedContent}', '${sanitizedCategory}', ${Number(body.readingTime) || 5}, '${body.difficulty || "Medium"}', '${tagsJson}');`;
-      
-      await execAsync(`npx wrangler d1 execute notes-db --remote --command "${sql.replace(/"/g, '\\"')}"`).catch(() => {});
+      const tagsJson = typeof body.tags === "string" ? body.tags : JSON.stringify(body.tags || []);
+      await insertArticle({
+        slug,
+        title: body.title || slug,
+        content: body.content || "",
+        category,
+        readingTime: Number(body.readingTime) || 5,
+        difficulty: body.difficulty || "Medium",
+        tags: tagsJson,
+      });
     } catch {
       // ignore
     }

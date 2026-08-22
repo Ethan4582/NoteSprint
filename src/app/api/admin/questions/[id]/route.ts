@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { saveQuestionToSource } from "@/src/lib/question-persister";
+import { deleteQuestion } from "@/src/db";
 
 export const dynamic = "force-static";
 
@@ -51,6 +52,7 @@ export async function DELETE(
   try {
     const { id } = await params;
     const numId = parseInt(id, 10);
+    await deleteQuestion(numId);
     return NextResponse.json({ success: true, id: numId });
   } catch (err) {
     return NextResponse.json({ error: (err as Error).message }, { status: 500 });

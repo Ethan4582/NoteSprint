@@ -52,3 +52,4 @@ next-env.d.ts
 dist/
 cloudflare-env.d.ts
 drizzle/
+scripts/

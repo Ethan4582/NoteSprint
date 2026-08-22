@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { Sun, Moon } from "lucide-react";
+import { cn } from "@/src/lib/utils";
 
-export default function ThemeToggle() {
+export default function ThemeToggle({ className }: { className?: string }) {
   const [theme, setTheme] = useState<"light" | "dark">("dark");
 
   useEffect(() => {
@@ -23,13 +24,16 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="p-2 hover:bg-[var(--bg-subtle)] rounded-[6px] transition-colors"
+      className={cn(
+        "h-9 w-9 flex items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--bg-subtle)] hover:bg-[var(--bg-surface)] text-[var(--text-secondary)] transition-all shadow-sm active:scale-95",
+        className
+      )}
       aria-label="Toggle theme"
     >
       {theme === "light" ? (
-        <Moon className="w-[18px] h-[18px] text-[var(--text-secondary)] drop-shadow-md" />
+        <Moon className="w-4 h-4 text-[var(--text-secondary)]" />
       ) : (
-        <Sun className="w-[18px] h-[18px] text-[var(--accent)] drop-shadow-[0_0_5px_rgba(255,69,0,0.5)]" />
+        <Sun className="w-4 h-4 text-[var(--accent)]" />
       )}
     </button>
   );

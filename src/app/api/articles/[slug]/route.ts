@@ -1,44 +1,22 @@
 import { NextResponse } from "next/server";
-import { getMarkdownContent, getMarkdownFiles } from "@/src/lib/markdown";
+import { getArticleBySlug } from "@/src/db";
 
-export const dynamic = "force-static";
-
-export async function generateStaticParams() {
-  const lld = await getMarkdownFiles("lld");
-  const hld = await getMarkdownFiles("hld");
-  return [...lld, ...hld].map((a) => ({ slug: a.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   const { slug } = await params;
-  let content = await getMarkdownContent("lld", slug);
-  let category = "lld";
 
-  if (!content) {
-    content = await getMarkdownContent("hld", slug);
-    category = "hld";
+  try {
+    const article = await getArticleBySlug(slug);
+    if (!article) {
+      return NextResponse.json({ error: "Article not found" }, { status: 404 });
+    }
+    return NextResponse.json(article);
+  } catch (err) {
+    console.error("Failed to fetch article by slug:", err);
+    return NextResponse.json({ error: "Failed to fetch article" }, { status: 500 });
   }
-
-  if (!content) {
-    return NextResponse.json({ error: "Article not found" }, { status: 404 });
-  }
-
-  const files = await getMarkdownFiles(category as "lld" | "hld");
-  const meta = files.find((f) => f.slug === slug);
-
-  return NextResponse.json({
-    id: 1,
-    slug,
-    title: meta?.title || slug.replace(/_/g, " "),
-    content,
-    category,
-    readingTime: meta?.readingTime || 5,
-    difficulty: meta?.difficulty || "Medium",
-    tags: JSON.stringify(meta?.tags || []),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  });
 }

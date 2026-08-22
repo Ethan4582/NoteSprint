@@ -2,10 +2,7 @@ import { NextResponse } from "next/server";
 import { getMarkdownFiles } from "@/src/lib/markdown";
 import fs from "fs";
 import path from "path";
-import { exec } from "child_process";
-import { promisify } from "util";
-
-const execAsync = promisify(exec);
+import { updateArticle, deleteArticle } from "@/src/db";
 
 export const dynamic = "force-static";
 
@@ -87,13 +84,19 @@ export async function PUT(
 
     // 3. Sync to remote D1 asynchronously
     try {
-      const sanitizedTitle = (body.title || "").replace(/'/g, "''");
-      const sanitizedContent = (body.content || "").replace(/'/g, "''");
-      const sanitizedCategory = (body.category || "lld").replace(/'/g, "''");
-      const tagsJson = (typeof body.tags === "string" ? body.tags : JSON.stringify(body.tags || [])).replace(/'/g, "''");
-      const sql = `UPDATE articles SET title = '${sanitizedTitle}', content = '${sanitizedContent}', category = '${sanitizedCategory}', reading_time = ${Number(body.readingTime) || 5}, difficulty = '${body.difficulty || "Medium"}', tags = '${tagsJson}', updated_at = CURRENT_TIMESTAMP WHERE slug = '${slug}' OR slug = '${fileKey}';`;
-      
-      await execAsync(`npx wrangler d1 execute notes-db --remote --command "${sql.replace(/"/g, '\\"')}"`).catch(() => {});
+      const tagsJson = typeof body.tags === "string" ? body.tags : JSON.stringify(body.tags || []);
+      await updateArticle(
+        slug,
+        {
+          title: body.title,
+          content: body.content,
+          category: body.category || "lld",
+          readingTime: Number(body.readingTime) || 5,
+          difficulty: body.difficulty || "Medium",
+          tags: tagsJson,
+        },
+        fileKey
+      );
     } catch {
       // ignore d1 sync failure during offline
     }
@@ -128,7 +131,7 @@ export async function DELETE(
     }
 
     try {
-      await execAsync(`npx wrangler d1 execute notes-db --remote --command "DELETE FROM articles WHERE slug = '${slug}';"`);
+      await deleteArticle(slug);
     } catch {
       // ignore
     }

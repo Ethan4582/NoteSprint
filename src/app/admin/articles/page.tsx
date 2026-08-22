@@ -120,10 +120,10 @@ export default function AdminArticlesPage() {
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center gap-2.5">
-        <div className="w-full sm:w-52">
+      <div className="flex flex-row items-center gap-2 sm:gap-2.5 w-full">
+        <div className="w-[130px] sm:w-52 shrink-0">
           <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger className="h-9 rounded-xl bg-raised border-[var(--border-strong)] text-xs font-semibold">
+            <SelectTrigger className="h-9 rounded-xl bg-raised border-[var(--border-strong)] text-xs font-semibold px-2.5 sm:px-3">
               <SelectValue placeholder="All Categories" />
             </SelectTrigger>
             <SelectContent>
@@ -135,7 +135,7 @@ export default function AdminArticlesPage() {
           </Select>
         </div>
 
-        <div className="relative w-full sm:w-80 md:w-96">
+        <div className="relative flex-1 min-w-0 sm:w-80 md:w-96 sm:flex-initial">
           <Input
             value={search}
             onChange={(e) => {
@@ -143,20 +143,20 @@ export default function AdminArticlesPage() {
               setCurrentPage(1);
             }}
             placeholder="Search articles by title or slug..."
-            className="h-9 pl-9 rounded-xl bg-raised border-[var(--border-strong)] text-xs"
+            className="h-9 pl-8 sm:pl-9 pr-2 rounded-xl bg-raised border-[var(--border-strong)] text-xs truncate"
           />
-          <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-[var(--text-muted)]" />
+          <Search className="absolute left-2.5 sm:left-3 top-2.5 h-3.5 w-3.5 text-[var(--text-muted)]" />
         </div>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
               type="button"
-              className="h-9 px-3 flex items-center gap-1.5 rounded-xl bg-raised border border-[var(--border-strong)] text-xs font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+              className="h-9 px-2.5 sm:px-3 flex items-center gap-1.5 rounded-xl bg-raised border border-[var(--border-strong)] text-xs font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors shrink-0"
               title="Filter and Sort"
             >
               <SlidersHorizontal className="h-3.5 w-3.5" />
-              <span className="capitalize">{sortOrder}</span>
+              <span className="capitalize hidden sm:inline">{sortOrder}</span>
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-32 p-1">
