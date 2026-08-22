@@ -1,6 +1,6 @@
 import type { Topic, Question, Article } from "@/src/db/schema";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
+const API_BASE = (typeof process !== "undefined" && process.env?.NEXT_PUBLIC_API_URL) || "";
 
 export interface TopicWithCount extends Topic {
   questionCount: number;

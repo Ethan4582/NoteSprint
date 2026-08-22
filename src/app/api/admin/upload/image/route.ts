@@ -1,24 +1,28 @@
+import process from "node:process";
 import { NextResponse } from "next/server";
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
-import sharp from "sharp";
-import fs from "fs";
-import path from "path";
+
+export const dynamic = "force-dynamic";
 
 const R2_BUCKET = "quiz-app-images";
-const R2_PUBLIC_URL = (process.env.R2_PUBLC_URL || "https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev").replace(/\/$/, "");
+
+function getR2PublicUrl(): string {
+  const url = (typeof process !== "undefined" && process.env?.R2_PUBLC_URL) || "https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev";
+  return url.replace(/\/$/, "");
+}
 
 function getS3Client(): S3Client | null {
-  if (
-    process.env.CLOUDFLARE_R2_ENDPOINT &&
-    process.env.CLOUDFLARE_R2_ACCESS_KEY_ID &&
-    process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY
-  ) {
+  const endpoint = typeof process !== "undefined" ? process.env?.CLOUDFLARE_R2_ENDPOINT : undefined;
+  const accessKeyId = typeof process !== "undefined" ? process.env?.CLOUDFLARE_R2_ACCESS_KEY_ID : undefined;
+  const secretAccessKey = typeof process !== "undefined" ? process.env?.CLOUDFLARE_R2_SECRET_ACCESS_KEY : undefined;
+
+  if (endpoint && accessKeyId && secretAccessKey) {
     return new S3Client({
       region: "auto",
-      endpoint: process.env.CLOUDFLARE_R2_ENDPOINT,
+      endpoint,
       credentials: {
-        accessKeyId: process.env.CLOUDFLARE_R2_ACCESS_KEY_ID,
-        secretAccessKey: process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY,
+        accessKeyId,
+        secretAccessKey,
       },
     });
   }
@@ -37,44 +41,29 @@ export async function POST(req: Request) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    let webpBuffer: Buffer;
-    try {
-      webpBuffer = await sharp(buffer).webp({ quality: 80 }).toBuffer();
-    } catch {
-      webpBuffer = buffer;
-    }
-
+    const extMatch = file.name.match(/\.([a-zA-Z0-9]+)$/);
+    const ext = extMatch ? extMatch[1].toLowerCase() : "png";
     const cleanBaseName = file.name.replace(/\.[^/.]+$/, "").replace(/[^a-zA-Z0-9_-]/g, "_");
-    const key = `uploads/${Date.now()}-${cleanBaseName}.webp`;
+    const key = `uploads/${Date.now()}-${cleanBaseName}.${ext}`;
+    const contentType = file.type || `image/${ext === "jpg" ? "jpeg" : ext}`;
 
     const s3 = getS3Client();
-    if (s3) {
-      await s3.send(
-        new PutObjectCommand({
-          Bucket: R2_BUCKET,
-          Key: key,
-          Body: webpBuffer,
-          ContentType: "image/webp",
-        })
-      );
-
-      return NextResponse.json({
-        url: `${R2_PUBLIC_URL}/${key}`,
-        key,
-      });
+    if (!s3) {
+      return NextResponse.json({ error: "R2 Storage not configured" }, { status: 500 });
     }
 
-    const uploadDir = path.join(process.cwd(), "public/uploads");
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    const localFilePath = path.join(uploadDir, `${Date.now()}-${cleanBaseName}.webp`);
-    fs.writeFileSync(localFilePath, webpBuffer);
-    const localKey = path.basename(localFilePath);
+    await s3.send(
+      new PutObjectCommand({
+        Bucket: R2_BUCKET,
+        Key: key,
+        Body: buffer,
+        ContentType: contentType,
+      })
+    );
 
     return NextResponse.json({
-      url: `/uploads/${localKey}`,
-      key: localKey,
+      url: `${getR2PublicUrl()}/${key}`,
+      key,
     });
   } catch (err) {
     return NextResponse.json({ error: (err as Error).message }, { status: 500 });
@@ -112,13 +101,6 @@ export async function DELETE(req: Request) {
       } catch (err) {
         console.error("R2 deletion error:", err);
       }
-    }
-
-    // Also remove local file if present
-    const fileName = path.basename(key);
-    const localFile = path.join(process.cwd(), "public/uploads", fileName);
-    if (fs.existsSync(localFile)) {
-      fs.unlinkSync(localFile);
     }
 
     return NextResponse.json({ success: true, key });

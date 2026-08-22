@@ -3,7 +3,8 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect, useMemo, Suspense } from "react";
 import { getQuestions } from "@/src/lib/data";
-import { fetchTopicQuestions } from "@/src/lib/api";
+import { fetchTopicQuestions, fetchQuestion } from "@/src/lib/api";
+import { getBookmarkedIds } from "@/src/hooks/useBookmarks";
 
 // Shared session components
 import FinishedView from "@/src/components/session/FinishedView";
@@ -32,18 +33,30 @@ function SessionContent() {
       const topics = config.topic.split(",").map((t) => t.trim()).filter(Boolean);
       let allLoaded: any[] = [];
 
-      for (const t of topics) {
-        try {
-          const res = await fetchTopicQuestions(t);
-          if (res?.questions && res.questions.length > 0) {
-            allLoaded.push(...res.questions.map((q) => ({ ...q, topic: t, subject: "Tech" })));
+      if (config.topic === "bookmarks" || topics.includes("bookmarks")) {
+        const bookmarkedIds = getBookmarkedIds();
+        const loaded = await Promise.all(
+          bookmarkedIds.map((id) => fetchQuestion(id).catch(() => null))
+        );
+        allLoaded = (loaded.filter(Boolean) as any[]).map((q) => ({
+          ...q,
+          topic: q.topicSlug || "Bookmarks",
+          subject: "Tech",
+        }));
+      } else {
+        for (const t of topics) {
+          try {
+            const res = await fetchTopicQuestions(t);
+            if (res?.questions && res.questions.length > 0) {
+              allLoaded.push(...res.questions.map((q) => ({ ...q, topic: t, subject: "Tech" })));
+            }
+          } catch {
+            // fallback
           }
-        } catch {
-          // fallback
         }
       }
 
-      if (allLoaded.length === 0) {
+      if (allLoaded.length === 0 && config.topic !== "bookmarks") {
         allLoaded = getQuestions(config.subject, config.topic);
       }
 

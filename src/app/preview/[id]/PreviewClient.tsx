@@ -7,6 +7,7 @@ import { fetchTopicQuestions } from "@/src/lib/api";
 import ContentRenderer from "@/src/components/ContentRenderer";
 import { ArrowLeft, ChevronLeft, ChevronRight, Layers, Hash } from "lucide-react";
 import ThemeToggle from "@/src/components/ThemeToggle";
+import BookmarkButton from "@/src/components/BookmarkButton";
 import { motion, AnimatePresence } from "framer-motion";
 
 const QUESTIONS_PER_PAGE = 15;
@@ -106,13 +107,16 @@ export default function PreviewClient({ id }: { id: string }) {
               const globalIndex = (currentPage - 1) * QUESTIONS_PER_PAGE + index + 1;
               return (
                 <article key={q.id} className="py-12 first:pt-0 last:pb-0">
-                  <div className="flex items-baseline gap-4 mb-4">
-                    <span className="text-xs font-mono text-[var(--accent)] font-bold opacity-60">
-                      {globalIndex.toString().padStart(2, '0')}
-                    </span>
-                    <h2 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] leading-tight tracking-tight">
-                      {q.question}
-                    </h2>
+                  <div className="flex items-start justify-between gap-4 mb-4">
+                    <div className="flex items-baseline gap-4">
+                      <span className="text-xs font-mono text-[var(--accent)] font-bold opacity-60">
+                        {globalIndex.toString().padStart(2, '0')}
+                      </span>
+                      <h2 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] leading-tight tracking-tight">
+                        {q.question}
+                      </h2>
+                    </div>
+                    <BookmarkButton questionId={q.id} size={16} className="shrink-0 mt-0.5" />
                   </div>
                   
                   <div className="prose prose-slate dark:prose-invert max-w-none">

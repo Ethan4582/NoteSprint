@@ -3,6 +3,7 @@
 import { Question } from "@/src/lib/data";
 import { ChevronRight } from "lucide-react";
 import ContentRenderer from "@/src/components/ContentRenderer";
+import BookmarkButton from "@/src/components/BookmarkButton";
 
 interface RevisionViewProps {
   question: Question;
@@ -24,11 +25,14 @@ export default function RevisionView({
   return (
     <div className="w-full max-w-[700px] mx-auto space-y-10 pb-20">
       <div className="flex justify-between items-center px-4">
-        {question.category && (
-          <span className="text-[10px] font-bold text-[var(--accent)] uppercase tracking-widest">
-            {question.category}
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+          <BookmarkButton questionId={question.id} size={15} />
+          {question.category && (
+            <span className="text-[10px] font-bold text-[var(--accent)] uppercase tracking-widest">
+              {question.category}
+            </span>
+          )}
+        </div>
         <span className="text-[10px] font-medium text-[var(--text-muted)] uppercase tracking-widest ml-auto">
           Q {currentIndex + 1} / {totalQuestions}
         </span>
