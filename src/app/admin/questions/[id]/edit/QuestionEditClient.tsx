@@ -2,8 +2,8 @@
 
 import { useState, useEffect, type FormEvent } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { fetchTopics, fetchQuestion } from "@/src/lib/api";
+import { useRouter, useSearchParams } from "next/navigation";
+import { fetchTopics, fetchQuestion, fetchQuestionByTopic } from "@/src/lib/api";
 import { updateQuestion } from "@/src/lib/admin-api";
 import type { Topic } from "@/src/db/schema";
 import { Button } from "@/src/components/ui/button";
@@ -20,6 +20,9 @@ import { Loader2 } from "lucide-react";
 
 export default function QuestionEditClient({ id }: { id: number }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const topicParam = searchParams.get("topic");
+
   const [topics, setTopics] = useState<Topic[]>([]);
   const [topicId, setTopicId] = useState<string>("");
   const [question, setQuestion] = useState("");
@@ -29,17 +32,34 @@ export default function QuestionEditClient({ id }: { id: number }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    Promise.all([fetchTopics(), fetchQuestion(id)])
-      .then(([topicsRes, qRes]) => {
+    const loadData = async () => {
+      try {
+        const topicsRes = await fetchTopics();
         setTopics(topicsRes);
+
+        let qRes;
+        if (topicParam) {
+          qRes = await fetchQuestionByTopic(topicParam, id);
+          const matchedTopic = topicsRes.find((t) => t.slug === topicParam);
+          if (matchedTopic) {
+            setTopicId(String(matchedTopic.id));
+          }
+        } else {
+          qRes = await fetchQuestion(id);
+          if (qRes) setTopicId(String(qRes.topicId));
+        }
+
         if (qRes) {
-          setTopicId(String(qRes.topicId));
           setQuestion(qRes.question);
           setAnswer(qRes.answer);
         }
-      })
-      .finally(() => setInitialLoading(false));
-  }, [id]);
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+
+    loadData();
+  }, [id, topicParam]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -76,7 +96,7 @@ export default function QuestionEditClient({ id }: { id: number }) {
       <div className="flex items-center justify-between border-b border-[var(--border)] pb-4">
         <div>
           <h1 className="text-2xl font-black tracking-tight text-[var(--text-primary)]">
-            Edit Question #{id}
+            Edit Question #{id} {topicParam ? `(${topicParam})` : ""}
           </h1>
           <p className="text-xs text-[var(--text-secondary)] mt-0.5">
             Modify question title and answer content.

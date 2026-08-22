@@ -158,7 +158,7 @@ export default function AdminQuestionsPage() {
                 </div>
 
                 <div className="flex items-center gap-1 flex-shrink-0">
-                  <Link href={`/admin/questions/${q.id}/edit`}>
+                  <Link href={`/admin/questions/${q.id}/edit?topic=${selectedTopic}`}>
                     <Button
                       variant="ghost"
                       size="icon"

@@ -36,6 +36,19 @@ export async function fetchQuestion(id: number): Promise<(Question & { topicSlug
   }
 }
 
+export async function fetchQuestionByTopic(
+  slug: string,
+  id: number
+): Promise<(Question & { topicSlug: string; topicName: string; category: string }) | null> {
+  try {
+    const res = await fetch(`${API_BASE}/api/topics/${slug}/questions/${id}`);
+    if (!res.ok) return null;
+    return res.json();
+  } catch {
+    return null;
+  }
+}
+
 export async function fetchArticles(category?: string): Promise<Article[]> {
   try {
     const res = await fetch(`${API_BASE}/api/articles`);
