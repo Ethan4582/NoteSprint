@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { saveQuestionToSource } from "@/src/lib/question-persister";
 
 export const dynamic = "force-static";
 
@@ -17,9 +18,22 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await req.json();
+    const topicId = Number(body.topicId) || 1;
+    const topicSlug = body.topicSlug || "interview_ai";
+    const numId = parseInt(id, 10);
+
+    await saveQuestionToSource(
+      topicSlug,
+      numId,
+      body.question || "",
+      body.answer || "",
+      body.imageUrl
+    );
+
     return NextResponse.json({
-      id: parseInt(id, 10),
-      topicId: body.topicId || 1,
+      id: numId,
+      topicId,
+      topicSlug,
       question: body.question,
       answer: body.answer,
       imageUrl: body.imageUrl || null,
@@ -34,6 +48,11 @@ export async function DELETE(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params;
-  return NextResponse.json({ success: true, id });
+  try {
+    const { id } = await params;
+    const numId = parseInt(id, 10);
+    return NextResponse.json({ success: true, id: numId });
+  } catch (err) {
+    return NextResponse.json({ error: (err as Error).message }, { status: 500 });
+  }
 }

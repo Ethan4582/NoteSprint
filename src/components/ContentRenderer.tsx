@@ -20,17 +20,19 @@ export default function ContentRenderer({
   image2,
   onImageClick,
 }: ContentRendererProps) {
-  // Pre-process legacy image tags like ${image("foo.png")} to standard markdown
-  const processedContent = (content || "").replace(
-    /\$\{image\("([^"]+)"\)\}/gi,
-    (_match, imgPath: string) => {
-      let resolved = imgPath.trim();
-      if (!resolved.startsWith("http") && !resolved.startsWith("/")) {
-        resolved = resolved.startsWith("assets/") ? `/${resolved}` : `/assets/theory/${resolved}`;
+  // Pre-process legacy image tags and HTML break tags to standard markdown
+  const processedContent = (content || "")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(
+      /\$\{image\("([^"]+)"\)\}/gi,
+      (_match, imgPath: string) => {
+        let resolved = imgPath.trim();
+        if (!resolved.startsWith("http") && !resolved.startsWith("/")) {
+          resolved = resolved.startsWith("assets/") ? `/${resolved}` : `/assets/theory/${resolved}`;
+        }
+        return `\n\n![diagram](${resolved})\n\n`;
       }
-      return `\n\n![diagram](${resolved})\n\n`;
-    }
-  );
+    );
 
   return (
     <div className="w-full space-y-4 animate-in fade-in duration-300">

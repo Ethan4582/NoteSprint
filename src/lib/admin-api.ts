@@ -133,6 +133,7 @@ export async function updateQuestion(
   id: number,
   payload: Partial<{
     topicId: number;
+    topicSlug: string;
     question: string;
     answer: string;
     imageUrl: string | null;

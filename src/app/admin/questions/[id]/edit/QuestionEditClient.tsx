@@ -84,8 +84,12 @@ export default function QuestionEditClient({ id }: { id: number }) {
     setLoading(true);
     setError(null);
     try {
+      const selectedTopicObj = topics.find((t) => String(t.id) === topicId);
+      const currentTopicSlug = selectedTopicObj?.slug || topicParam || "interview_ai";
+
       await updateQuestion(id, {
         topicId: parseInt(topicId, 10),
+        topicSlug: currentTopicSlug,
         question: question.trim(),
         answer: answer.trim(),
       });
