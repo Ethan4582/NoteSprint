@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useEffect } from "react";
 import { getQuestions } from "@/src/lib/data";
+import { fetchTopicQuestions } from "@/src/lib/api";
 import ContentRenderer from "@/src/components/ContentRenderer";
 import { ArrowLeft, ChevronLeft, ChevronRight, Layers, Hash } from "lucide-react";
 import ThemeToggle from "@/src/components/ThemeToggle";
@@ -14,22 +15,33 @@ export default function PreviewClient({ id }: { id: string }) {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [mounted, setMounted] = useState(false);
+  const [questions, setQuestions] = useState<any[]>(() => getQuestions([], id));
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setMounted(true);
-  }, []);
-
-  const questions = useMemo(() => {
-    return getQuestions([], id);
+    fetchTopicQuestions(id)
+      .then((res) => { 
+        if (res?.questions && res.questions.length > 0) {
+          setQuestions(res.questions);
+        }
+      })
+      .finally(() => setLoading(false));
   }, [id]);
 
-  const totalPages = Math.ceil(questions.length / QUESTIONS_PER_PAGE);
+  const totalPages = Math.max(1, Math.ceil(questions.length / QUESTIONS_PER_PAGE));
   const currentQuestions = questions.slice(
     (currentPage - 1) * QUESTIONS_PER_PAGE,
     currentPage * QUESTIONS_PER_PAGE
   );
 
-  if (!mounted) return null;
+  if (!mounted || loading) {
+    return (
+      <div className="min-h-screen bg-[var(--bg-base)] flex items-center justify-center font-mono text-xs uppercase tracking-widest text-[var(--text-muted)]">
+        Loading Questions...
+      </div>
+    );
+  }
 
   if (questions.length === 0) {
     return (

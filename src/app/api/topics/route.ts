@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { DATA } from "@/src/lib/data";
+import { queryD1 } from "@/src/lib/d1-remote";
 
 export const dynamic = "force-static";
 
@@ -54,6 +55,29 @@ function countQuestions(topicData: unknown): number {
 }
 
 export async function GET() {
+  try {
+    const d1Topics = await queryD1<{
+      id: number;
+      slug: string;
+      name: string;
+      category: string;
+      questionCount: number;
+    }>(`
+      SELECT t.id, t.slug, t.name, t.category, COUNT(q.id) as questionCount
+      FROM topics t
+      LEFT JOIN questions q ON q.topic_id = t.id
+      GROUP BY t.id
+      ORDER BY t.name ASC
+    `);
+
+    if (d1Topics && d1Topics.length > 0) {
+      return NextResponse.json(d1Topics);
+    }
+  } catch (e) {
+    console.warn("D1 topics query fallback:", e);
+  }
+
+  // Fallback to local memory / static
   let idCounter = 1;
   const topicsList = Object.keys(DATA).map((slug) => {
     const meta = TOPIC_METADATA[slug] || {

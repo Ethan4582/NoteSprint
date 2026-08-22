@@ -1,7 +1,8 @@
 "use client";
 
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useState, Suspense, useMemo, useEffect } from "react";
+import { fetchTopics, TopicWithCount } from "@/src/lib/api";
 import { DATA, getQuestions } from "@/src/lib/data";
 import BottomNav from "@/src/components/BottomNav";
 import { Play, Search } from "lucide-react";
@@ -13,38 +14,56 @@ import SessionConfigModal from "@/src/components/dashboard/SessionConfigModal";
 
 function InterviewContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
-  
   const initialTopic = searchParams.get("topic");
 
+  const [dbTopics, setDbTopics] = useState<TopicWithCount[]>([]);
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    fetchTopics().then((res) => {
+      if (res && res.length > 0) {
+        setDbTopics(res.filter((t) => t.slug.startsWith("interview_")));
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (initialTopic) setSelectedTopics([initialTopic]);
   }, [initialTopic]);
 
   const allAvailableTopics = useMemo(() => {
+    if (dbTopics.length > 0) {
+      return dbTopics
+        .map((t) => ({ topic: t.slug, qCount: t.questionCount }))
+        .filter((t) => t.qCount > 0)
+        .sort((a, b) => b.qCount - a.qCount);
+    }
+
     return Object.keys(DATA)
-      .filter(topic => topic.startsWith("interview_"))
-      .map((topic) => ({ topic, count: getQuestions([], topic).length }))
-      .filter((t) => t.count > 0)
-      .sort((a, b) => b.count - a.count)
-      .map((t) => ({ topic: t.topic }));
-  }, []);
+      .filter((topic) => topic.startsWith("interview_"))
+      .map((topic) => ({ topic, qCount: getQuestions([], topic).length }))
+      .filter((t) => t.qCount > 0)
+      .sort((a, b) => b.qCount - a.qCount);
+  }, [dbTopics]);
 
   const filteredTopics = useMemo(() => {
     if (!search) return allAvailableTopics;
-    return allAvailableTopics.filter(t => t.topic.toLowerCase().replace("interview_", "").includes(search.toLowerCase()));
+    return allAvailableTopics.filter((t) =>
+      t.topic.toLowerCase().replace("interview_", "").includes(search.toLowerCase())
+    );
   }, [allAvailableTopics, search]);
 
   const toggleTopic = (topic: string) => {
-    setSelectedTopics(prev => prev.includes(topic) ? prev.filter(t => t !== topic) : [...prev, topic]);
+    setSelectedTopics((prev) =>
+      prev.includes(topic) ? prev.filter((t) => t !== topic) : [...prev, topic]
+    );
   };
 
   const totalSelectedQuestions = selectedTopics.reduce((sum, topic) => {
-    return sum + getQuestions([], topic).length;
+    const matched = allAvailableTopics.find((t) => t.topic === topic);
+    return sum + (matched?.qCount ?? getQuestions([], topic).length);
   }, 0);
 
   return (

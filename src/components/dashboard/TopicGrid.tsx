@@ -4,7 +4,7 @@ import { getQuestions } from "@/src/lib/data";
 import TopicCard from "./TopicCard";
 
 interface TopicGridProps {
-  topics: { topic: string }[];
+  topics: { topic: string; qCount?: number }[];
   basePath?: string;
   selectedTopics?: string[];
   onToggleTopic?: (topic: string) => void;
@@ -12,9 +12,9 @@ interface TopicGridProps {
 
 export default function TopicGrid({ topics, basePath, selectedTopics = [], onToggleTopic }: TopicGridProps) {
   const sortedTopics = topics
-    .map(({ topic }) => ({
+    .map(({ topic, qCount }) => ({
       topic,
-      qCount: getQuestions([], topic).length,
+      qCount: typeof qCount === "number" ? qCount : getQuestions([], topic).length,
     }))
     .sort((a, b) => b.qCount - a.qCount);
 
