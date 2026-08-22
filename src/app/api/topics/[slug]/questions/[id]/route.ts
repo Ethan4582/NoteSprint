@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { DATA } from "@/src/lib/data";
+import { queryD1 } from "@/src/lib/d1-remote";
 
 export const dynamic = "force-static";
 
@@ -33,7 +34,7 @@ interface RawQ {
 function resolveImageUrl(img?: string | null): string | null {
   if (!img) return null;
   if (img.startsWith("http://") || img.startsWith("https://")) return img;
-  const clean = img.replace(/^\/?(assets\/)?/, "");
+  const clean = img.replace(/^(\.\.\/)+/, "").replace(/^\/?(assets\/)?/, "").replace(/^\/?public\//, "");
   return `https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/${clean.replace(/\.(png|jpg|jpeg)$/i, ".webp")}`;
 }
 
@@ -62,8 +63,52 @@ export async function GET(
 ) {
   const { slug, id } = await params;
   const numId = parseInt(id, 10);
-  const rawData = DATA[slug];
 
+  // 1. Query remote D1
+  try {
+    const qRows = await queryD1<{
+      id: number;
+      topic_id: number;
+      question: string;
+      answer: string;
+      image_url: string | null;
+      source_file: string | null;
+      slug: string;
+      name: string;
+      category: string;
+    }>(`
+      SELECT q.id, q.topic_id, q.question, q.answer, q.image_url, q.source_file,
+             t.slug, t.name, t.category
+      FROM questions q
+      JOIN topics t ON t.id = q.topic_id
+      WHERE q.id = ?
+      LIMIT 1
+    `, [numId]);
+
+    if (qRows && qRows.length > 0) {
+      const found = qRows[0];
+      const imgUrl = resolveImageUrl(found.image_url);
+      const answer = normalizeContent(found.answer || "", imgUrl);
+      return NextResponse.json({
+        id: found.id,
+        topicId: found.topic_id,
+        topicSlug: found.slug,
+        topicName: found.name,
+        category: found.category,
+        question: found.question || "",
+        answer,
+        imageUrl: imgUrl,
+        sourceFile: found.source_file,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    }
+  } catch (err) {
+    console.warn("D1 query fallback for question id:", err);
+  }
+
+  // 2. Fallback to local memory / static data
+  const rawData = DATA[slug];
   if (!rawData) {
     return NextResponse.json({ error: "Topic not found" }, { status: 404 });
   }
@@ -79,7 +124,6 @@ export async function GET(
   }
 
   const found = rawList.find((q, index) => (q && q.id === numId) || index + 1 === numId);
-
   if (!found) {
     return NextResponse.json({ error: "Question not found" }, { status: 404 });
   }

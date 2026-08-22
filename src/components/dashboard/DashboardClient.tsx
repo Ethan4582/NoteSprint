@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Play } from "lucide-react";
 import { DATA, getQuestions } from "@/src/lib/data";
+import { fetchTopics, TopicWithCount } from "@/src/lib/api";
 import BottomNav from "@/src/components/BottomNav";
-import TopicCard from "@/src/components/dashboard/TopicCard";
 
 import DashboardHeader from "@/src/components/dashboard/DashboardHeader";
 import DashboardSearch from "@/src/components/dashboard/DashboardSearch";
@@ -21,6 +21,15 @@ export default function DashboardClient({ systemDocs }: { systemDocs: MarkdownMe
   const [activeTab, setActiveTab] = useState("ALL");
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [dbTopics, setDbTopics] = useState<TopicWithCount[]>([]);
+
+  useEffect(() => {
+    fetchTopics().then((res) => {
+      if (res && res.length > 0) {
+        setDbTopics(res.filter((t) => !t.slug.startsWith("interview_")));
+      }
+    });
+  }, []);
 
   const CATEGORY_MAP: Record<string, string[]> = {
     "Frontend": ["react", "nextjs", "typescript", "redux", "javascript", "playwright_", "testing"],
@@ -30,30 +39,38 @@ export default function DashboardClient({ systemDocs }: { systemDocs: MarkdownMe
   };
 
   const getFilteredTopics = () => {
-    let topics = Object.keys(DATA)
-      .filter(topic => !topic.startsWith("interview_"))
-      .map(topic => ({ topic }));
+    let topics: { topic: string; qCount?: number }[] = [];
+
+    if (dbTopics.length > 0) {
+      topics = dbTopics.map((t) => ({ topic: t.slug, qCount: t.questionCount }));
+    } else {
+      topics = Object.keys(DATA)
+        .filter((topic) => !topic.startsWith("interview_"))
+        .map((topic) => ({ topic, qCount: getQuestions([], topic).length }));
+    }
     
     if (activeTab !== "ALL") {
       const categoryTopics = CATEGORY_MAP[activeTab] || [];
-      topics = topics.filter(t => categoryTopics.includes(t.topic));
+      topics = topics.filter((t) => categoryTopics.includes(t.topic));
     }
 
     if (search) {
-      topics = topics.filter(t => 
+      topics = topics.filter((t) => 
         t.topic.toLowerCase().includes(search.toLowerCase())
       );
     }
 
-    return topics.filter(t => getQuestions([], t.topic).length > 0);
+    return topics.filter((t) => (t.qCount ?? getQuestions([], t.topic).length) > 0);
   };
 
   const toggleTopic = (topic: string) => {
-    setSelectedTopics(prev => prev.includes(topic) ? prev.filter(t => t !== topic) : [...prev, topic]);
+    setSelectedTopics((prev) => prev.includes(topic) ? prev.filter((t) => t !== topic) : [...prev, topic]);
   };
 
+  const filtered = getFilteredTopics();
   const totalSelectedQuestions = selectedTopics.reduce((acc, topic) => {
-    return acc + getQuestions([], topic).length;
+    const matched = filtered.find((t) => t.topic === topic);
+    return acc + (matched?.qCount ?? getQuestions([], topic).length);
   }, 0);
 
   const tabs = ["ALL", "Frontend", "Backend", "Fundamentals", "System Design"];
@@ -76,32 +93,28 @@ export default function DashboardClient({ systemDocs }: { systemDocs: MarkdownMe
         ) : (
           <div className="space-y-8">
             <TopicGrid 
-              topics={getFilteredTopics()} 
+              topics={filtered} 
               selectedTopics={selectedTopics}
               onToggleTopic={toggleTopic}
             />
-            {search && systemDocs.filter(doc => {
+            {search && systemDocs.filter((doc) => {
               const lowerSearch = search.toLowerCase();
               const titleMatch = doc.title.toLowerCase().includes(lowerSearch);
-              const tagMatch = doc.tags?.some(tag => tag.toLowerCase().includes(lowerSearch));
+              const tagMatch = doc.tags?.some((tag) => tag.toLowerCase().includes(lowerSearch));
               return titleMatch || tagMatch;
             }).length > 0 && (
               <div className="space-y-4">
                 <h3 className="text-sm font-black text-[var(--text-muted)] uppercase tracking-widest px-1">
-                  System Design Matches
+                  Matching Documentation
                 </h3>
-                <div className="grid grid-cols-1 gap-4">
-                  {systemDocs.filter(doc => {
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {systemDocs.filter((doc) => {
                     const lowerSearch = search.toLowerCase();
                     const titleMatch = doc.title.toLowerCase().includes(lowerSearch);
-                    const tagMatch = doc.tags?.some(tag => tag.toLowerCase().includes(lowerSearch));
+                    const tagMatch = doc.tags?.some((tag) => tag.toLowerCase().includes(lowerSearch));
                     return titleMatch || tagMatch;
-                  }).map((doc, index) => (
-                    <SystemDesignDocCard 
-                      key={doc.slug} 
-                      doc={doc} 
-                      index={index} 
-                    />
+                  }).map((doc, idx) => (
+                    <SystemDesignDocCard key={doc.slug} doc={doc} index={idx} />
                   ))}
                 </div>
               </div>
@@ -117,7 +130,7 @@ export default function DashboardClient({ systemDocs }: { systemDocs: MarkdownMe
             className="pointer-events-auto bg-[var(--accent)] text-white px-6 py-3 rounded-full shadow-lg shadow-[var(--accent)]/30 font-bold tracking-widest uppercase text-xs flex items-center gap-2 hover:scale-105 active:scale-95 transition-all"
           >
             <Play size={14} fill="currentColor" />
-            Configure Session ({selectedTopics.length})
+            Start Session ({selectedTopics.length} Topics • {totalSelectedQuestions} Qs)
           </button>
         </div>
       )}

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import ThemeToggle from "@/src/components/ThemeToggle";
 import { adminLogout } from "@/src/lib/admin-api";
-import { LayoutDashboard, HelpCircle, FileText, LogOut } from "lucide-react";
+import { LayoutDashboard, HelpCircle, FileText, LineChart, LogOut } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 
 export default function AdminNav() {

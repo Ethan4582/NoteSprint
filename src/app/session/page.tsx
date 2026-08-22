@@ -1,22 +1,19 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect, useMemo, Suspense } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { getQuestions } from "@/src/lib/data";
-import Flashcard from "@/src/components/Flashcard";
+import { fetchTopicQuestions } from "@/src/lib/api";
 
 // Shared session components
 import FinishedView from "@/src/components/session/FinishedView";
 import Lightbox from "@/src/components/session/Lightbox";
 import SessionHeader from "@/src/components/session/SessionHeader";
 import SessionFooter from "@/src/components/session/SessionFooter";
-import FlashcardAnswer from "@/src/components/session/FlashcardAnswer";
-import RevisionView from "@/src/components/session/RevisionView";
-
 import SessionMain from "@/src/components/session/SessionMain";
 
 function SessionContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
 
   const config = useMemo(() => ({
@@ -27,122 +24,153 @@ function SessionContent() {
     mode: (searchParams.get("mode") as "flashcard" | "notes") || "flashcard",
   }), [searchParams]);
 
-  const questions = useMemo(() => {
-    const subjects = config.subject.split(",");
-    const topics = config.topic.split(",");
-    
-    if (topics.length <= 1) {
-      const all = getQuestions(config.subject, config.topic);
-      return all.sort(() => Math.random() - 0.5).slice(0, config.count);
-    }
+  const [questions, setQuestions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-    const perTopic = Math.floor(config.count / topics.length);
-    const extra = config.count % topics.length;
-    let selected: any[] = [];
+  useEffect(() => {
+    const loadSessionQuestions = async () => {
+      const topics = config.topic.split(",").map((t) => t.trim()).filter(Boolean);
+      let allLoaded: any[] = [];
 
-    topics.forEach((t, i) => {
-      const s = subjects[i] || subjects[0];
-      const topicQuestions = getQuestions(s, t).sort(() => Math.random() - 0.5);
-      const countToTake = i < extra ? perTopic + 1 : perTopic;
-      selected = [...selected, ...topicQuestions.slice(0, countToTake)];
-    });
+      for (const t of topics) {
+        try {
+          const res = await fetchTopicQuestions(t);
+          if (res?.questions && res.questions.length > 0) {
+            allLoaded.push(...res.questions.map((q) => ({ ...q, topic: t, subject: "Tech" })));
+          }
+        } catch {
+          // fallback
+        }
+      }
 
-    return selected.sort(() => Math.random() - 0.5);
+      if (allLoaded.length === 0) {
+        allLoaded = getQuestions(config.subject, config.topic);
+      }
+
+      const shuffled = allLoaded.sort(() => Math.random() - 0.5).slice(0, config.count);
+      setQuestions(shuffled);
+      setLoading(false);
+    };
+
+    loadSessionQuestions();
   }, [config]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(config.time * 60);
-  const [responses, setResponses] = useState<boolean[]>([]);
+  const [correctCount, setCorrectCount] = useState(0);
+  const [incorrectCount, setIncorrectCount] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
   const [activeImage, setActiveImage] = useState<string | null>(null);
 
+  // Timer
   useEffect(() => {
-    if (config.time === 0 || isFinished) return;
-    if (timeLeft <= 0) {
-      setIsFinished(true);
-      return;
-    }
-    const timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
+    if (isFinished || timeLeft <= 0 || loading) return;
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          setIsFinished(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
     return () => clearInterval(timer);
-  }, [timeLeft, isFinished, config.time]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (isFinished) return;
-      if (config.mode === "flashcard") {
-        if (e.code === "Space") { e.preventDefault(); setIsFlipped(prev => !prev); }
-        else if (e.code === "KeyY" && isFlipped && !showFeedback) handleAnswer(true);
-        else if (e.code === "KeyN" && isFlipped && !showFeedback) handleAnswer(false);
-        else if (e.code === "ArrowRight" && showFeedback) nextQuestion();
-      } else {
-        if (e.code === "ArrowRight") nextQuestion();
-        if (e.code === "ArrowLeft") prevQuestion();
-        if (e.code === "Space") setShowAnswer(!showAnswer);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isFinished, config.mode, isFlipped, showFeedback, showAnswer, currentIndex, questions.length]);
+  }, [isFinished, timeLeft, loading]);
 
   const handleAnswer = (success: boolean) => {
-    setResponses(prev => [...prev, success]);
-    setShowFeedback(true);
-  };
+    if (success) setCorrectCount((c) => c + 1);
+    else setIncorrectCount((c) => c + 1);
 
-  const nextQuestion = () => {
-    if (currentIndex < questions.length - 1) {
-      setCurrentIndex(prev => prev + 1);
+    setShowFeedback(true);
+    setTimeout(() => {
       setShowFeedback(false);
       setIsFlipped(false);
       setShowAnswer(false);
+      if (currentIndex + 1 < questions.length) {
+        setCurrentIndex((prev) => prev + 1);
+      } else {
+        setIsFinished(true);
+      }
+    }, 300);
+  };
+
+  const nextQuestion = () => {
+    setIsFlipped(false);
+    setShowAnswer(false);
+    if (currentIndex + 1 < questions.length) {
+      setCurrentIndex((prev) => prev + 1);
     } else {
       setIsFinished(true);
     }
   };
 
   const prevQuestion = () => {
+    setIsFlipped(false);
+    setShowAnswer(false);
     if (currentIndex > 0) {
-      setCurrentIndex(prev => prev - 1);
-      setShowAnswer(false);
+      setCurrentIndex((prev) => prev - 1);
     }
   };
 
-  const stats = useMemo(() => {
-    const correct = responses.filter(r => r).length;
-    return {
-      total: questions.length,
-      correct,
-      incorrect: responses.length - correct,
-      accuracy: Math.round((correct / questions.length) * 100) || 0
-    };
-  }, [responses, questions.length]);
-
-  const formatTime = (s: number) => {
-    const mins = Math.floor(s / 60);
-    const secs = s % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
   };
 
   const getTimeColor = () => {
-    if (timeLeft < 10) return "text-[var(--error)] animate-pulse";
-    if (timeLeft < 60) return "text-[var(--warning)]";
-    return "text-[var(--text-secondary)]";
+    if (timeLeft < 60) return "text-red-500";
+    if (timeLeft < 180) return "text-amber-500";
+    return "text-[var(--text-primary)]";
   };
 
-  if (isFinished) return <FinishedView stats={stats} />;
-  if (!questions[currentIndex]) return null;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[var(--bg-base)] flex items-center justify-center font-mono text-xs uppercase tracking-widest text-[var(--text-muted)]">
+        Preparing Session...
+      </div>
+    );
+  }
+
+  if (questions.length === 0) {
+    return (
+      <div className="min-h-screen bg-[var(--bg-base)] flex flex-col items-center justify-center p-6 text-center">
+        <h1 className="text-xl font-bold text-[var(--text-primary)]">No Questions Found</h1>
+        <p className="text-sm text-[var(--text-muted)] mt-2">Could not find any questions for the selected topics.</p>
+        <button
+          onClick={() => router.back()}
+          className="mt-6 px-6 py-2.5 bg-[var(--accent)] text-white rounded-xl font-bold text-xs uppercase tracking-widest"
+        >
+          Go Back
+        </button>
+      </div>
+    );
+  }
+
+  if (isFinished) {
+    const totalAnswered = correctCount + incorrectCount;
+    const accuracy = totalAnswered > 0 ? Math.round((correctCount / totalAnswered) * 100) : 0;
+    return (
+      <FinishedView
+        stats={{
+          total: questions.length,
+          correct: correctCount,
+          incorrect: incorrectCount,
+          accuracy,
+        }}
+      />
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] flex flex-col">
-      <Lightbox activeImage={activeImage} onClose={() => setActiveImage(null)} />
-
+    <div className="min-h-screen bg-[var(--bg-base)] flex flex-col justify-between selection:bg-[var(--accent)] selection:text-white">
       <SessionHeader
-        topic={config.topic}
+        topic={config.topic.replace(/_/g, " ")}
         timeLeft={timeLeft}
-        timerEnabled={config.time > 0}
+        timerEnabled={true}
         formatTime={formatTime}
         getTimeColor={getTimeColor}
         onEndSession={() => setIsFinished(true)}
@@ -173,13 +201,17 @@ function SessionContent() {
         handleAnswer={handleAnswer}
         showAnswer={showAnswer}
       />
+
+      {activeImage && (
+        <Lightbox activeImage={activeImage} onClose={() => setActiveImage(null)} />
+      )}
     </div>
   );
 }
 
 export default function SessionPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[var(--bg-base)] flex items-center justify-center font-mono text-xs uppercase tracking-widest text-[var(--text-muted)]">Initializing Session...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-[var(--bg-base)] flex items-center justify-center font-mono text-xs uppercase tracking-widest text-[var(--text-muted)]">Loading Session...</div>}>
       <SessionContent />
     </Suspense>
   );

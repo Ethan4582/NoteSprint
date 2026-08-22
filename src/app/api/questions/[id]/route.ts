@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { DATA } from "@/src/lib/data";
+import { queryD1 } from "@/src/lib/d1-remote";
 
 export const dynamic = "force-static";
 
@@ -20,6 +21,32 @@ interface RawQ {
   code?: string;
 }
 
+function resolveImageUrl(img?: string | null): string | null {
+  if (!img) return null;
+  if (img.startsWith("http://") || img.startsWith("https://")) return img;
+  const clean = img.replace(/^(\.\.\/)+/, "").replace(/^\/?(assets\/)?/, "").replace(/^\/?public\//, "");
+  return `https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/${clean.replace(/\.(png|jpg|jpeg)$/i, ".webp")}`;
+}
+
+function normalizeContent(answer: string, imgUrl: string | null, code?: string): string {
+  let text = (answer || "")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/?strong>/gi, "**")
+    .replace(/<\/?b>/gi, "**")
+    .replace(/<\/?em>/gi, "*")
+    .replace(/<\/?i>/gi, "*");
+
+  if (code) {
+    text += `\n\n\`\`\`\n${code}\n\`\`\``;
+  }
+
+  if (imgUrl && !text.includes(imgUrl) && !text.includes("![")) {
+    text += `\n\n![diagram](${imgUrl})\n`;
+  }
+
+  return text;
+}
+
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -27,6 +54,50 @@ export async function GET(
   const { id } = await params;
   const numId = parseInt(id, 10);
 
+  // 1. Query remote D1 database
+  try {
+    const qRows = await queryD1<{
+      id: number;
+      topic_id: number;
+      question: string;
+      answer: string;
+      image_url: string | null;
+      source_file: string | null;
+      slug: string;
+      name: string;
+      category: string;
+    }>(`
+      SELECT q.id, q.topic_id, q.question, q.answer, q.image_url, q.source_file,
+             t.slug, t.name, t.category
+      FROM questions q
+      JOIN topics t ON t.id = q.topic_id
+      WHERE q.id = ?
+      LIMIT 1
+    `, [numId]);
+
+    if (qRows && qRows.length > 0) {
+      const found = qRows[0];
+      const imgUrl = resolveImageUrl(found.image_url);
+      const answer = normalizeContent(found.answer || "", imgUrl);
+      return NextResponse.json({
+        id: found.id,
+        topicId: found.topic_id,
+        topicSlug: found.slug,
+        topicName: found.name,
+        category: found.category,
+        question: found.question || "",
+        answer,
+        imageUrl: imgUrl,
+        sourceFile: found.source_file,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    }
+  } catch (err) {
+    console.warn("D1 query fallback for /api/questions/[id]:", err);
+  }
+
+  // 2. Fallback to local memory / static data
   let found: RawQ | null = null;
   let topicSlug = "";
   let topicId = 1;
@@ -56,8 +127,8 @@ export async function GET(
     return NextResponse.json({ error: "Question not found" }, { status: 404 });
   }
 
-  let answer = found.answer || "";
-  if (found.code) answer += `\n\`\`\`\n${found.code}\n\`\`\``;
+  const imgUrl = resolveImageUrl(found.image || found.image2 || null);
+  const answer = normalizeContent(found.answer || "", imgUrl, found.code);
 
   return NextResponse.json({
     id: found.id || numId,
@@ -67,7 +138,7 @@ export async function GET(
     category: "tech",
     question: found.question || "",
     answer,
-    imageUrl: found.image || found.image2 || null,
+    imageUrl: imgUrl,
     sourceFile: topicSlug,
     createdAt: new Date(),
     updatedAt: new Date(),

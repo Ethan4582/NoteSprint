@@ -14,4 +14,4 @@ bucket_name = "quiz-app-images"
 
 [vars]
 R2_PUBLIC_URL = "https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev"
-PASSWORD = "Ash1420@"
+

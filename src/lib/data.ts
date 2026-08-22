@@ -93,7 +93,7 @@ export const DATA: Record<string, any> = {
   sql,
   lld,
   hld,
-  interview_ai,
+  interview_ai: (interview_ai || []) as unknown,
   interview_backend,
   interview_frontend,
   interview_hr,
