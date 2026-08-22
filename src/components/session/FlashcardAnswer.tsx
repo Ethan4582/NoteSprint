@@ -2,7 +2,7 @@
 
 import { Question } from "@/src/lib/data";
 import ContentRenderer from "@/src/components/ContentRenderer";
-import { Check, X } from "lucide-react";
+import BookmarkButton from "@/src/components/BookmarkButton";
 
 interface FlashcardAnswerProps {
   question: Question;
@@ -26,11 +26,14 @@ export default function FlashcardAnswer({
       <div className="space-y-10">
         {/* Header */}
         <div className="flex justify-between items-center px-4">
-          {question.category && (
-            <span className="text-[10px] font-bold text-[var(--accent)] uppercase tracking-widest">
-              {question.category}
-            </span>
-          )}
+          <div className="flex items-center gap-2">
+            <BookmarkButton questionId={question.id} size={15} />
+            {question.category && (
+              <span className="text-[10px] font-bold text-[var(--accent)] uppercase tracking-widest">
+                {question.category}
+              </span>
+            )}
+          </div>
           <span className="text-[10px] font-medium text-[var(--text-muted)] uppercase tracking-widest ml-auto">
             Q {currentIndex + 1} / {totalQuestions}
           </span>

@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Question } from "@/src/lib/data";
+import BookmarkButton from "@/src/components/BookmarkButton";
 
 interface FlashcardProps {
   question: Question;
@@ -28,7 +29,8 @@ export default function Flashcard({
         onClick={onFlip}
         whileHover={{ y: -4 }}
       >
-        <div className="flex justify-end items-start">
+        <div className="flex justify-between items-center">
+          <BookmarkButton questionId={question.id} size={15} />
           <span className="text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-widest bg-[var(--bg-subtle)] px-2 py-1 rounded-[6px]">
             Question {current} / {total}
           </span>
