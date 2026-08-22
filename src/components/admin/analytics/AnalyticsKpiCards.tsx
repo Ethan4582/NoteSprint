@@ -11,12 +11,18 @@ const ICON_MAP = {
   clock: { icon: Clock, bg: "bg-amber-500/10 text-amber-500", border: "border-amber-500/20" },
 };
 
+function isPercentageChange(change: string) {
+  return /^[+-]?\d+(\.\d+)?%/.test(change.trim());
+}
+
 export default function AnalyticsKpiCards({ kpis }: { kpis: AnalyticsKpi[] }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
       {kpis.map((kpi) => {
         const iconConfig = ICON_MAP[kpi.iconName] || ICON_MAP.users;
         const Icon = iconConfig.icon;
+        const isPercent = isPercentageChange(kpi.change);
+        const isNoData = kpi.change === "No data";
 
         return (
           <div
@@ -45,10 +51,20 @@ export default function AnalyticsKpiCards({ kpis }: { kpis: AnalyticsKpi[] }) {
               <div className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--text-primary)] font-mono">
                 {kpi.value}
               </div>
-              <div className="flex items-center gap-1 mt-1 text-xs font-semibold text-emerald-500">
-                <ArrowUpRight className="h-3.5 w-3.5" />
-                <span>{kpi.change}</span>
-              </div>
+              {isNoData ? (
+                <div className="mt-1 text-xs font-semibold text-[var(--text-muted)]">
+                  No data for period
+                </div>
+              ) : isPercent ? (
+                <div className={cn("flex items-center gap-1 mt-1 text-xs font-semibold", kpi.changeType === "increase" ? "text-emerald-500" : "text-red-400")}>
+                  <ArrowUpRight className={cn("h-3.5 w-3.5", kpi.changeType === "decrease" && "rotate-180")} />
+                  <span>{kpi.change}</span>
+                </div>
+              ) : (
+                <div className="mt-1 text-xs font-medium text-[var(--text-muted)]">
+                  {kpi.change}
+                </div>
+              )}
             </div>
           </div>
         );
