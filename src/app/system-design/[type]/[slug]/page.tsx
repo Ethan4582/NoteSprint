@@ -1,4 +1,4 @@
-import { getMarkdownContent, getMarkdownFiles } from "@/src/lib/markdown";
+import { getArticleBySlug } from "@/src/db";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Clock } from "lucide-react";
 import Link from "next/link";
@@ -6,16 +6,7 @@ import ThemeToggle from "@/src/components/ThemeToggle";
 import ClientMarkdownRenderer from "@/src/components/read/ClientMarkdownRenderer";
 import TableOfContents from "@/src/components/read/TableOfContents";
 
-// Note: Next.js page params might be async in newer versions, so we await them.
-export async function generateStaticParams() {
-  const lldFiles = await getMarkdownFiles("lld");
-  const hldFiles = await getMarkdownFiles("hld");
-
-  return [
-    ...lldFiles.map((file) => ({ type: "lld", slug: file.slug })),
-    ...hldFiles.map((file) => ({ type: "hld", slug: file.slug })),
-  ];
-}
+export const dynamic = "force-dynamic";
 
 export default async function MarkdownReaderPage({
   params,
@@ -23,20 +14,15 @@ export default async function MarkdownReaderPage({
   params: Promise<{ type: string; slug: string }>;
 }) {
   const { type, slug } = await params;
-  
-  if (type !== "lld" && type !== "hld") {
+
+  const article = await getArticleBySlug(slug);
+  if (!article) {
     notFound();
   }
 
-  const content = await getMarkdownContent(type as "lld" | "hld", slug);
-  if (!content) {
-    notFound();
-  }
-
-  const files = await getMarkdownFiles(type as "lld" | "hld");
-  const meta = files.find((f) => f.slug === slug);
-  const title = meta?.title || slug.replace(/_/g, " ");
-  const readingTime = meta?.readingTime || Math.max(1, Math.ceil(content.split(/\s+/).length / 200));
+  const content = article.content || "";
+  const title = article.title || slug.replace(/_/g, " ");
+  const readingTime = article.readingTime || Math.max(1, Math.ceil(content.split(/\s+/).length / 200));
 
   return (
     <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] transition-colors duration-300 selection:bg-[var(--accent)] selection:text-white">
@@ -65,7 +51,6 @@ export default async function MarkdownReaderPage({
         </div>
       </header>
 
-      {/* Reader Content */}
       {/* Reader Content */}
       <main className="max-w-[1400px] mx-auto w-full px-4 sm:px-6 py-6 sm:py-12 pb-32">
         <div className="relative flex justify-center">

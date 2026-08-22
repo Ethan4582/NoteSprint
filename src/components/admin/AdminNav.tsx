@@ -91,7 +91,6 @@ export default function AdminNav() {
                   type="button"
                   className="flex items-center gap-1.5 h-9 px-3 rounded-xl border border-[var(--border)] bg-[var(--bg-subtle)] text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-surface)] transition-all shadow-sm active:scale-95"
                 >
-                  <CurrentIcon className="h-3.5 w-3.5 text-[var(--accent)]" />
                   <span>{currentNav.label}</span>
                   <ChevronDown className="h-3.5 w-3.5 text-[var(--text-muted)] ml-0.5" />
                 </button>
