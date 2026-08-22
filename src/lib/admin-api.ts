@@ -1,7 +1,7 @@
 import { SignJWT } from "jose";
 import type { Question, Topic, Article } from "@/src/db/schema";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
+const API_BASE = (typeof process !== "undefined" && process.env?.NEXT_PUBLIC_API_URL) || "";
 
 function getAuthHeader(): Record<string, string> {
   if (typeof window === "undefined") return {};

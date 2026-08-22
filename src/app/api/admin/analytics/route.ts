@@ -1,11 +1,15 @@
+import process from "node:process";
 import { NextResponse } from "next/server";
 import { getTopTopics, getDbStats } from "@/src/db";
 import type { AnalyticsData, TimeRange, TopTopic } from "@/src/components/admin/analytics/types";
 
 export const dynamic = "force-dynamic";
 
-const CF_API_TOKEN = process.env.CLOUDFLARE_API_TOKEN || "";
-const CF_ZONE_ID = process.env.CLOUDFLARE_ZONE_ID || "";
+function getCfCredentials() {
+  const token = (typeof process !== "undefined" && process.env?.CLOUDFLARE_API_TOKEN) || "";
+  const zoneId = (typeof process !== "undefined" && process.env?.CLOUDFLARE_ZONE_ID) || "dc062fee89a9757eb58f4e1791805bff";
+  return { token, zoneId };
+}
 
 // --- Simple in-process cache (resets on cold start) ---
 interface CacheEntry {
@@ -79,10 +83,11 @@ const COUNTRY_NAMES: Record<string, string> = {
 
 async function cfGraphQL<T>(query: string): Promise<T | null> {
   try {
+    const { token } = getCfCredentials();
     const res = await fetch("https://api.cloudflare.com/client/v4/graphql", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${CF_API_TOKEN}`,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ query }),
@@ -104,10 +109,11 @@ async function cfGraphQL<T>(query: string): Promise<T | null> {
 }
 
 async function fetchDailyAnalytics(startDate: string, endDate: string): Promise<DailyGroup[]> {
+  const { zoneId } = getCfCredentials();
   const data = await cfGraphQL<{ viewer: { zones: { httpRequests1dGroups: DailyGroup[] }[] } }>(`
     {
       viewer {
-        zones(filter: { zoneTag: "${CF_ZONE_ID}" }) {
+        zones(filter: { zoneTag: "${zoneId}" }) {
           httpRequests1dGroups(
             limit: 90,
             filter: { date_geq: "${startDate}", date_leq: "${endDate}" }
@@ -129,10 +135,11 @@ async function fetchDailyAnalytics(startDate: string, endDate: string): Promise<
 }
 
 async function fetchHourlyAnalytics(startIso: string, endIso: string): Promise<HourlyGroup[]> {
+  const { zoneId } = getCfCredentials();
   const data = await cfGraphQL<{ viewer: { zones: { httpRequests1hGroups: HourlyGroup[] }[] } }>(`
     {
       viewer {
-        zones(filter: { zoneTag: "${CF_ZONE_ID}" }) {
+        zones(filter: { zoneTag: "${zoneId}" }) {
           httpRequests1hGroups(
             limit: 72,
             filter: { datetime_geq: "${startIso}", datetime_leq: "${endIso}" }

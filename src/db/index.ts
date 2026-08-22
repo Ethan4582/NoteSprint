@@ -1,11 +1,18 @@
+import process from "node:process";
 import { drizzle as drizzleD1 } from "drizzle-orm/d1";
 import { drizzle as drizzleProxy } from "drizzle-orm/sqlite-proxy";
 import type { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import type { D1Database } from "@cloudflare/workers-types";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 import * as schema from "./schema";
 
-const accountId = process.env.CLOUDFLARE_ACCOUNT_ID || "";
-const apiToken = process.env.CLOUDFLARE_API_TOKEN || "";
+function getEnvVar(key: string): string {
+  if (typeof process !== "undefined" && process.env) {
+    return process.env[key] || "";
+  }
+  return "";
+}
+
 const databaseId = "e867079a-d387-4c77-9304-4210a3f60fd4";
 
 export async function executeD1Remote(
@@ -13,6 +20,8 @@ export async function executeD1Remote(
   params: unknown[] = [],
   _method: "run" | "all" | "values" | "get" = "all"
 ) {
+  const accountId = getEnvVar("CLOUDFLARE_ACCOUNT_ID");
+  const apiToken = getEnvVar("CLOUDFLARE_API_TOKEN");
   const url = `https://api.cloudflare.com/client/v4/accounts/${accountId}/d1/database/${databaseId}/query`;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
@@ -49,8 +58,21 @@ export async function executeD1Remote(
 export type AppDb = BaseSQLiteDatabase<"async", any, typeof schema>;
 
 export function createDb(d1?: D1Database): AppDb {
-  if (d1) {
-    return drizzleD1(d1, { schema }) as unknown as AppDb;
+  let targetD1 = d1;
+
+  if (!targetD1) {
+    try {
+      const ctx = getCloudflareContext();
+      if ((ctx.env as any)?.DB) {
+        targetD1 = (ctx.env as any).DB as D1Database;
+      }
+    } catch {
+      // not in cloudflare worker context
+    }
+  }
+
+  if (targetD1) {
+    return drizzleD1(targetD1, { schema }) as unknown as AppDb;
   }
 
   return drizzleProxy(

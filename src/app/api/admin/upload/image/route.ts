@@ -1,23 +1,28 @@
+import process from "node:process";
 import { NextResponse } from "next/server";
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 
 export const dynamic = "force-dynamic";
 
 const R2_BUCKET = "quiz-app-images";
-const R2_PUBLIC_URL = (process.env.R2_PUBLC_URL || "https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev").replace(/\/$/, "");
+
+function getR2PublicUrl(): string {
+  const url = (typeof process !== "undefined" && process.env?.R2_PUBLC_URL) || "https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev";
+  return url.replace(/\/$/, "");
+}
 
 function getS3Client(): S3Client | null {
-  if (
-    process.env.CLOUDFLARE_R2_ENDPOINT &&
-    process.env.CLOUDFLARE_R2_ACCESS_KEY_ID &&
-    process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY
-  ) {
+  const endpoint = typeof process !== "undefined" ? process.env?.CLOUDFLARE_R2_ENDPOINT : undefined;
+  const accessKeyId = typeof process !== "undefined" ? process.env?.CLOUDFLARE_R2_ACCESS_KEY_ID : undefined;
+  const secretAccessKey = typeof process !== "undefined" ? process.env?.CLOUDFLARE_R2_SECRET_ACCESS_KEY : undefined;
+
+  if (endpoint && accessKeyId && secretAccessKey) {
     return new S3Client({
       region: "auto",
-      endpoint: process.env.CLOUDFLARE_R2_ENDPOINT,
+      endpoint,
       credentials: {
-        accessKeyId: process.env.CLOUDFLARE_R2_ACCESS_KEY_ID,
-        secretAccessKey: process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY,
+        accessKeyId,
+        secretAccessKey,
       },
     });
   }
@@ -57,7 +62,7 @@ export async function POST(req: Request) {
     );
 
     return NextResponse.json({
-      url: `${R2_PUBLIC_URL}/${key}`,
+      url: `${getR2PublicUrl()}/${key}`,
       key,
     });
   } catch (err) {
