@@ -1,5 +1,15 @@
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-static";
+
+export function generateStaticParams() {
+  const ids: { id: string }[] = [];
+  for (let i = 1; i <= 250; i++) {
+    ids.push({ id: String(i) });
+  }
+  return ids;
+}
+
 export async function PUT(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
