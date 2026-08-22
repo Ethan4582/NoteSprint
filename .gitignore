@@ -9,7 +9,9 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
+plan/
 plan.md
+AGENT.md
 # testing
 /coverage
 notes.md
@@ -39,3 +41,7 @@ skill.md
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# agents/skills
+.agents/
+

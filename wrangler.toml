@@ -1,0 +1,17 @@
+name = "notes"
+main = "src/worker/index.ts"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "notes-db"
+database_id = "e867079a-d387-4c77-9304-4210a3f60fd4"
+
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "quiz-app-images"
+
+[vars]
+R2_PUBLIC_URL = "https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev"
+PASSWORD = "Ash1420@"

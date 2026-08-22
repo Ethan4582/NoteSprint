@@ -43,18 +43,19 @@ const lld = {
     }, {
       id: 10,
       question: "What is Liskov Substitution Principle ?",
-      answer: "This principle ensures that any class that is the child of a parent class should be usable in place of its parent without any unexpected behaviour.<br><br>Why it matters?<br> 1.Ensures reliable polymorphism. <br> 2.Makes code easier to extend and maintain. <br> 3.Prevents subclasses from breaking parent class behavior.<br><br>Example:\${image(\"assets/lld/3.png\")}  \${image(\"assets/lld/4.png\")}"
+      answer: "This principle ensures that any class that is the child of a parent class should be usable in place of its parent without any unexpected behaviour.<br><br>Why it matters?<br> 1.Ensures reliable polymorphism. <br> 2.Makes code easier to extend and maintain. <br> 3.Prevents subclasses from breaking parent class behavior.<br><br>Example:\${image(\"assets/lld/3.png\")}"
     }, {
       id: 11,
       question: "What is Interface Segregation Principle ?",
-      answer: "This principle states that clients should not be forced to depend upon interfaces that they do not use. In simple terms, it means that instead of having one large interface, it should be broken down into smaller, more specific interfaces so that each interface is only responsible for one particular functionality.<br><br>Why it matters?<br> 1.Ensures reliable polymorphism. <br> 2.Makes code easier to extend and maintain. <br> 3.Prevents subclasses from breaking parent class behavior.<br><br>Example:\${image(\"assets/lld/5.png\")}  \${image(\"assets/lld/6.png\")}"
+      answer: "This principle states that clients should not be forced to depend upon interfaces that they do not use. In simple terms, it means that instead of having one large interface, it should be broken down into smaller, more specific interfaces so that each interface is only responsible for one particular functionality.<br></br> An interface is basically a contract that says what a class must do, but not how it does it. <br> ISP- Don't force a class to implement methods it doesn't need.<br><br>Why it matters?<br> 1.Ensures reliable polymorphism. <br> 2.Makes code easier to extend and maintain. <br> 3.Prevents subclasses from breaking parent class behavior.<br><br>Example:\${image(\"assets/lld/4.png\")}"
     }, {
       id: 12,
-      question:"",
-      answer: ""
+      question: "What is Dependency Inversion Principle? ",
+      answer: "It suggests that classes should rely on abstractions (e.g., interfaces or abstract classes) rather than concrete implementations.\nThis allows for more flexible and decoupled code, making it easier to change implementations without affecting other parts of the codebase.<br><br>Why it matters?<br> 1.Promotes decoupled architecture.<br> 2.Facilitates testing and maintainability.<br><br> Example : \${image(\"assets/lld/5.png\")} \${image(\"assets/lld/6.png\")}"
+
     }, {
-      id: 10,
-      question:"",
+      id: 13,
+      question: "",
       answer: ""
     }, {
       id: 10,

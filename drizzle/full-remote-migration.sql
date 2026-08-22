@@ -1,0 +1,861 @@
+-- ==========================================
+-- 1. CREATE TABLES AND INDEXES
+-- ==========================================
+CREATE TABLE `articles` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`slug` text NOT NULL,
+	`title` text NOT NULL,
+	`content` text NOT NULL,
+	`category` text NOT NULL,
+	`reading_time` integer DEFAULT 1 NOT NULL,
+	`difficulty` text DEFAULT 'Medium' NOT NULL,
+	`tags` text,
+	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
+	`updated_at` integer DEFAULT (unixepoch()) NOT NULL
+);
+
+CREATE UNIQUE INDEX `articles_slug_unique` ON `articles` (`slug`);
+CREATE INDEX `idx_articles_category` ON `articles` (`category`);
+CREATE TABLE `questions` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`topic_id` integer NOT NULL,
+	`question` text NOT NULL,
+	`answer` text NOT NULL,
+	`image_url` text,
+	`source_file` text,
+	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
+	`updated_at` integer DEFAULT (unixepoch()) NOT NULL,
+	FOREIGN KEY (`topic_id`) REFERENCES `topics`(`id`) ON UPDATE no action ON DELETE cascade
+);
+
+CREATE INDEX `idx_questions_topic` ON `questions` (`topic_id`);
+CREATE TABLE `topics` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`slug` text NOT NULL,
+	`name` text NOT NULL,
+	`category` text NOT NULL,
+	`created_at` integer DEFAULT (unixepoch()) NOT NULL
+);
+
+CREATE UNIQUE INDEX `topics_slug_unique` ON `topics` (`slug`);
+
+-- ==========================================
+-- 2. SEED TOPICS AND QUESTIONS
+-- ==========================================
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('nodejs', 'Node.js', 'backend');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Node.js and how does it work?', 'Node.js is a JavaScript runtime built on the V8 engine not a language. It allows you to run JavaScript on the server Like we have JVM for Spring. We can run our .js file directly in node environment. We do not need any additional setup.', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'How is Node a runtime environment on the server side? What is V8?', 'Browser execute code on the client side (Browser has APIs to run JS code) while Node execute code on the server (Node has APIs like File System, HTTP, etc.). Both Browser and Node have V8 engine but Node has additional features like event loop, APIs etc. V8 is a JavaScript engine which is written in C++. It compiles and runs JavaScript code.', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is the difference between a Runtime Environment and a Framework?', 'Runtime environment is a software that provides an environment for a program to run like memory management and I/O operations. Framework is a collection of libraries and tools that helps you to build a web application and it is built on top of runtime environment. Like React is a framework built on top of browser runtime environment. Express is a framework built on top of node runtime environment. In short Runtime environment provides features while framework provides features to build an application.', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is the difference between Node.js and Express.js?', 'NodeJS is a runtime environment while Express.js is a framework. Express.js is built on top of NodeJS. Node.js provides features like file system, http, etc. while Express.js provides features like routing, middleware, etc.', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What are the differences between Client-Side (Browser) and Server-Side (Node.js)?', 'Server-Side handles the business logic like database, Authentication, API, etc. While client side handles the UI it has features like DOM Manipulation, Event Handling, etc.', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What are the 7 main features of Node.js?', '1. Fast 2. Asynchronous and non-blocking nature 3. Single Threaded 4. Event Driven 5. Cross-Platform 6. NPM 7. Real-Time Applications', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Asynchronous Programming?', 'A task will not wait for another task to complete. It will just move to the next task and will come back to the previous task once it is completed. This is called non-blocking nature of node.js and event will tell the thread the task is completed and execute it first.', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What are Events, Event Emitter, Event Queue, Event Loop, and Event Driven?', 'Node.js follows event driven architecture. It has Event Emitter to emit events, Event Queue to queue events, Event Loop to loop through events and Event Driven to drive events. Event Driven architecture is nothing but a way to handle events.', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What are the disadvantages of Node.js?', '1. Single Threaded, 2. Callbacks 3. CPU Intensive Tasks, 4. Heavy Computation like gaming or Image Processing', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What are Modules in Node? What is the difference between a function and a module?', 'Modules in node are nothing but a way to organize our code in a way that we can reuse it. It is a way to break down our code into smaller manageable chunks. Function returns a value (one) while module can export multiple values/functions/classes etc. A module is a broader concept that encapsulates functionality, while a function is a specific set of instructions within that module.', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'How many ways are there to export a module?', '1. default export 2. named export 3. direct export', '/assets/theory/node/11.png', 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What are the types of modules in Node?', 'fs, http are built-in modules, local module means created by us and third party modules are installed from npm', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is the difference between a function and an event?', 'A function is a block of code that performs a specific task. An event is a signal that indicates that something has happened.', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What are the advantages of using Express.js with Node.js?', '1. Routing (Easy to define routes and endpoints) 2. Middleware (Chainable functions that can process requests and responses) 3. Template Engines (Integration with template engines like EJS, Pug, etc.) 4. Error Handling (Efficient error handling middleware) 5. Security (Built-in security features like helmet, rate limiting, etc.) 6. Performance (Lightweight and fast framework) 7. Community (Large and active community with extensive support and resources)', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'How to create an HTTP Server using Express.js?', 'To create an HTTP server in Express, you initialize the express application, define your port, and use the ''listen'' method to start receiving requests.', '/assets/theory/node/15.png', 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Middleware in Express.js and when to use them?', 'Middleware is a function that stands in between request and response and can perform validation, modification, etc. We use them when we need to perform some action before or after the request is processed.', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What are the types of Middleware?', '1. Application-level middleware (app.use()) 2. Router-level middleware (router.use()) 3. Error-handling middleware (err, req, res, next) 4. Built-in middleware (express.json(), express.urlencoded()) 5. Third-party middleware (body-parser, cors, helmet, etc.)', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'How do you implement middleware in Express.js?', 'Middleware is implemented by using ''app.use()'' for global scope or by passing the middleware function as an argument to specific route handlers.', '/assets/theory/node/18.png', 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is the Request Pipeline in Express?', 'The request pipeline represents the series of middleware and route handlers that a request passes through from the moment it hits the server until the response is sent back to the client.', '/assets/theory/node/19.png', 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What are third-party middlewares? Give some examples.', 'Third-party middleware is a middleware that is not built by us but installed from npm. Some examples are body-parser, cors, helmet, etc.', '/assets/theory/node/20.png', 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is error handling middleware?', 'Error handling middleware is a middleware that is used to handle errors in our application. It is a function that takes four arguments req, res, err, next. And we add them at the end if we have multiple middlewares so if the error occurs in any middleware it will skip all the remaining middleware and go to the error handling middleware.
+```
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send(''Something broke!'');
+});
+```', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What are the advantages of using middleware in Express.js?', '1. Modularity (Divide application into smaller, manageable pieces) 2. Flexibility (Add or remove middleware as needed) 3. Performance (Lightweight and efficient) 4. Security (Implement security measures like authentication and authorization) 5. Error Handling (Handle errors gracefully) 6. Maintainability (Easy to maintain and debug) 7. Code Reusability (Use middleware in multiple applications) 8. Scalability (Easy to scale the application)', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is the difference between middleware and routing in Express?', 'Routing determines how an application responds to a client request for a specific endpoint (URI). Middleware functions have access to the request and response objects and the next middleware function in the application''s request-response cycle.', '/assets/theory/node/23.png', 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'How to handle Routing in real Express.js applications?', 'In real applications, routing is handled by separating routes into different files using ''express.Router()'' and then importing them into the main app file.', '/assets/theory/node/24.png', 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What are Route Parameters in Express.js?', 'Route parameters are named URL segments that are used to capture the values specified at their position in the URL. They are stored in the ''req.params'' object.', '/assets/theory/node/25.png', 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is the difference between app.get() and router.get() methods?', '''app.get()'' is used to define routes directly on the main application object, while ''router.get()'' is used to define routes within a separate router object for better modularity.', '/assets/theory/node/26.png', 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'How does routing work in real production environments?', 'Production routing involves deep nesting of routers, separation of concerns between controllers and routes, and often versioning of the API.', '/assets/theory/node/27.png', 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What are the advantages of REST API (Representational State Transfer)?', '1. Stateless (each request is independent, easy to scale horizontally.) 2. Uses HTTP standards (simple (GET, POST, etc.), works with any client. 3. Lightweight & fast (typically JSON, less overhead than SOAP.) 4. Decoupled (frontend/backend evolve independently.) 5. Cacheable (improves performance and reduces server load.)', '/assets/theory/node/28-1.png', 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is the difference between REST and SOAP?', 'REST is an architectural style for designing APIs while SOAP is a protocol. REST uses HTTP protocol while SOAP can use any protocol. REST is lightweight while SOAP is heavy. REST is stateless while SOAP is stateful. REST is cached while SOAP is not cached.', '/assets/theory/node/29.png', 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What are HTTP requests and HTTP responses?', 'HTTP request is a message sent from the client to the server. It contains the request method (GET, POST, etc.), the URL of the resource being requested, and the request headers. HTTP response is a message sent from the server to the client. It contains the response status code, the response headers, and the response body.', '/assets/theory/node/30.png', 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What are GET, POST, DELETE, PUT, and PATCH methods?', 'GET (retrieve data) - Fetching data from a server. PUT (update or create data) - Modifying existing data or creating it if it doesn''t exist. POST (create data) - Adding new data. DELETE (delete data) - Removing data. PATCH (partially update data) - Sending only the specific fields that need to be updated.', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Explain Idempotent and Non-Idempotent methods.', 'Idempotency means that performing the same operation multiple times will have the same effect as performing it once. For example, if we send a GET request to a server multiple times, it will return the same data every time. Similarly, if we send a DELETE request to a server multiple times, it will delete the resource only once. Non-idempotent means that performing the same operation multiple times can/will have different effects. For example, if we send a POST request to a server multiple times, it will create a new resource every time.', '/assets/theory/node/32.png', 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is CORS in REST API and how to remove them?', 'CORS or Cross-Origin Resource Sharing is a security mechanism that allows a web page from one domain to request resources from a different domain. To remove CORS we use cors middleware in express. In production we have to add our domain in access-control-allow-origin header.', '/assets/theory/node/33.png', 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is serialization and deserialization and its types?', 'Serialization is the process of converting an object into a stream of bytes. Deserialization is the process of converting a stream of bytes into an object.', '/assets/theory/node/34.png', 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'How to serialize and deserialize an object in Node.js?', 'In Node.js, we typically use ''JSON.stringify()'' for serialization and ''JSON.parse()'' for deserialization when working with JSON data.', '/assets/theory/node/35.png', 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is the concept of versioning in REST API?', 'Versioning in REST API is a way to manage changes to an API over time while maintaining backward compatibility with older versions. Versioning ensures that existing clients continue to work with the API even after updates are made.', '/assets/theory/node/36.png', 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is the typical structure of a Node.js project?', 'A typical structure involves directories for routes, controllers, models, middleware, and a main entry point like app.js or index.js.', '/assets/theory/node/37.png', 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is authentication and authorization?', 'Authentication is the process of verifying the identity of a user. Authorization is the process of verifying the permissions of a user.', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What are the types of Authentication in web development?', '1. Basic Authentication (username/password) 2. Token-Based Authentication (JWT) 3. OAuth (third-party login) 4. Session-Based Authentication 5. API Key Authentication', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is the role of hashing and salt in the authentication process?', 'Hashing is used to store passwords in a way that cannot be decrypted. Salt is a random value that is added to the password before hashing to prevent rainbow table attacks.', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'How can we create a hashed password in Node.js?', 'We can use libraries like ''bcryptjs'' or the built-in ''crypto'' module to create hashed passwords securely.', '/assets/theory/node/41.png', 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Token-based and JWT-based authentication?', 'In token-based authentication, the server generates a unique token for each user after successful login. This token is then sent to the client, which includes it in every subsequent request to access protected resources. The server verifies the token to ensure the user''s identity. JSON Web Token (JWT) is a specific type of token-based authentication that uses JSON objects to securely transmit information between parties. JWTs are digitally signed, ensuring their integrity and authenticity.', '/assets/theory/node/42.png', 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is the Error-first callback pattern?', 'The idea is that the first parameter of the callback is reserved for an error object, and the second parameter is for the result. This forces the developer to handle failure first, then success.', '/assets/theory/node/43.png', 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'How to handle errors using Promises?', 'Errors in Promises can be handled using ''.catch()'' at the end of a promise chain or by using ''try-catch'' blocks when working with async/await.', '/assets/theory/node/44.png', 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'How to handle errors while using async-await?', 'We use ''try-catch'' blocks to handle errors while using async-await, wrapping the awaited code in the ''try'' block and handling errors in the ''catch'' block.', '/assets/theory/node/45.png', 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, ' What is event loop in nodejs? ', 'The event loop in Node.js is a crucial mechanism that enables its single-threaded, non-blocking I/O architecture. It allows Node.js to handle multiple concurrent operations efficiently without getting blocked by I/O tasks. The event loop works in conjunction with the call stack and the callback queue to manage asynchronous operations. In essence, the event loop is an infinite loop that continuously checks if there are any pending tasks in the callback queue. If there are, it executes them one by one, pushing them onto the call stack. If the call stack is empty, it waits for new tasks to arrive.', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Call Stack in NodeJs?', 'It keep the track of the functions that are currently executing or are paused because they are waiting for an operation to complete. It follow LIFO and only synchonous calls are allowed in call stack.If is block node.js cannot excute anything else. This is the reason why nodejs is single threaded.', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is libuv in Node.js?', 'Libuv is a C-language library that provides asynchronous I/O capabilities to Node.js.It handles Event loop, File System, Network and Child Processes, Thread pool .', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Thread pool in nodejs?', 'Thread pool in nodejs is a pool of threads that are used to handle asynchronous I/O operations (via libuv). It is used to handle file system operations, DNS lookups, and other I/O operations that are not handled by the event loop. By default, thread pool size is 4.', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is a blocking code ?', 'Blocking code is a code that blocks the execution of other code. It is synchronous code. It is not good for performance.
+```
+
+
+const fs = require("fs");
+// blockigng code
+const data = fs.readFileSync("file.txt");
+console.log(data);
+
+// non-blockigng code
+fs.readFile("file.txt", (err, data) => {
+console.log(data);
+});
+    
+```', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'difference between Javascript and Node.js', '1. JS is programming language, Node.js is runtime environment. 2. JS is used for client side development, Node.js is used for server side development. 3. JS is single threaded, Node.js is single threaded but it uses event loop to handle asynchronous operations. 4. JS is interpreted language, Node.js is compiled language.  ', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Streaming in nodejs? ', 'It is used to handle large chunks of data in small chunks. Types: Readable (You can read data from it),Writable (You can write data to it),Duplex (You can read and write data to it),Transform (You can read and write data to it, but it also transform the data)  ', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Buffers in nodejs? ', 'A buffer is a temporary memory location that is used to store binary data. It is used to handle binary data in nodejs. It is a fixed-size array of bytes. Buffers are mainly used for file I/O operations, network I/O operations, and cryptography operations.', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Explain Event Loop phases and their priority?', 'Call Stack → process.nextTick() → Promise microtasks → Event Loop phases (timers → I/O → check → close)
+```
+
+console.log("start");
+
+setTimeout(() => console.log("timeout"), 0);
+
+Promise.resolve().then(() => console.log("promise"));
+
+process.nextTick(() => console.log("nextTick"));
+
+console.log("end");
+
+Execution flow:
+Stack: start → end → nextTick queue → promise microtask → event loop (timers)
+Output: start → end → nextTick → promise → timeout
+
+
+```', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is the different between require() and import() in nodejs?', '1. require()[ CommonJS module mode] is synchronous, ES6 [ES module mode] import is Asynchronous 2. Can be used anywhere in code but import can only be used at the top level. 3. older but import is modern way 
+```
+
+   // CommonJS (require) — synchronous
+const { log } = require("console");
+
+// ES6 (import) — asynchronous  and Import needs "type": "module" in package.json
+import { log } from "console";
+    
+```', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Difference between module.exports vs exports?', 'module.exports → actual object returned by require(); use when exporting single value/function/class. exports → just a reference to module.exports; use for adding multiple properties (don’t reassign it). <br><br> When to use: <br> Multiple things → exports.x = ... <br> Single thing → module.exports = ... <br> Why wrong? → exports no longer points to module.exports, so require() gets empty {}.
+```
+
+ // math.js
+
+// ✅ RIGHT → multiple exports (use exports)
+exports.add = (a, b) => a + b;
+exports.sub = (a, b) => a - b;
+
+// OR ✅ RIGHT → single export (use module.exports)
+// module.exports = function (a, b) { return a + b; };
+
+// ❌ WRONG → reassigning exports (breaks link)
+exports = function () {
+  console.log("won’t work");
+};
+  
+```', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What are Callbacks, Promises, and Async/Await', '1. Callbacks → pass a function to run after async work (older pattern, can get messy) <br>Use: simple async tasks <br>Avoid: multiple nested ops (callback hell) 2. Promises → cleaner chaining + built-in error handling . 3. Async/Await → syntactic sugar over Promises, makes async code look synchronous 
+```
+
+    // Callback
+    fs.readFile("file.txt", "utf8", (err, data) => {
+  if (err) return console.log(err);
+  console.log(data);
+}); 
+
+ // Promises
+ fetch(url)
+  .then(res => res.json())
+  .then(data => console.log(data))
+  .catch(err => console.log(err));
+
+  //Asyn/Await
+  try {
+  const res = await fetch(url);
+  const data = await res.json();
+  console.log(data);
+} catch (err) {
+  console.log(err);
+}
+    
+```', NULL, 'nodejs' FROM topics WHERE slug = 'nodejs';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('express', 'Express.js', 'backend');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Express.js and what are its features?', 'Express.js is a fast, unopinionated, minimalist web framework for Node.js. It provides a robust set of features for web and mobile applications, including simplified routing, middleware support.', NULL, 'express' FROM topics WHERE slug = 'express';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'How would set up express server', '
+```
+
+const express = require(''express''); 
+require("dotenv").config();
+const app= express(); 
+app.use(express.json());
+
+app.get(''/'',(req, res)=>{
+   res.send(console.log("hi there"))
+})
+
+app.get(''/api'', (req, res) => {
+  res.json({ message: ''This is the API route.'' });
+});
+
+app.get(''/api/:id'', (req, res)=>{
+   const {id} = req.params;
+   res.json({messge: id});
+})
+
+const PORT=process.env.PORT || 3000;
+app.listen(PORT , ()=>{
+   console.log(`listen to port 3000`);
+})
+    
+```', NULL, 'express' FROM topics WHERE slug = 'express';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Difference between GET and POST method.', '1. GET is used to retrieve data from a resource and should not cause side effects; POST is used to send data to the server to create or update resources 2. In GET, data is sent as query parameters in the URL with size limits; in POST, data is sent in the request body and can handle larger amounts. 3. GET parameters are visible in the URL (less secure for sensitive data); POST parameters are not visible in the URL (more secure). 4. GET requests can be cached, bookmarked, and are idempotent; POST requests are not cached, cannot be bookmarked, and are not idempotent. Use GET for fetching data (e.g., reading posts, searching, API calls) and POST for submitting data (e.g., forms, file uploads, payments)..', NULL, 'express' FROM topics WHERE slug = 'express';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'How to handle POST request', 'Before handling POST requests, it''s important to include middleware to parse the incoming data. Express provides built-in middleware for handling JSON and form data like app.use(express.json());
+```
+
+    const express = require(''express''); 
+require("dotenv").config();
+const app= express(); 
+app.use(express.json());
+
+const store=[];
+
+app.post(''/content'', (req, res)=>{
+    const newcontent= req.body.content;
+    if(!newcontent){
+      return res.status(400).json({error:"Add valide content"});
+    }
+
+    store.push(newcontent);
+    res.status(201).json({ message: ''Content added successfully'' ,data: store });
+  
+})
+const PORT=process.env.PORT || 3000;
+app.listen(PORT , ()=>{
+   console.log("listen to port ",PORT);
+})
+  
+```', NULL, 'express' FROM topics WHERE slug = 'express';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'How to handle errors in Express.js?', '', NULL, 'express' FROM topics WHERE slug = 'express';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('mongodb', 'MongoDB', 'backend');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is the difference between SQL and NoSQL?', 'SQL databases are relational, use structured schemas, and are vertically scalable. NoSQL databases (like MongoDB) are non-relational, have dynamic schemas for unstructured data, and are horizontally scalable.', NULL, 'mongodb' FROM topics WHERE slug = 'mongodb';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Explain the concept of ''Indexes'' in MongoDB.', 'Indexes support the efficient execution of queries in MongoDB. Without indexes, MongoDB must perform a collection scan (scanning every document) to find matches. Indexes significantly speed up query performance.
+```
+db.collection.createIndex({ "name": 1 })
+```', NULL, 'mongodb' FROM topics WHERE slug = 'mongodb';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('postgresql', 'PostgreSQL', 'backend');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is a Primary Key in PostgreSQL?', 'A primary key is a column or group of columns used to uniquely identify a row in a table. It must be unique and cannot contain null values.', NULL, 'postgresql' FROM topics WHERE slug = 'postgresql';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is a ''JOIN'' and what are the common types?', 'A JOIN clause combines rows from two or more tables based on a related column. Common types include INNER JOIN, LEFT JOIN, RIGHT JOIN, and FULL OUTER JOIN.
+```
+SELECT users.name, orders.amount
+FROM users
+INNER JOIN orders ON users.id = orders.user_id;
+```', NULL, 'postgresql' FROM topics WHERE slug = 'postgresql';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('aws_', 'AWS', 'backend');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is AWS?', 'Amazon Web Services (AWS) is a comprehensive, evolving cloud computing platform provided by Amazon.', NULL, 'aws_' FROM topics WHERE slug = 'aws_';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('azure_', 'Azure', 'backend');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Microsoft Azure?', 'Azure is a cloud computing service operated by Microsoft for application management via Microsoft-managed data centers.', NULL, 'azure_' FROM topics WHERE slug = 'azure_';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('drizzle_', 'Drizzle ORM', 'backend');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Drizzle ORM?', 'Drizzle is a TypeScript ORM that feels like writing SQL, but with full type safety and great performance.', NULL, 'drizzle_' FROM topics WHERE slug = 'drizzle_';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('fastapi_', 'FastAPI', 'backend');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is FastAPI?', 'FastAPI is a modern, fast (high-performance), web framework for building APIs with Python 3.7+ based on standard Python type hints.', NULL, 'fastapi_' FROM topics WHERE slug = 'fastapi_';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('graphql_', 'GraphQL', 'backend');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is GraphQL?', 'GraphQL is a query language for APIs and a runtime for fulfilling those queries with your existing data. It gives clients the power to ask for exactly what they need.', NULL, 'graphql_' FROM topics WHERE slug = 'graphql_';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('grpc_', 'gRPC', 'backend');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is gRPC?', 'gRPC is a modern open-source high performance Remote Procedure Call (RPC) framework that can run in any environment.', NULL, 'grpc_' FROM topics WHERE slug = 'grpc_';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('hono_', 'Hono', 'backend');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Hono?', 'Hono is a small, simple, and ultra-fast web framework for the Edges. It works on Cloudflare Workers, Fastly Compute, Deno, Bun, Vercel, Lagon, and Node.js.', NULL, 'hono_' FROM topics WHERE slug = 'hono_';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('langchain_', 'LangChain', 'backend');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is LangChain?', 'LangChain is a framework designed to simplify the creation of applications using large language models (LLMs).', NULL, 'langchain_' FROM topics WHERE slug = 'langchain_';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('langgraph_', 'LangGraph', 'backend');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is LangGraph?', 'LangGraph is a library for building stateful, multi-actor applications with LLMs, used to create agent and multi-agent workflows.', NULL, 'langgraph_' FROM topics WHERE slug = 'langgraph_';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('prisma', 'Prisma', 'backend');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Prisma?', 'Prisma is a next-generation Node.js and TypeScript ORM that makes it easy to work with databases.', NULL, 'prisma' FROM topics WHERE slug = 'prisma';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('python', 'Python', 'backend');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Python?', 'Python is a high-level, interpreted, general-purpose programming language. Its design philosophy emphasizes code readability.', NULL, 'python' FROM topics WHERE slug = 'python';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('redis', 'Redis', 'backend');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Redis?', 'Redis is an open-source, in-memory data structure store, used as a database, cache, and message broker.', NULL, 'redis' FROM topics WHERE slug = 'redis';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('socketio_', 'Socket.io', 'backend');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Socket.io?', 'Socket.io is a library that enables real-time, bidirectional and event-based communication between the browser and the server.', NULL, 'socketio_' FROM topics WHERE slug = 'socketio_';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('websocket_', 'WebSocket', 'backend');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What are WebSockets?', 'WebSocket is a computer communications protocol, providing full-duplex communication channels over a single TCP connection.', NULL, 'websocket_' FROM topics WHERE slug = 'websocket_';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('react', 'React', 'frontend');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is React?', 'React is an open-source JavaScript library developed by Meta (formerly Facebook) for building user interfaces, specifically for single-page applications. It allows developers to create reusable UI components.', NULL, 'react' FROM topics WHERE slug = 'react';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is JSX?', 'JSX (JavaScript XML) is a syntax extension for JavaScript that allows you to write HTML-like structure directly within your JavaScript code. It is transformed into standard JavaScript function calls by tools like Babel.', NULL, 'react' FROM topics WHERE slug = 'react';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('nextjs', 'Next.js', 'frontend');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Server-Side Rendering (SSR)?', 'SSR is the process of rendering a web page on the server and sending the fully rendered HTML to the client. In Next.js, this is achieved using Server Components or ''getServerSideProps''.', NULL, 'nextjs' FROM topics WHERE slug = 'nextjs';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Explain the difference between the Next.js ''Image'' component and the standard <img> tag.', 'The Next.js Image component provides automatic optimizations like lazy loading, resizing, and format conversion. A standard <img> tag requires manual implementation of these features.
+```
+import Image from ''next/image''
+
+<Image src="/profile.png" alt="User Profile" width={500} height={500} />
+```', NULL, 'nextjs' FROM topics WHERE slug = 'nextjs';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('typescript', 'TypeScript', 'frontend');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What are the primary advantages of TypeScript over JavaScript?', 'TypeScript offers static typing, which allows for catching errors at compile-time rather than runtime. It also provides superior IDE support (autocomplete, refactoring) and advanced features like interfaces and decorators.', NULL, 'typescript' FROM topics WHERE slug = 'typescript';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is an Interface in TypeScript?', 'An interface defines a contract for the structure of an object, specifying the types of its properties and methods. It ensures that any object implementing the interface adheres to the defined structure.
+```
+interface User {
+  name: string;
+  id: number;
+  email?: string; // Optional property
+}
+```', NULL, 'typescript' FROM topics WHERE slug = 'typescript';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('redux', 'Redux', 'frontend');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Redux?', 'Redux is an open-source JavaScript library for managing and centralizing application state.', NULL, 'redux' FROM topics WHERE slug = 'redux';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('javascript', 'JavaScript', 'frontend');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Key Characteristics of Promises?', '1. Promises are used to handle asynchronous operations like fetching data from a server, reading files, or running timers. 2. A promise has three states: pending (initial state before completion), fulfilled/resolved (successful completion with a result), and rejected (failure with an error reason). 3. Promises support chaining using the then method, allowing sequential execution of asynchronous operations in a readable way. 4. Promises provide built-in error handling through the catch method, which helps manage and propagate errors in asynchronous code.', NULL, 'javascript' FROM topics WHERE slug = 'javascript';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Why Do We Need Promises', '1. Promises help avoid callback hell (callback pyramids), making code more readable and maintainable by reducing deeply nested callbacks. 2. They allow sequential execution of asynchronous operations in a clean way, improving overall code readability. 3. They simplify error handling by using a centralized catch block for a sequence of async operations. 4. They support Promise.all, which enables parallel execution of multiple async tasks and waits for all to complete.', 'assets/theory/js/2.png', 'javascript' FROM topics WHERE slug = 'javascript';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Give Example Of Promises', '
+```
+
+      const myPromise = new Promise((resolve, reject) => {
+      setTimeout(() => {
+          resolve(''Operation succeeded!'');
+          reject(''Operation failed!'');
+        }, 1000);
+    });
+    
+```', NULL, 'javascript' FROM topics WHERE slug = 'javascript';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Promise Chaining?', 'Promise chaining allows you to execute a sequence of asynchronous operations in a specific order. Each promise can return another promise, enabling a chain of dependent operations.
+```
+
+     successfulPromise
+  .then((result) => {
+    console.log(result); // Output: Operation succeeded!
+    return ''New value'';
+  })
+  .then((newValue) => {
+    console.log(newValue); // Output: New value
+  })
+  .catch((error) => {
+    console.error(error);
+  });
+    
+```', NULL, 'javascript' FROM topics WHERE slug = 'javascript';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Example of Promise All', 'Promise.all waits for all promises to resolve. If any promise rejects, the entire Promise.all rejects immediately.
+```
+
+      const promise1 = Promise.resolve(1);
+const promise2 = Promise.resolve(2);
+const promise3 = new Promise((resolve) => setTimeout(resolve, 100, 3));
+
+Promise.all([promise1, promise2, promise3])
+  .then((values) => {
+    console.log(values); // Output: [1, 2, 3]
+  })
+  .catch((error) => {
+    console.error(error);
+  });
+    
+```', NULL, 'javascript' FROM topics WHERE slug = 'javascript';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('playwright_', 'Playwright', 'frontend');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Playwright?', 'Playwright is a framework for Web-browser automation. It allows for testing web applications across different browsers like Chromium, Firefox, and WebKit.', NULL, 'playwright_' FROM topics WHERE slug = 'playwright_';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('testing', 'Testing', 'frontend');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Software Testing?', 'Software testing is the process of verifying and validating that a software application or program meets the business and technical requirements that guided its design and development.', NULL, 'testing' FROM topics WHERE slug = 'testing';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('operating_systeam', 'Operating System', 'cs_fundamentals');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is a Process in an Operating System?', 'A process is an active instance of a program in execution. It contains the program code, its current state, memory, and system resources allocated to it.', NULL, 'operating_systeam' FROM topics WHERE slug = 'operating_systeam';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Virtual Memory?', 'Virtual memory is a memory management technique that creates an abstraction of physical memory. It allows an operating system to use hardware storage (like a disk) as an extension of RAM, giving applications the illusion of having a much larger memory space available.', NULL, 'operating_systeam' FROM topics WHERE slug = 'operating_systeam';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('computer_network', 'Computer Network', 'cs_fundamentals');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is an IP Address?', 'An Internet Protocol (IP) address is a unique numerical label assigned to each device connected to a computer network that uses the Internet Protocol for communication. It identifies the host or network interface and provides the location of the device.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Explain the primary differences between TCP and UDP.', 'TCP (Transmission Control Protocol) is connection-oriented and ensures reliable, ordered delivery of data with error checking. UDP (User Datagram Protocol) is connectionless and faster as it lacks the overhead of reliability checks, making it ideal for real-time applications like streaming or gaming.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Network?', 'An inter-connection of multiple devices known as host, that are connected using multiple paths for the purpose of sending/receiving data.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Types of Networks', '1. LAN (Local Area Network) [covers a small area like home, office, or school] 2. MAN (Metropolitan Area Network) [covers a larger area like a city] 3. WAN (Wide Area Network) [covers a large geographical area like a country] 4. PAN (Personal Area Network) [covers a small area around an individual]', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Types of Network Topologies', '1. Star -- Star topology is a network topology in which all the nodes are connected to a single device known as a central device
+2. Ring -- Ring topology is a network topology in which nodes are exactly connected to two or more nodes and thus, forming a single continuous path for the transmission.
+3. Bus -- Bus topology is a network topology in which all the nodes are connected to a single cable known as a central cable or bus.
+4. Mesh -- Mesh topology is a network topology in which all the nodes are individually connected to other nodes.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Bandwidth?', 'Bandwidth refers to the maximum amount of data that can be transmitted over a network connection in a given amount of time. It is typically measured in bits per second (bps).', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Latency?', 'Latency is the time it takes for a data packet to travel from its source to its destination in a network. It is typically measured in milliseconds (ms).', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is VPN?', 'A VPN (Virtual Private Network) creates a secure, encrypted connection over a public network, allowing users to access resources as if they were directly connected to a private network.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What are Advantages of VPN?', 'VPN provides enhanced security and privacy by encrypting data, allows remote access to private networks, and helps bypass geo-restrictions.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is IPv4 Address?', 'IPv4 (Internet Protocol version 4) is the fourth version of the Internet Protocol and is the most widely used IP addressing scheme. It is a 32-bit address space that can support up to 4.3 billion unique addresses.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is IPv6 Address?', 'IPv6 (Internet Protocol version 6) is the latest version of the Internet Protocol and is the successor to IPv4. It is a 128-bit address space that can support up to 3.4 x 10^38 unique addresses.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is MAC Address?', 'MAC (Media Access Control) Address is a unique identifier assigned to each network interface controller (NIC) for use as a network address in communications within a network segment. It is a unique 48-bits hardware number of a computer, which is embedded into network card', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is DNS?', 'DNS (Domain Name System) is a hierarchical and distributed naming system for computers, services, or any resource connected to the Internet or a private network.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is the Differences between IPv4 and IPv6?', '1. Address Space: IPv4 is a 32-bit address space that can support up to 4.3 billion unique addresses. IPv6 is a 128-bit address space that can support up to 3.4 x 10^38 unique addresses. 2. Notation: IPv4 uses dotted decimal notation, while IPv6 uses hexadecimal notation. 3. Header Size: IPv4 has a larger header size than IPv6 4. Security: IPv6 has built-in security features that are not present in IPv. 5. Configuration: IPv6 has automatic configuration features that are not present in IPv4 ', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is TCP/IP Model?', 'TCP/IP (Transmission Control Protocol/Internet Protocol) model is a conceptual model that describes how data is transmitted over the Internet. It is a four-layer model that consists of the Application Layer, the Transport Layer, the Internet Layer, and the Network Access Layer.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is HTTP and HTTPS', 'HTTP (Hypertext Transfer Protocol) is an application layer protocol used for transmitting hypermedia documents, such as HTML. HTTPS (Hypertext Transfer Protocol Secure) is a secure version of HTTP that uses encryption to protect data transmitted between a client and a server. HTTP runs on port 80, while HTTPS runs on port 443. HTTP is not secure, while HTTPS is secure.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Firewall?', 'The firewall is a network security system that is used to monitor the incoming and outgoing traffic and blocks the same based on the firewall security policies. It acts as a wall between the internet (public network) and the networking devices (a private network). It is either a hardware device, software program, or a combination of both. It adds a layer of security to the network.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is OSI Model?', 'The OSI (Open Systems Interconnection) model is a conceptual model that describes how data is transmitted over the Internet. It is a seven-layer model that consists of the Physical Layer, the Data Link Layer, the Network Layer, the Transport Layer, the Session Layer, the Presentation Layer, and the Application Layer.', '/assets/theory/cn/18.png', 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is the Differences between TCP and UDP?', 'TCP is a connection-oriented protocol, while UDP is a connectionless protocol. TCP is reliable, while UDP is not reliable. TCP is slower than UDP, while UDP is faster than TCP. TCP is used for applications that require reliable data transmission, such as file transfer and email. UDP is used for applications that require fast data transmission, such as streaming and online gaming.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'How does the UDP work?', 'UDP (User Datagram Protocol) is a connectionless protocol that operates on the Transport Layer of the TCP/IP model. Unlike TCP, it does not establish a connection before sending data, nor does it guarantee delivery, order, or error checking. It simply encapsulates the data into datagrams and sends them to the destination IP address and port number. The datagrams may arrive out of order or be lost entirely without any notification to the sender. This lack of overhead makes UDP much faster than TCP, making it suitable for time-sensitive applications where speed is prioritized over reliability.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'How does the TCP work?', 'TCP (Transmission Control Protocol) is a connection-oriented protocol that operates on the Transport Layer of the TCP/IP model. It establishes a reliable connection between the sender and receiver through a three-way handshake process before data transmission begins. TCP ensures reliable data delivery through mechanisms like sequence numbers, acknowledgments, and flow control. It also retransmits lost or corrupted packets and manages the rate of data flow to prevent overwhelming the receiver. This reliability makes TCP suitable for applications where data integrity is critical, such as web browsing, file transfers, and email.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Explain three way handshake', 'Three-way handshake is a process used by TCP to establish a reliable connection between the sender and receiver. It involves three steps: SYN, SYN-ACK, and ACK. In the SYN step, the sender sends a SYN packet to the receiver to initiate the connection. In the SYN-ACK step, the receiver sends a SYN-ACK packet to the sender to acknowledge the connection. In the ACK step, the sender sends an ACK packet to the receiver to confirm the connection.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Explain is layes in OSI model in detail', '1.Physical Layer → Handles actual transmission of raw bits through cables, fiber optics, or wireless signals. Responsible for physical connection between devices. 2. Data Link Layer → Transfers data between directly connected devices using frames and MAC addresses. Also handles basic error detection/correction. 3.Network Layer → Handles logical addressing (IP) and routing packets between networks.Finds the best path from source to destination. 4. Transport Layer → Ensures reliable data delivery with error checking and flow control.Uses TCP (reliable) or UDP (fast, connectionless). 5. Session Layer → Starts, manages, and ends communication sessions between devices.Maintains connection state during communication. 6.Presentation Layer → Translates, encrypts, and compresses data between application and network formats.Makes data readable for different systems. 7. Application Layer → Closest layer to the user; provides network services like HTTP, FTP, DNS, SMTP.Enables applications to communicate over the network.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What happens when you hit an URL', '1. A URL may contain a request to HTML, image file or any other type. 2. If the content of the typed URL is in the cache and fresh, then display the content. 3. Else find the IP address for the domain so that a TCP connection can be set up. Browser does a DNS lookup. 4. Browser needs to know the IP address for a URL so that it can set up a TCP connection. This is why browser needs DNS service. The browser first looks for URL-IP mapping browser cache, then in OS cache. If all caches are empty, then it makes a recursive query to the local DNS server. The local DNS server provides the IP address. 5. Browser sets up a TCP connection using three-way handshake. 6. Browser sends a HTTP request. 7. Server has a web server like Apache, IIS running that handles incoming HTTP request and sends an HTTP response. 8. Browser receives the HTTP response and renders the content.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is DNS lookup', 'A DNS lookup is the process of translating a human-readable domain name (like google.com) into a machine-readable IP address (like [IP_ADDRESS]). It involves a series of steps where the browser first checks its local cache, then queries a series of DNS servers (recursive resolver, root, TLD, and authoritative) until it finds the correct IP address to connect to the website.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is the SMTP protocol?', 'SMTP (Simple Mail Transfer Protocol) is an application layer protocol used for sending emails from a client to a server, or between servers. It uses TCP port 25 for communication and follows a client-server architecture. SMTP handles the reliable transfer of email messages across networks.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is the FTP protocol?', 'FTP (File Transfer Protocol) is an application layer protocol used for transferring files between a client and a server. It uses TCP ports 20 and 21 for communication and follows a client-server architecture. FTP handles the reliable transfer of files across networks.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Client-Server Architecture?', 'Client-Server Architecture is a distributed application structure that partitions tasks or workloads between the providers of a resource or service, called servers, and service requesters, called clients. <br/><br/>In this architecture, the client initiates communication by sending a request to the server, and the server responds by providing the requested resource or service. The client and server are typically separate computers connected over a network, allowing for centralized management of resources and services.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is the difference between a switch, router, and bridge?', 'Switch operates on Data Link Layer and forwards frames based on MAC addresses. It is used to connect devices within a single network. Router operates on Network Layer and forwards packets based on IP addresses. It is used to connect different networks. Bridge operates on Data Link Layer and connects two or more network segments, forwarding frames based on MAC addresses.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Differentiate between Latency and Bandwidth?', 'Latency is the time it takes for a data packet to travel from the source to the destination, while bandwidth is the maximum rate at which data can be transferred over a network. In simpler terms, latency is the delay, and bandwidth is the capacity.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is a proxy server? Forward proxy vs reverse proxy?', 'A proxy server acts as an intermediary between a client and a server.<br/><br/> Forward proxy is used when the client wants to access a resource on the internet, and the server is the resource. Reverse proxy is used when the server wants to provide a resource to the client. In short, a forward proxy is used to protect the client, and a reverse proxy is used to protect the server. In a forward proxy, clients are behind the proxy, whereas in a reverse proxy, the server is behind the proxy.<br/><br/>Ex- Forward Proxy: corporate proxy server. Reverse Proxy: web server with load balancing. <br/><br/>In Forward Proxy: the proxy server is located between the user and the internet. In Reverse Proxy: the proxy server is located between the internet and the web server. ', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is NAT (Network Address Translation)? Why is it used?', 'NAT (Network Address Translation) is a process that allows multiple devices on a private network to share a single public IP address. <br/><br/> It is used to conserve public IP addresses and provide an additional layer of security by hiding the private IP addresses of devices on the network from the outside world.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is CIDR? How does it work?', 'CIDR (Classless Inter-Domain Routing) is a method of allocating IP addresses and routing IP packets. <br/><br/> It allows for more efficient use of IP addresses by eliminating the need for classful networks and providing a way to summarize multiple IP addresses into a single routing entry. <br/><br/> Example: Consider a network with IP range [IP_ADDRESS]-. The subnet mask /20 indicates that the first 20 bits are used for the network portion and the last 12 bits for the host portion. This allows for 4096 possible addresses, with the first and last being reserved for network and broadcast addresses respectively, leaving 4094 usable addresses. ', '/assets/theory/cn/33.png', 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, ' What is IPv6? How is it different from IPv4?', 'Internet Protocol Version 6, or popularly called IPv6 is an updated version of IP addressing, and (might sound silly), but the main reason for its launch was because IPv4 ran out of addresses.Hence, IPv6 was introduced to solve this by using 128-bit addresses which were written in hexadecimal format:', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is ARP protocol', 'ARP stands for Address Resolution Protocol.ARP is a protocol used in computer networks to find the MAC address of a device when the IP address is known.ARP is used in IPv4 networks, but not in IPv6 networks.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What kind of error is undetectable by the checksum?', 'The checksum can detect only an even number of bit errors. If there is an odd number of bit errors, the checksum will not detect the error and the packet will be accepted by the receiver.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What are the Advantages of Fiber Optics', 'Fiber optics has numerous advantages over traditional copper cables, including higher bandwidth, lower signal loss, immunity to electromagnetic interference, and increased security, making it the preferred choice for high-speed data transmission.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Multicast?', 'Multicast is a communication method that allows a single sender to transmit data to multiple recipients simultaneously. In multicast networking, data is sent to a specific group of receivers, rather than broadcasting to all devices on the network. This approach is widely used in applications such as video conferencing, online gaming, and live streaming.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Define the term Jitter?', 'Jitter is a variation in the delay of received packets. When packets arrive at the receiver with irregular timing, it can cause disruptions in real-time applications such as video conferencing and online gaming. Jitter can be caused by network congestion, routing issues, or other network impairments.', NULL, 'computer_network' FROM topics WHERE slug = 'computer_network';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('c++', 'C++', 'cs_fundamentals');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is C++?', 'C++ is a high-level, general-purpose programming language that was developed by Bjarne Stroustrup as an extension of the C programming language.', NULL, 'c++' FROM topics WHERE slug = 'c++';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('database_management', 'Database Management', 'cs_fundamentals');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is a DBMS?', 'A Database Management System (DBMS) is software used to manage databases, allowing users to store, retrieve, and update data efficiently.', NULL, 'database_management' FROM topics WHERE slug = 'database_management';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('oops', 'OOPs', 'cs_fundamentals');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is OBJECT-ORIENTED PROGRAMMING', 'Object-Oriented Programming (OOP) is a programming paradigm that organizes code into objects, which represent real-world entities. It allows developers to model complex systems by breaking them down into smaller, manageable pieces. 
+<br><br>
+Example:
+Imagine a car manufacturing company. To produce cars, the company uses a design blueprint. The blueprint defines the structure and functionality of a car (e.g., the number of wheels, type of engine, color, etc.).<br><br>
+However, the blueprint itself is not a car—it is only a guide. The actual cars manufactured from this blueprint are like objects, and the blueprint itself is a class. 
+🚗📏 ', NULL, 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is a Class?', 'A class is a blueprint for creating objects. It defines the properties (attributes) and behaviors (methods) that the objects will have. Think of it as a template that outlines the structure and capabilities of an object but does not represent any actual instance.', NULL, 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Key Characteristics of a Class', '1. Attributes (Properties): These are the variables that define the state of an object. They represent the data or characteristics of the object. <br><br>
+2. Methods (Behaviors): These are the functions defined within a class that represent the actions or behaviors an object can perform. <br><br>
+3. Constructor: A special method that is automatically called when an object is created (instantiated) from a class. It is used to initialize the object''s attributes. <br><br>
+4. Encapsulation: The bundling of data (attributes) and the methods that operate on the data within a single unit (the class). This helps in data hiding and protecting the data from unauthorized access. ', NULL, 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is an Constructor?', 'A special method used to initialize the attributes of the class when an object is created. 🛠️<br><br>Think of a constructor like setting up a new phone. 📱<br><br>When you buy it, the setup process asks for language, Wi-Fi, and account—this initializes the phone Similarly, a constructor automatically sets initial values for an object when it is created. ', NULL, 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Difference Between Class and Object', '', '/assets/theory/oops/5.png', 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is an Object?', 'An object is an instance of a class. It represents a specific realization of the class blueprint, with its own unique set of data.‍<br>br> In the car analogy, each manufactured car is an object, and it holds specific values for its attributes (e.g., make: "Toyota", model: "Corolla", year: 2021).‍', NULL, 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Why Use Classes and Objects?', '1. Reusability: Write a class once and create multiple objects with different data. ♻️2. Modularity:OOP allows you to break a large and complex problem down into smaller and more manageable pieces, or "objects." This makes it easier to write, test, and maintain your code.3. Abstraction: Focus on the essential details of an entity without worrying about the internal workings.4. Scalability: Adding new features is straightforward without affecting existing code. 📈', NULL, 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Types of Constructors', '1. Default Constructor: Default constructor is the constructor which doesn’t take any argument. It has no parameters.
+2. Parameterized Constructor: A constructor is called Parameterized Constructor when it accepts a specific number of parameters.
+3. Copy Constructor: A copy constructor is a member function which initializes an object using another object of the same class.', NULL, 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Characteristics of the constructor', '1. Constructor has the same name as the class itself.<br>2.Constructors don’t have a return type.<br>3. A constructor is automatically called when an object is created.<br>4.It must be placed in the public section of class.<br>5.If we do not specify a constructor, C++ compiler generates a default constructor for object (expects no parameters and has an empty body).<br>6.Constructors can be overloaded.<br>7.Constructor cannot be declared virtual.', '/assets/theory/oops/9.png', 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Destructor', 'A destructor is a special method used to free up memory resources when an object is destroyed. 🧹When you finish using a tool, you put it back in its place. Similarly, when an object is no longer needed, the destructor cleans up the memory it was using. Destructor destroys the class objects created by the constructor.', NULL, 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'haracteristics of the constructor and destructor', '1. Destructor is invoked automatically by the compiler when its corresponding constructor goes out of scope and releases the memory space that is no longer required by the program. 2. Destructor neither requires any argument nor returns any value therefore it cannot be overloaded. 3. Destructor cannot be declared as static and const. 4. Destructor should be declared in the public section of the program.
+```
+#include <iostream>
+using namespace std;
+
+int count = 0 ;
+
+class num{
+public:
+    num(){ // Constructor
+        count++;
+        cout << "Constructor is called for object number " << count << endl;
+    }
+
+    ~num(){ // Destructor
+        cout << "Destructor is called for object number " << count << endl;
+        count--;
+    }
+};
+    
+```', NULL, 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Inheritance and its types?', 'Inheritance represents an ''is-a'' relationship where a subclass inherits properties and behaviors from its parent class. 1. Single Inheritance 2. Multiple Inheritance 3. Multilevel Inheritance 4. Hierarchical Inheritance. 5. Hybrid Inheritance.', NULL, 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Explian Single Inheritance ', 'When a subclass(child) is inherited from a base class is called single inheritance.', '/assets/theory/oops/13.png', 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Explian Multilevel Inheritance ', 'In this type of inheritance, a class is derived from a class which is already derived from another class. In simple words, we can say that a chain of single inheritance forms a multilevel inheritance.', '/assets/theory/oops/14.png', 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Explian Multiple Inheritance', 'In multiple inheritance, a single derived class is inherited from two or more base classes. In simple words, we can say that two or more base classes form a multiple inheritance.', '/assets/theory/oops/15.png', 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Explain Hierarchical Inheritance', 'In this type of inheritance, more than one subclass is inherited from a single base class.', '/assets/theory/oops/16.png', 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Explain Hybrid Inheritance', 'When a combination of single, multiple, and multilevel inheritances forms a hierarchy of classes is called hybrid inheritance.', '/assets/theory/oops/17.png', 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Encapsulation?', 'It is the principle of bundling data (variables) and methods (functions) together in a single unit (class) while restricting direct access to the internal data using access modifiers. <br><br> Real-World Terminology: It’s like a capsule or protective box where internal details are hidden and only controlled access is allowed.', '/assets/theory/oops/18.png', 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Why do we need Encapsulation ', '1. Increased Security of Data: Encapsulation hides the internal data of a class and allows access only through controlled methods (like getters/setters). This prevents unauthorized or accidental modification of data. 2. Access Without Revealing Complexity: Users can interact with an object using simple methods without knowing the internal working. This hides complex implementation details. 3. Reduces Human Errors: Since direct access to data is restricted, developers must use defined methods, which reduces the chance of incorrect data manipulation. 4. Easier to Understand: By organizing data and related methods in one class, the code becomes more structured and easier for developers to read, maintain, and manage.', NULL, 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Abstraction', 'Abstraction is the concept of hiding complex implementation details and showing only the essential features of an object. <br><br>Ex- It is like a atm machine it perform a lot of  task but only so limited info to use like input and hide the complexity ', '/assets/theory/oops/20.png', 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Why do we need Abstraction', '1. Avoids Writing Low-Level Code: Abstraction hides complex internal implementation, so the user only works with simple functions or interfaces without dealing with detailed low-level logic.2. Avoids Code Duplication & Increases Reusability:Common functionality can be written once in an abstract class or interface and reused in multiple classes, reducing repeated code.3. Increases Security: Only necessary features are exposed to the user while internal implementation details remain hidden, which protects sensitive logic and data', NULL, 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Polymorphism?', 'Polymorphism is the ability of a method, object, or function to take many forms and perform different actions based on the context.<br> C++ polymorphism means that a call to a member function will cause a different function to be executed depending on the type of object that invokes the function.<br>Ex- behave like a son in home , behave like student in school , behave lile customer in mall <br>-> the same print() function can display text, numbers, or objects differently.', NULL, 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is member function and member variable?', 'Member function is nothing but a function that is defined inside a class.Member variable is nothing but a variable that is defined inside a class.', NULL, 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Advantage of Polymorphism', '1. Code Reusability: Polymorphism allows one function or method to perform multiple tasks depending on the object or data type, so the same code can be reused instead of writing separate functions. 2. Operator Flexibility: In C++, operators can be overloaded to work with different data types, such as using + to add numbers or combine strings. 3. Saves Time & Simplifies Programs: Since the same function or operator works in multiple situations, it reduces extra code and makes the program shorter and easier to manage', NULL, 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'types of Polymorphism', '1. Compile-time Polymorphism (Static Polymorphism): 2. Run-time Polymorphism (Dynamic Polymorphism)', NULL, 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is function overloading?', 'Function overloading is a compile-time polymorphism technique that allows multiple functions to have the same name but different parameters (either different number of parameters or different types of parameters). The compiler determines which function to call based on the arguments provided during the function call.', '/assets/theory/oops/26.png', 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Compile time Polymorphism', 'Compile-time polymorphism is a polymorphism that is, the function call is resolved during the compilation process.<br>We can achieve Compile-time polymorphism by two ways:<br> 1. Function Overloading  2. Operator Overloading', NULL, 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Explain  Compile and Run time', 'Compile time → when code is being converted to machine code by the compiler; catches syntax/type errors before execution. <br>Run time → when the program is actually executing in memory; errors happen while running.Example: dividing by zero, accessing invalid array index, API failure.', NULL, 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Operator Overloading?', 'Operator overloading is a compile-time polymorphism technique that allows you to redefine the way operators work with custom data types. It allows you to use operators like +, -, *, /, ==, etc. with your own classes.<br>So a single operator ‘+’, when placed between integer operands, adds them and when placed between string operands, concatenates them', '/assets/theory/oops/28.png', 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Runtime Polymorphism', 'Runtime polymorphism is also known as dynamic polymorphism or late binding. In runtime polymorphism, the function call is resolved at run time. <br> This type of polymorphism is achieved by Function Overriding or Virtual function', NULL, 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Virtual Function', 'A virtual function is a member function in the base class that we expect to redefine in derived classes When a virtual function is defined in a base class, then in runtime on the basis of type of object assigned to it, the respective class function is called <br> It helps write generic but flexible code. You can use a base class pointer (Payment*) and C++ automatically runs the correct derived class logic (UPI, Card, PayPal) at runtime.So you don’t need lots of if(paymentType == ...) conditions — adding new types becomes easy and existing code stays unchanged.', '/assets/theory/oops/29.png', 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Abstract Class', 'Abstract Class is a class that cannot be instantiated and is designed to be a base class, often containing pure virtual functions that must be implemented by derived classes.<br><br>Real-World Terminology: It’s like a template or blueprint—you can’t use it directly, but other classes can follow its design and implement the details.', '/assets/theory/oops/30.png', 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Pure Virtual Function?', 'Pure Virtual Function is a function declared in a base class with = 0 and must be overridden by derived classes, making the base class abstract.<br><br>Real-World Terminology: It’s like a promise or placeholder—the base class says “every subclass must provide its own version of this function.', NULL, 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is a Friend Class & Friend Function?', 'Friend Function: A function that is declared outside a class but has permission to access its private and protected members.<br>Friend Class: A class whose functions have special access to another class’s private/protected members.', '/assets/theory/oops/32.png', 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Interface?', 'Interface in C++ is a class that contains only pure virtual functions and no member variables. It is a way to achieve abstraction and polymorphism in C++.', NULL, 'oops' FROM topics WHERE slug = 'oops';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Access Modifiers ', 'Access Modifiers are keywords that control the visibility of class members (variables and methods) to other parts of the program.<br>Real-World Terminology: They act like permission levels—deciding who can see, modify, or use certain data.', '/assets/theory/oops/34.png', 'oops' FROM topics WHERE slug = 'oops';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('sql', 'SQL', 'cs_fundamentals');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is SQL?', 'SQL (Structured Query Language) is a standard language for storing, manipulating and retrieving data in databases.', NULL, 'sql' FROM topics WHERE slug = 'sql';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('lld', 'Low Level Design', 'system_design');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is LLD Design?', 'LLD or Low-Level Design is a phase in software development that focuses on the detailed design of a system. It involves breaking down a system into smaller, more manageable components and designing the interactions between them. Design of a particular module is done in LLD like Auth, Database schema, API design etc.', NULL, 'lld' FROM topics WHERE slug = 'lld';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is HLD Design?', 'HLD or High-Level Design is a phase in software development that focuses on the architectural design of a system. It involves breaking down a system into smaller, more manageable components and designing the interactions between them. High-level Design of the whole system is done in HLD.', NULL, 'lld' FROM topics WHERE slug = 'lld';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Why is LLD important?', '1. Avoid rework [removes unnecessary code repetition, duplication, and reduces bugs], 2. Improve collaboration [developers can work on different modules in parallel], 3. Promote scalability, 4. Encourage best practices [new developers can easily understand and work on the code].', NULL, 'lld' FROM topics WHERE slug = 'lld';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'How is LLD Different From HLD?', 'High-Level Design (HLD) focuses on the overall architecture of the system. For instance, in a movie ticket booking system, HLD would outline the main components like the user interface (where users select movies and seats), the backend services (handling booking requests, seat availability, and notifications), and the database (storing movie schedules, user data, and bookings). <br><br> It would also define how these components interact—like the flow of data between the user interface, backend, and third-party payment gateways <br><br> ${image("assets/lld/1.png")}<br><br> Low-Level Design (LLD), on the other hand, dives into the specifics of implementing individual features. For example, it defines how the booking process works—detailing the step-by-step flow from when a user selects a movie and showtime to when a ticket is successfully booked. 🎬📅<br><br> It specifies how data is validated (e.g., ensuring selected seats are available and payment details are correct), algorithms for locking seats (to prevent double booking), and how the booking information is stored in the database (schema). 💾🔒<br><br> LLD also describes the flow of data, such as how a booking confirmation is generated and sent to the user via email or SMS. 📧📱 It’s like creating blueprints for each transaction in the system, covering the smallest details to ensure reliability and precision. 🎯', NULL, 'lld' FROM topics WHERE slug = 'lld';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is DRY Principle?', 'DRY (Don''t Repeat Yourself) means avoiding duplicate code, logic, or data by creating reusable functions, classes, or modules. <br><br> Why DRY? <br> 1. Less Duplication → Write once, use everywhere. 2. Better Readability → Cleaner and easier-to-understand code. 3. Fewer Bugs → Changes are made in one place only.  4. Better Reusability → Components can be reused across the application. 5. Easier Maintenance → Simpler to update and scale. <br><br> Example: Instead of writing the same validation logic in multiple files, create a single validateUser() function and reuse it.', NULL, 'lld' FROM topics WHERE slug = 'lld';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is KISS Principle?', 'KISS (Keep It Simple, Stupid) means designing systems to be as simple as possible, avoiding unnecessary complexity. <br><br> Why KISS? <br> 1. Less Complexity → Easier to understand and maintain. 2. Fewer Bugs → Simple code has fewer places for bugs to hide. 3. Faster Development → Simple designs are quicker to implement. 4. Better Performance → Simpler code usually runs faster. 5. Easier Debugging → Troubleshooting is straightforward. <br><br> Example: Instead of using a complex framework for a simple task, use a basic function or class.', NULL, 'lld' FROM topics WHERE slug = 'lld';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is YAGNI Principle?', 'YAGNI (You Ain''t Gonna Need This) means avoiding adding functionality until it''s actually needed, rather than anticipating future requirements. <br><br> Why YAGNI? <br> 1. Less Complexity → Avoids over-engineering. 2. Faster Development → Focus on current requirements only. 3. Better Design → Simpler designs are easier to maintain. 4. Reduced Waste → Prevents building unnecessary features. 5. Flexibility → Easier to adapt to changes. <br><br> Example: Don''t add caching or authentication until there''s a real need, rather than implementing them speculatively.', NULL, 'lld' FROM topics WHERE slug = 'lld';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Single Responsibility Principle? ', 'A class should have only one reason to change. <br><br> Why SRP? <br> 1. Better Maintainability → Changes are isolated to a single class. 2. Improved Readability → Code becomes easier to understand. 3. Reduced Complexity → Simpler, focused classes. 4. Easier Testing → Each class can be tested independently. 5. Better Reusability → Focused classes are easier to reuse. <br><br> Example: Instead of a User class handling authentication, email sending, and logging, create separate AuthService, EmailService, and Logger classes.', NULL, 'lld' FROM topics WHERE slug = 'lld';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Open/Closed Principle?', 'This principle states that Software entities (classes, modules, functions, etc.) should be open for extension, but closed for modification which means you should be able to extend a class behavior, without modifying it. <br><br> Why OCP? <br> 1. Better Maintainability → Changes are isolated to a single class. 2. Improved Readability → Code becomes easier to understand. 3. Reduced Complexity → Simpler, focused classes. 4. Easier Testing → Each class can be tested independently. 5. Better Reusability → Focused classes are easier to reuse. <br><br> Example: Instead of having one class for user management, authentication, and notifications, create separate classes for each functionality .<br><br> Use when: New features/types will be added frequently. Extend behavior without modifying existing code.<br><br> ${image("assets/lld/2.png")} ', NULL, 'lld' FROM topics WHERE slug = 'lld';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Liskov Substitution Principle ?', 'This principle ensures that any class that is the child of a parent class should be usable in place of its parent without any unexpected behaviour.<br><br>Why it matters?<br> 1.Ensures reliable polymorphism. <br> 2.Makes code easier to extend and maintain. <br> 3.Prevents subclasses from breaking parent class behavior.<br><br>Example:${image("assets/lld/3.png")}', NULL, 'lld' FROM topics WHERE slug = 'lld';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Interface Segregation Principle ?', 'This principle states that clients should not be forced to depend upon interfaces that they do not use. In simple terms, it means that instead of having one large interface, it should be broken down into smaller, more specific interfaces so that each interface is only responsible for one particular functionality.<br></br> An interface is basically a contract that says what a class must do, but not how it does it. <br> ISP- Don''t force a class to implement methods it doesn''t need.<br><br>Why it matters?<br> 1.Ensures reliable polymorphism. <br> 2.Makes code easier to extend and maintain. <br> 3.Prevents subclasses from breaking parent class behavior.<br><br>Example:${image("assets/lld/4.png")}', NULL, 'lld' FROM topics WHERE slug = 'lld';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Dependency Inversion Principle? ', 'It suggests that classes should rely on abstractions (e.g., interfaces or abstract classes) rather than concrete implementations.
+This allows for more flexible and decoupled code, making it easier to change implementations without affecting other parts of the codebase.<br><br>Why it matters?<br> 1.Promotes decoupled architecture.<br> 2.Facilitates testing and maintainability.<br><br> Example : ${image("assets/lld/5.png")} ${image("assets/lld/6.png")}', NULL, 'lld' FROM topics WHERE slug = 'lld';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('hld', 'High Level Design', 'system_design');
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('interview_ai', 'AI Interview', 'interview');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is the difference between supervised and unsupervised learning?', 'Supervised learning uses labeled data to train models, while unsupervised learning finds patterns in unlabeled data.', NULL, 'interview_ai' FROM topics WHERE slug = 'interview_ai';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is LLM Quantization?', 'LLMs have billions of weights and parameters adjusted during training. Storing these weights requires significant memory. For example, Llama-3.1-70B in FP16 (2 bytes per parameter) requires ~140GB RAM just to load.<br><br>Quantization reduces memory footprint and computational cost by representing weights with lower precision (e.g., FP16 → FP8/INT8/INT4), making models smaller, cheaper, and faster.<br><br><strong>Key Concepts:</strong><br>1. <strong>Number Formats:</strong> Precision levels used to store weights (FP16, BF16, FP8, INT8, INT4). Lower precision requires less memory.<br>2. <strong>Quantization Methods:</strong><br>- <strong>AWQ (Activation-aware Weight Quantization):</strong> Identifies and preserves important weights while quantizing less important ones.<br>- <strong>GPTQ:</strong> One-shot post-training quantization based on second-order error information.<br>3. <strong>File Formats:</strong> Formats like GGUF used by runtimes such as llama.cpp for efficient CPU/GPU execution.<br><br><strong>Trade-off:</strong> Lower precision can cause slight degradation in output quality; testing is required to balance size vs. accuracy based on hardware and software optimizations.', NULL, 'interview_ai' FROM topics WHERE slug = 'interview_ai';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'How does prompt caching work in AI model requests, and why do tasks like coding get cheaper due to cache hits?', 'When you send a request, the model processes every token in your prompt — that processing is what you''re billed for.<br><br>Prompt caching works by saving the computed state (the key-value attention cache) for a portion of your prompt after the first request. On subsequent requests, if that same prefix is sent again, the model skips recomputing it and reads the saved state directly. Those tokens are billed at ~10% of normal input cost. The cache is keyed on exact token sequence — one token difference in the prefix means a miss.<br><br><strong>Why coding tasks benefit most:</strong><br><br>A typical coding request looks like:<br>[System prompt — 1,000 tokens] ← stable<br>[Codebase — 10,000 tokens] ← stable<br>[User message — 30 tokens] ← changes every request<br><br>After the first request, the 11,000-token prefix is cached. Every follow-up pays full price on only 30 tokens instead of 11,030. Anything with a large, stable context — coding assistants, long-document Q&A — benefits the most for this reason.<br><br>One caveat: the cache has a TTL (e.g., 5 minutes on Anthropic''s API, refreshed on each hit).', 'theory/ai/1.png', 'interview_ai' FROM topics WHERE slug = 'interview_ai';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Why exact token match matters in Cache hits?', 'The simplest way to think of the transformer attention cache (KV cache) is a big table where the model stores intermediate results for each token. For a cache hit to occur, the new input must produce the exact same keys and values as a previous input. This requires the token IDs to match byte-for-byte from the start of the prompt.<br><br>Even a single-character difference in your input can result in completely different token IDs, invalidating the cache. For example, adding a space or changing capitalization may change the tokenization, leading to a cache miss. This is why prompt caching is effective for fixed or repetitive inputs — like system prompts, code snippets, or previous conversation turns — where the token sequence is identical.<br><br>Think of it like this:<br>[System prompt] ← identical every single request<br>[Codebase/context] ← identical every single request<br>[User message] ← changes every request', NULL, 'interview_ai' FROM topics WHERE slug = 'interview_ai';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('interview_backend', 'Backend Interview', 'interview');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'How do you improve the API Performance?', '1. Pagination: breaking into a smaller pages so your service stays quick 2. Async Logging: instead of looging that writes to the disk geather log data and write it to the disk now and then it cuts down on waiting time on disk operations 3. Caching : use redis like cache every time before you make a call to database check the redis 4. Payload Compression : shrink the size of the data  while sending and reciving using tool like gzip 5. Connection pool: It keep connection ready to go instead of always open and closing the connection directly', NULL, 'interview_backend' FROM topics WHERE slug = 'interview_backend';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'How to secure internal microservice communication in Kubernetes (service-to-service access control)?', 'Layer 1: Private networking <br><br>
+Put the service, like payment, inside a private network meaning no public address in production. In Kubernetes, that means using a ClusterIP instead of a LoadBalancer.<br><br>
+
+Problem: In production, different services in the cluster can still talk to each other. If a service that does have public exposure gets hacked, it could be used to reach this "private" payment service.<br><br>
+
+Layer 2: Network policy <br><br>
+
+Add rules an allow list  that only permits services with explicit permission to talk to the service we want to keep private.<br><br>
+
+Blind spot: network policy only knows where a request came from (its IP), not who actually sent it. In Kubernetes, IPs change a lot  pods restart and get reassigned new IPs so this isn''t enough on its own.<br><br>
+
+Layer 3: Mutual TLS<br><br>
+
+Both services verify each other''s identity. Every service gets its own short-lived certificate, and both sides verify the other before any data moves.<br><br>
+
+Who issues the certificates: we run a trusted certificate authority inside the cluster. Teams often use a service mesh like Istio or Linkerd to implement mTLS it adds a sidecar proxy to each service, and that proxy is responsible for fetching, presenting, verifying, rotating, and encrypting on behalf of the service.<br><br>
+
+Layer 4: Authorization<br><br>
+
+Add strict rules for which service can call which. For example, payment has no reason to talk to refund refunds are handled by the support service  and this is enforced directly by the proxy as an authorization check.', NULL, 'interview_backend' FROM topics WHERE slug = 'interview_backend';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('interview_frontend', 'Frontend Interview', 'interview');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is the virtual DOM in React?', 'The virtual DOM is a programming concept where an ideal, or ''virtual'', representation of a UI is kept in memory and synced with the ''real'' DOM by a library such as ReactDOM.', NULL, 'interview_frontend' FROM topics WHERE slug = 'interview_frontend';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('interview_hr', 'HR Interview', 'interview');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Tell me about yourself.', 'This is a classic icebreaker. Focus on your professional background, key achievements, and why you''re interested in the role.', NULL, 'interview_hr' FROM topics WHERE slug = 'interview_hr';
+INSERT OR IGNORE INTO topics (slug, name, category) VALUES ('docker', 'Docker', 'backend');
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Docker?', 'Docker is a platform for developing, shipping, and running applications in containers. Containers are lightweight, standalone, executable packages of software that include everything needed to run an application: code, runtime, system tools, system libraries, and settings.', NULL, 'docker' FROM topics WHERE slug = 'docker';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'What is Docker Compose?', 'Docker Compose is a tool for defining and running multi-container Docker applications. It uses a YAML file to configure the application''s services, networks, and volumes.', NULL, 'docker' FROM topics WHERE slug = 'docker';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Difference between Docker and Kubernetes?', 'Docker is a platform for building and running containers, while Kubernetes is a container orchestration platform that manages and automates the deployment, scaling, and management of containerized applications.', NULL, 'docker' FROM topics WHERE slug = 'docker';
+INSERT INTO questions (topic_id, question, answer, image_url, source_file) SELECT id, 'Difference between Docker and Kubernetes?', 'Docker is a platform for building and running containers, while Kubernetes is a container orchestration platform that manages and automates the deployment, scaling, and management of containerized applications.', NULL, 'docker' FROM topics WHERE slug = 'docker';
+
+-- ==========================================
+-- 3. SEED ARTICLES
+-- ==========================================
+INSERT OR REPLACE INTO articles (slug, title, content, category, reading_time, difficulty, tags) VALUES ('music-leaderboard-system-design', 'Music Leaderboard System Design', '# Music Leaderboard System Design
+
+Given an API to track when a certain user listened to a certain song, build a system to track the **top 10 most listened to songs and albums** in the last one week / one month / one year, by user / country / globally.
+
+
+## Out of Scope
+
+- No personalization
+- User Experience is out of scope
+
+
+## Scale
+
+| Parameter | Value |
+|---|---|
+| Unique Users | 100 Million (40% Active) |
+| Average Listening Time | 2 Hours a day |
+| Songs Available | 500 Million (growing at 50K per day) |
+
+
+## Latency
+
+- Not a real-time system
+- The list is refreshed every hour daily (differs by highly active hours and less active hours)
+- Up to 1 day for less popular regions, and configurable
+
+
+## QPS (Queries Per Second)
+
+| State | QPS |
+|---|---|
+| Starting | 200 QPS |
+| Peak | 1,000 QPS |
+
+
+## Data Calculation
+
+```
+100M users → 3 hrs a day → 3 * 60 / 5 = 36 songs per user (avg)
+→ 100M * 36 / 12 = 300K events per second
+→ 36 * 100M = 3.6 Billion events per day
+```
+
+
+## Design
+
+### Architecture Diagram
+
+![Music Leaderboard System Design](../../../../public/assets/mock/lld/Design_Music_leaderboard_API.png)
+
+> 📐 View interactive diagram on [Excalidraw](https://excalidraw.com/#json=lnYPNWD_AvwZr3JnFWAmF,1-jxxQ6ZlC7artKVouBElg)
+
+
+### Design Process
+
+- The tracking API tracks the data and stores it in a queue until it is processed.
+- The API could also do the processing itself, but this can lead to higher latency — we can offload this functionality in the future.
+- The reason to use a queue is that during peak times, we can avoid data loss or latency issues by offloading to the queue, which allows us to scale the API.
+- We will add a queue to the tracking API which it will write to — we can use **Kafka**.
+- We do not have any real-time requirement, so we can do **batch processing** with a maximum latency of 1 hour.
+- We will have a streaming job that reads from the Kafka topic and writes to batch stores.
+- We are choosing **HDFS (Data Lake)** or **AWS S3** for storing the raw data.
+- We will have an **ETL pipeline** that processes the raw data and gives schema to the event.
+
+
+### Quick Discussion — HDFS Partitioning
+
+**Should we create 1 partition per hour for HDFS?**
+
+- If we do per-hour partitioning, we will have too many small files in HDFS, which can affect bandwidth.
+- Less query data is rarely accessed, so there is no need for per-hour partitioning.
+- Instead, we can have a **single large file for a day**.
+
+
+## Low Level Design
+
+### Schemas
+
+**Song Event Schema:**
+```
+{ Song_id, User_id, Album_id, Time_stamp, Country_code, Geo_location }
+```
+
+**Song Metadata Table Schema:**
+```
+{ Song_id, Song_name, Artist_name, Album_name, Album_art, Genre, Year }
+```
+
+It is expected to be available in HDFS. If this were a small record set we could fetch it in the batch processing, but since we have millions of songs we need to keep it there.
+
+We then pass the schema to another ETL (or the same ETL) job called `Enrich_Songs_Event`, which merges it with the Song Metadata or Album Metadata using Joins. Based on necessity, we can improve the schema further (e.g., country code, city, etc.).
+
+**Enriched Schema:**
+```
+Song:      Song_id, Song_name, Artist_name, Album_name, Album_art, Genre, Year
+User:      User_id, Gender, Age
+Location:  Country_code, Geo_location, City
+Timestamp: Time_stamp, day, month, year, hour
+```
+
+
+### Aggregation
+
+After enrichment, the data has to be aggregated. Options include:
+
+- **BigQuery** — fast data warehouse, data analytics. The Top Songs and Top Albums APIs can talk directly to BigQuery.
+- After BigQuery aggregation, we can put results into another data store to serve the data, like **RDBMS**.
+
+#### 2 Ways to Transfer Data from HDFS to RDBMS
+
+1. Use an ETL job and write the aggregation results directly to the RDBMS tables.
+2. If using BigQuery for aggregation, export the results to RDBMS using a batch job.
+
+
+## Reliability
+
+### Tracking API
+- Load balancers deployed in multiple regions.
+- If we have Region 1 and Region 2, and we need no data loss, we can choose a 50/50 or 100/100 traffic split.
+
+### Kafka
+- Kafka is distributed, so we can have multiple brokers. If one region is down, others can continue to work, and we can have multiple copies of the data.
+- Since the data is not partitioned across 2 regions, we need an aggregation layer that will read from both Kafka instances and keep it consolidated.
+
+### HDFS
+- HDFS is also distributed but is primarily used in 1 region. If we bring up another region, it will have all the data and can start running immediately.
+
+### RDBMS
+- RDBMS needs to be available in both regions — both primary and replicated — so we have a backup.
+
+
+## Improvements
+
+- Monitoring and alerting with health checks on all components.
+- Separate health checks for data quality — verifying data is arriving, processing, and flowing correctly through different pipelines.
+
+## Glossary
+
+**Why Kafka?**
+
+Distributed, replicated, fault tolerant, pub-sub system.
+
+**Why HDFS?**
+
+Good for batch processing, can store petabytes of data, distributed, replicated data, fault tolerant, cost effective, scales well for batch processing.
+
+**Why BigQuery?**
+
+BigQuery is a fully managed, serverless data warehouse that enables super-fast SQL queries using the power of Google''s distributed infrastructure.
+
+**What is ETL?**
+
+Extract, Transform, Load (ETL) is a type of data integration process that involves extracting data from one or more sources, transforming it into the required format, and loading it into a destination system. ETL is good for batch processing and can be scheduled.
+
+**What is RDBMS?**
+
+A relational database management system (RDBMS) is software that allows you to create, manage, and query a relational database. It provides a way to store data in tables with rows and columns, and to define relationships between tables.
+
+**What is Batch Processing?**
+
+Batch processing is a method of processing data in batches or chunks, rather than processing each data item individually as it arrives. Data is collected over a period of time and then processed together as a single batch.
+
+**What is OLAP?**
+
+OLAP (Online Analytical Processing) is a type of data processing that allows users to analyze data from multiple perspectives. It is used to analyze large datasets and identify trends and patterns. OLAP is widely used in data analytics and business intelligence.
+
+
+
+
+
+
+
+## Problem Statement
+
+How does Instagram/Twiiter  like System work  to support 500 Million active users, with celebrities like Taylor Swift/ELon Musk  having 100 Million followers.
+
+### X and Instgram have different need 
+-> one is more microblogging platform  and other is more visul media platform 
+->X is more write 
+->instgram is more read
+
+## Explain first what happen what happen when a normal person with less follower uploads a photo.
+-
+-
+-
+-
+-
+
+# Design arithecure for sittuation 1:  when a normal person with less follower uploads a photo.
+
+
+
+
+## Solutions   
+
+1. keep cache for each user   post get push in each person followe imeedagtely 
+2. the followe read from the cache isnitally  when they load the app 
+
+
+This sysyteam break when you have 100 million  of follower 
+
+if you go by the abover menthod this may strike server loads and minutes to propagate to all
+
+So what to do  
+
+Solution -> Hybrid apprach 
+
+-> regalur user get same fanout when write their post is precomputer in their follower feed caches 
+
+for celebrate we can special case in your systeam 
+
+-> when the user load their feed we look any new post from celebertry 
+-> this make the write load stays flat no matter what Elon musk or Taylor swift post 
+
+Trade slight more complex read logic  
+
+## Explain the complex read logic 
+
+
+
+
+
+# result 
+the speed latency still reamin under 500ms  becuase the celbetry merge is a small operation  on already cached feed 
+
+Their is not universaly fannout on wirte or Fanout on read strategy 
+The write answer depend the data you sysyteam is hadnling 
+
+
+
+
+
+## Design architecture for  when a celeb with 500M followers uploads a photo.', 'lld', 15, 'Medium', '["music","leaderboard","redis","system design"]');
+
+-- ==========================================
+-- 4. UPDATE R2 IMAGE URLS
+-- ==========================================
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/lld/1.webp' WHERE image_url = 'assets/lld/1.png' OR image_url = '/assets/lld/1.png' OR image_url = 'assets/lld/1.webp' OR image_url = '/assets/lld/1.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/lld/2.webp' WHERE image_url = 'assets/lld/2.png' OR image_url = '/assets/lld/2.png' OR image_url = 'assets/lld/2.webp' OR image_url = '/assets/lld/2.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/lld/3.webp' WHERE image_url = 'assets/lld/3.png' OR image_url = '/assets/lld/3.png' OR image_url = 'assets/lld/3.webp' OR image_url = '/assets/lld/3.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/lld/4.webp' WHERE image_url = 'assets/lld/4.png' OR image_url = '/assets/lld/4.png' OR image_url = 'assets/lld/4.webp' OR image_url = '/assets/lld/4.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/lld/5.webp' WHERE image_url = 'assets/lld/5.png' OR image_url = '/assets/lld/5.png' OR image_url = 'assets/lld/5.webp' OR image_url = '/assets/lld/5.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/lld/6.webp' WHERE image_url = 'assets/lld/6.png' OR image_url = '/assets/lld/6.png' OR image_url = 'assets/lld/6.webp' OR image_url = '/assets/lld/6.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/mock/lld/Design_Music_leaderboard_API.webp' WHERE image_url = 'assets/mock/lld/Design_Music_leaderboard_API.png' OR image_url = '/assets/mock/lld/Design_Music_leaderboard_API.png' OR image_url = 'assets/mock/lld/Design_Music_leaderboard_API.webp' OR image_url = '/assets/mock/lld/Design_Music_leaderboard_API.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/ai/1.webp' WHERE image_url = 'assets/theory/ai/1.png' OR image_url = '/assets/theory/ai/1.png' OR image_url = 'assets/theory/ai/1.webp' OR image_url = '/assets/theory/ai/1.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/cn/18.webp' WHERE image_url = 'assets/theory/cn/18.png' OR image_url = '/assets/theory/cn/18.png' OR image_url = 'assets/theory/cn/18.webp' OR image_url = '/assets/theory/cn/18.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/cn/33.webp' WHERE image_url = 'assets/theory/cn/33.png' OR image_url = '/assets/theory/cn/33.png' OR image_url = 'assets/theory/cn/33.webp' OR image_url = '/assets/theory/cn/33.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/js/2.webp' WHERE image_url = 'assets/theory/js/2.png' OR image_url = '/assets/theory/js/2.png' OR image_url = 'assets/theory/js/2.webp' OR image_url = '/assets/theory/js/2.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/node/11.webp' WHERE image_url = 'assets/theory/node/11.png' OR image_url = '/assets/theory/node/11.png' OR image_url = 'assets/theory/node/11.webp' OR image_url = '/assets/theory/node/11.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/node/15.webp' WHERE image_url = 'assets/theory/node/15.png' OR image_url = '/assets/theory/node/15.png' OR image_url = 'assets/theory/node/15.webp' OR image_url = '/assets/theory/node/15.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/node/18.webp' WHERE image_url = 'assets/theory/node/18.png' OR image_url = '/assets/theory/node/18.png' OR image_url = 'assets/theory/node/18.webp' OR image_url = '/assets/theory/node/18.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/node/19.webp' WHERE image_url = 'assets/theory/node/19.png' OR image_url = '/assets/theory/node/19.png' OR image_url = 'assets/theory/node/19.webp' OR image_url = '/assets/theory/node/19.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/node/20.webp' WHERE image_url = 'assets/theory/node/20.png' OR image_url = '/assets/theory/node/20.png' OR image_url = 'assets/theory/node/20.webp' OR image_url = '/assets/theory/node/20.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/node/23.webp' WHERE image_url = 'assets/theory/node/23.png' OR image_url = '/assets/theory/node/23.png' OR image_url = 'assets/theory/node/23.webp' OR image_url = '/assets/theory/node/23.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/node/24.webp' WHERE image_url = 'assets/theory/node/24.png' OR image_url = '/assets/theory/node/24.png' OR image_url = 'assets/theory/node/24.webp' OR image_url = '/assets/theory/node/24.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/node/25.webp' WHERE image_url = 'assets/theory/node/25.png' OR image_url = '/assets/theory/node/25.png' OR image_url = 'assets/theory/node/25.webp' OR image_url = '/assets/theory/node/25.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/node/26.webp' WHERE image_url = 'assets/theory/node/26.png' OR image_url = '/assets/theory/node/26.png' OR image_url = 'assets/theory/node/26.webp' OR image_url = '/assets/theory/node/26.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/node/27.webp' WHERE image_url = 'assets/theory/node/27.png' OR image_url = '/assets/theory/node/27.png' OR image_url = 'assets/theory/node/27.webp' OR image_url = '/assets/theory/node/27.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/node/28-1.webp' WHERE image_url = 'assets/theory/node/28-1.png' OR image_url = '/assets/theory/node/28-1.png' OR image_url = 'assets/theory/node/28-1.webp' OR image_url = '/assets/theory/node/28-1.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/node/28.webp' WHERE image_url = 'assets/theory/node/28.png' OR image_url = '/assets/theory/node/28.png' OR image_url = 'assets/theory/node/28.webp' OR image_url = '/assets/theory/node/28.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/node/29.webp' WHERE image_url = 'assets/theory/node/29.png' OR image_url = '/assets/theory/node/29.png' OR image_url = 'assets/theory/node/29.webp' OR image_url = '/assets/theory/node/29.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/node/30.webp' WHERE image_url = 'assets/theory/node/30.png' OR image_url = '/assets/theory/node/30.png' OR image_url = 'assets/theory/node/30.webp' OR image_url = '/assets/theory/node/30.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/node/31.webp' WHERE image_url = 'assets/theory/node/31.png' OR image_url = '/assets/theory/node/31.png' OR image_url = 'assets/theory/node/31.webp' OR image_url = '/assets/theory/node/31.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/node/32.webp' WHERE image_url = 'assets/theory/node/32.png' OR image_url = '/assets/theory/node/32.png' OR image_url = 'assets/theory/node/32.webp' OR image_url = '/assets/theory/node/32.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/node/33.1.webp' WHERE image_url = 'assets/theory/node/33.1.png' OR image_url = '/assets/theory/node/33.1.png' OR image_url = 'assets/theory/node/33.1.webp' OR image_url = '/assets/theory/node/33.1.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/node/33.webp' WHERE image_url = 'assets/theory/node/33.png' OR image_url = '/assets/theory/node/33.png' OR image_url = 'assets/theory/node/33.webp' OR image_url = '/assets/theory/node/33.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/node/34.webp' WHERE image_url = 'assets/theory/node/34.png' OR image_url = '/assets/theory/node/34.png' OR image_url = 'assets/theory/node/34.webp' OR image_url = '/assets/theory/node/34.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/node/35.webp' WHERE image_url = 'assets/theory/node/35.png' OR image_url = '/assets/theory/node/35.png' OR image_url = 'assets/theory/node/35.webp' OR image_url = '/assets/theory/node/35.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/node/36.webp' WHERE image_url = 'assets/theory/node/36.png' OR image_url = '/assets/theory/node/36.png' OR image_url = 'assets/theory/node/36.webp' OR image_url = '/assets/theory/node/36.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/node/37.webp' WHERE image_url = 'assets/theory/node/37.png' OR image_url = '/assets/theory/node/37.png' OR image_url = 'assets/theory/node/37.webp' OR image_url = '/assets/theory/node/37.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/node/41-1.webp' WHERE image_url = 'assets/theory/node/41-1.png' OR image_url = '/assets/theory/node/41-1.png' OR image_url = 'assets/theory/node/41-1.webp' OR image_url = '/assets/theory/node/41-1.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/node/41.webp' WHERE image_url = 'assets/theory/node/41.png' OR image_url = '/assets/theory/node/41.png' OR image_url = 'assets/theory/node/41.webp' OR image_url = '/assets/theory/node/41.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/node/42.webp' WHERE image_url = 'assets/theory/node/42.png' OR image_url = '/assets/theory/node/42.png' OR image_url = 'assets/theory/node/42.webp' OR image_url = '/assets/theory/node/42.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/node/43.webp' WHERE image_url = 'assets/theory/node/43.png' OR image_url = '/assets/theory/node/43.png' OR image_url = 'assets/theory/node/43.webp' OR image_url = '/assets/theory/node/43.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/node/44.webp' WHERE image_url = 'assets/theory/node/44.png' OR image_url = '/assets/theory/node/44.png' OR image_url = 'assets/theory/node/44.webp' OR image_url = '/assets/theory/node/44.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/node/45.webp' WHERE image_url = 'assets/theory/node/45.png' OR image_url = '/assets/theory/node/45.png' OR image_url = 'assets/theory/node/45.webp' OR image_url = '/assets/theory/node/45.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/oops/13.webp' WHERE image_url = 'assets/theory/oops/13.png' OR image_url = '/assets/theory/oops/13.png' OR image_url = 'assets/theory/oops/13.webp' OR image_url = '/assets/theory/oops/13.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/oops/14.webp' WHERE image_url = 'assets/theory/oops/14.png' OR image_url = '/assets/theory/oops/14.png' OR image_url = 'assets/theory/oops/14.webp' OR image_url = '/assets/theory/oops/14.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/oops/15.webp' WHERE image_url = 'assets/theory/oops/15.png' OR image_url = '/assets/theory/oops/15.png' OR image_url = 'assets/theory/oops/15.webp' OR image_url = '/assets/theory/oops/15.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/oops/16.webp' WHERE image_url = 'assets/theory/oops/16.png' OR image_url = '/assets/theory/oops/16.png' OR image_url = 'assets/theory/oops/16.webp' OR image_url = '/assets/theory/oops/16.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/oops/17.webp' WHERE image_url = 'assets/theory/oops/17.png' OR image_url = '/assets/theory/oops/17.png' OR image_url = 'assets/theory/oops/17.webp' OR image_url = '/assets/theory/oops/17.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/oops/18.webp' WHERE image_url = 'assets/theory/oops/18.png' OR image_url = '/assets/theory/oops/18.png' OR image_url = 'assets/theory/oops/18.webp' OR image_url = '/assets/theory/oops/18.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/oops/20.webp' WHERE image_url = 'assets/theory/oops/20.png' OR image_url = '/assets/theory/oops/20.png' OR image_url = 'assets/theory/oops/20.webp' OR image_url = '/assets/theory/oops/20.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/oops/26.webp' WHERE image_url = 'assets/theory/oops/26.png' OR image_url = '/assets/theory/oops/26.png' OR image_url = 'assets/theory/oops/26.webp' OR image_url = '/assets/theory/oops/26.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/oops/28.webp' WHERE image_url = 'assets/theory/oops/28.png' OR image_url = '/assets/theory/oops/28.png' OR image_url = 'assets/theory/oops/28.webp' OR image_url = '/assets/theory/oops/28.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/oops/29.webp' WHERE image_url = 'assets/theory/oops/29.png' OR image_url = '/assets/theory/oops/29.png' OR image_url = 'assets/theory/oops/29.webp' OR image_url = '/assets/theory/oops/29.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/oops/30.webp' WHERE image_url = 'assets/theory/oops/30.png' OR image_url = '/assets/theory/oops/30.png' OR image_url = 'assets/theory/oops/30.webp' OR image_url = '/assets/theory/oops/30.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/oops/32.webp' WHERE image_url = 'assets/theory/oops/32.png' OR image_url = '/assets/theory/oops/32.png' OR image_url = 'assets/theory/oops/32.webp' OR image_url = '/assets/theory/oops/32.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/oops/34.webp' WHERE image_url = 'assets/theory/oops/34.png' OR image_url = '/assets/theory/oops/34.png' OR image_url = 'assets/theory/oops/34.webp' OR image_url = '/assets/theory/oops/34.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/oops/5.1.webp' WHERE image_url = 'assets/theory/oops/5.1.png' OR image_url = '/assets/theory/oops/5.1.png' OR image_url = 'assets/theory/oops/5.1.webp' OR image_url = '/assets/theory/oops/5.1.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/oops/5.webp' WHERE image_url = 'assets/theory/oops/5.png' OR image_url = '/assets/theory/oops/5.png' OR image_url = 'assets/theory/oops/5.webp' OR image_url = '/assets/theory/oops/5.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/theory/oops/9.webp' WHERE image_url = 'assets/theory/oops/9.png' OR image_url = '/assets/theory/oops/9.png' OR image_url = 'assets/theory/oops/9.webp' OR image_url = '/assets/theory/oops/9.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/aws_.webp' WHERE image_url = 'icon/aws_.png' OR image_url = '/icon/aws_.png' OR image_url = 'icon/aws_.webp' OR image_url = '/icon/aws_.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/azure_.webp' WHERE image_url = 'icon/azure_.png' OR image_url = '/icon/azure_.png' OR image_url = 'icon/azure_.webp' OR image_url = '/icon/azure_.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/c++.webp' WHERE image_url = 'icon/c++.png' OR image_url = '/icon/c++.png' OR image_url = 'icon/c++.webp' OR image_url = '/icon/c++.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/computer_network.webp' WHERE image_url = 'icon/computer_network.png' OR image_url = '/icon/computer_network.png' OR image_url = 'icon/computer_network.webp' OR image_url = '/icon/computer_network.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/database_management.webp' WHERE image_url = 'icon/database_management.png' OR image_url = '/icon/database_management.png' OR image_url = 'icon/database_management.webp' OR image_url = '/icon/database_management.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/docker.webp' WHERE image_url = 'icon/docker.png' OR image_url = '/icon/docker.png' OR image_url = 'icon/docker.webp' OR image_url = '/icon/docker.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/drizzle_.webp' WHERE image_url = 'icon/drizzle_.png' OR image_url = '/icon/drizzle_.png' OR image_url = 'icon/drizzle_.webp' OR image_url = '/icon/drizzle_.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/express.webp' WHERE image_url = 'icon/express.png' OR image_url = '/icon/express.png' OR image_url = 'icon/express.webp' OR image_url = '/icon/express.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/fastapi_.webp' WHERE image_url = 'icon/fastapi_.png' OR image_url = '/icon/fastapi_.png' OR image_url = 'icon/fastapi_.webp' OR image_url = '/icon/fastapi_.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/graphql_.webp' WHERE image_url = 'icon/graphql_.png' OR image_url = '/icon/graphql_.png' OR image_url = 'icon/graphql_.webp' OR image_url = '/icon/graphql_.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/grpc_.webp' WHERE image_url = 'icon/grpc_.png' OR image_url = '/icon/grpc_.png' OR image_url = 'icon/grpc_.webp' OR image_url = '/icon/grpc_.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/hld.webp' WHERE image_url = 'icon/hld.png' OR image_url = '/icon/hld.png' OR image_url = 'icon/hld.webp' OR image_url = '/icon/hld.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/hono_.webp' WHERE image_url = 'icon/hono_.png' OR image_url = '/icon/hono_.png' OR image_url = 'icon/hono_.webp' OR image_url = '/icon/hono_.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/javascript.webp' WHERE image_url = 'icon/javascript.png' OR image_url = '/icon/javascript.png' OR image_url = 'icon/javascript.webp' OR image_url = '/icon/javascript.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/kubernetes.webp' WHERE image_url = 'icon/kubernetes.png' OR image_url = '/icon/kubernetes.png' OR image_url = 'icon/kubernetes.webp' OR image_url = '/icon/kubernetes.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/langchain_.webp' WHERE image_url = 'icon/langchain_.png' OR image_url = '/icon/langchain_.png' OR image_url = 'icon/langchain_.webp' OR image_url = '/icon/langchain_.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/langgraph_.webp' WHERE image_url = 'icon/langgraph_.png' OR image_url = '/icon/langgraph_.png' OR image_url = 'icon/langgraph_.webp' OR image_url = '/icon/langgraph_.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/lld.webp' WHERE image_url = 'icon/lld.png' OR image_url = '/icon/lld.png' OR image_url = 'icon/lld.webp' OR image_url = '/icon/lld.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/mongodb.webp' WHERE image_url = 'icon/mongodb.png' OR image_url = '/icon/mongodb.png' OR image_url = 'icon/mongodb.webp' OR image_url = '/icon/mongodb.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/nodejs.webp' WHERE image_url = 'icon/nodejs.png' OR image_url = '/icon/nodejs.png' OR image_url = 'icon/nodejs.webp' OR image_url = '/icon/nodejs.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/oops.webp' WHERE image_url = 'icon/oops.png' OR image_url = '/icon/oops.png' OR image_url = 'icon/oops.webp' OR image_url = '/icon/oops.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/operating_systeam.webp' WHERE image_url = 'icon/operating_systeam.png' OR image_url = '/icon/operating_systeam.png' OR image_url = 'icon/operating_systeam.webp' OR image_url = '/icon/operating_systeam.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/playwright_.webp' WHERE image_url = 'icon/playwright_.png' OR image_url = '/icon/playwright_.png' OR image_url = 'icon/playwright_.webp' OR image_url = '/icon/playwright_.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/postgresql.webp' WHERE image_url = 'icon/postgresql.png' OR image_url = '/icon/postgresql.png' OR image_url = 'icon/postgresql.webp' OR image_url = '/icon/postgresql.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/prisma.webp' WHERE image_url = 'icon/prisma.png' OR image_url = '/icon/prisma.png' OR image_url = 'icon/prisma.webp' OR image_url = '/icon/prisma.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/python.webp' WHERE image_url = 'icon/python.png' OR image_url = '/icon/python.png' OR image_url = 'icon/python.webp' OR image_url = '/icon/python.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/redis.webp' WHERE image_url = 'icon/redis.png' OR image_url = '/icon/redis.png' OR image_url = 'icon/redis.webp' OR image_url = '/icon/redis.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/redux.webp' WHERE image_url = 'icon/redux.png' OR image_url = '/icon/redux.png' OR image_url = 'icon/redux.webp' OR image_url = '/icon/redux.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/socketio_.webp' WHERE image_url = 'icon/socketio_.png' OR image_url = '/icon/socketio_.png' OR image_url = 'icon/socketio_.webp' OR image_url = '/icon/socketio_.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/sql.webp' WHERE image_url = 'icon/sql.png' OR image_url = '/icon/sql.png' OR image_url = 'icon/sql.webp' OR image_url = '/icon/sql.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/testing.webp' WHERE image_url = 'icon/testing.png' OR image_url = '/icon/testing.png' OR image_url = 'icon/testing.webp' OR image_url = '/icon/testing.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/typescript.webp' WHERE image_url = 'icon/typescript.webp' OR image_url = '/icon/typescript.webp' OR image_url = 'icon/typescript.webp' OR image_url = '/icon/typescript.webp';
+UPDATE questions SET image_url = 'https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/icon/websocket_.webp' WHERE image_url = 'icon/websocket_.png' OR image_url = '/icon/websocket_.png' OR image_url = 'icon/websocket_.webp' OR image_url = '/icon/websocket_.webp';

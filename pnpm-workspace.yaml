@@ -1,6 +1,5 @@
 allowBuilds:
-  sharp: false
-  unrs-resolver: false
-ignoredBuiltDependencies:
-  - sharp
-  - unrs-resolver
+  "@cloudflare/workerd-windows-64": true
+  esbuild: true
+  sharp: true
+  workerd: true
