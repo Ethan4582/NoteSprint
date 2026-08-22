@@ -16,7 +16,6 @@ import {
   SelectValue,
 } from "@/src/components/ui/select";
 import RichMarkdownEditor from "@/src/components/admin/RichMarkdownEditor";
-import ImageUploader from "@/src/components/admin/ImageUploader";
 import { Loader2 } from "lucide-react";
 
 export default function NewQuestionPage() {
@@ -25,7 +24,6 @@ export default function NewQuestionPage() {
   const [topicId, setTopicId] = useState<string>("");
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,7 +48,6 @@ export default function NewQuestionPage() {
         topicId: parseInt(topicId, 10),
         question: question.trim(),
         answer: answer.trim(),
-        imageUrl,
       });
       router.push("/admin/questions");
     } catch (err) {
@@ -124,13 +121,6 @@ export default function NewQuestionPage() {
             size="small"
             placeholder="Write the explanation in markdown. You can format text and insert images directly..."
           />
-        </div>
-
-        <div className="space-y-1.5 rounded-2xl border border-[var(--border-strong)] bg-raised p-4 shadow-raised-crisp">
-          <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-2 block">
-            Cover / Question Image (Optional)
-          </label>
-          <ImageUploader value={imageUrl} onChange={setImageUrl} />
         </div>
 
         <Button type="submit" disabled={loading} className="w-full h-12 text-base font-bold">

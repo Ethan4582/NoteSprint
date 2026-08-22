@@ -1,6 +1,9 @@
 "use client";
 
 import React from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import remarkBreaks from "remark-breaks";
 
 interface ContentRendererProps {
   content?: string;
@@ -17,91 +20,128 @@ export default function ContentRenderer({
   image2,
   onImageClick,
 }: ContentRendererProps) {
-  
-  const parseContent = (text: string) => {
-    // Regex to match ${image("path")} pattern
-    const imageRegex = /\$\{image\("([^"]+)"\)\}/gi;
-    
-    // Split by the regex, capturing the path
-    const parts = text.split(imageRegex);
-    
-    const blocks: { type: 'text' | 'image', value: string }[] = [];
-    
-    for (let i = 0; i < parts.length; i++) {
-      const part = parts[i];
-      if (i % 2 === 0) {
-        // Text part (even indices)
-        if (part) {
-          blocks.push({ type: 'text', value: part });
-        }
-      } else {
-        // Image path part (odd indices)
-        if (part) {
-          blocks.push({ type: 'image', value: part });
-        }
+  // Pre-process legacy image tags like ${image("foo.png")} to standard markdown
+  const processedContent = (content || "").replace(
+    /\$\{image\("([^"]+)"\)\}/gi,
+    (_match, imgPath: string) => {
+      let resolved = imgPath.trim();
+      if (!resolved.startsWith("http") && !resolved.startsWith("/")) {
+        resolved = resolved.startsWith("assets/") ? `/${resolved}` : `/assets/theory/${resolved}`;
       }
+      return `\n\n![diagram](${resolved})\n\n`;
     }
-
-    return blocks;
-  };
-
-  const hasInlineImages = content.includes('${image(');
-  const blocks = parseContent(content);
-
-  const resolveImagePath = (path: string) => {
-    if (path.startsWith('http') || path.startsWith('/')) return path;
-    if (path.startsWith('assets/')) return `/${path}`;
-    return `/assets/theory/${path}`;
-  };
+  );
 
   return (
-    <div className="w-full space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-8">
-      {/* Dynamic Content Rendering */}
-      <div className="flex flex-col gap-4">
-        {blocks.map((block, index) => {
-          if (block.type === 'text') {
-            return (
-              <div
-                key={`text-${index}`}
-                className="text-[16px] sm:text-[18px] leading-relaxed text-[var(--text-primary)] font-medium break-words opacity-95"
-                dangerouslySetInnerHTML={{ 
-                  __html: block.value
-                    .replace(/(\d+\.\s+)/g, (match, p1, offset) => {
-                      return offset > 0 ? `<br/><strong>${p1}</strong>` : `<strong>${p1}</strong>`;
-                    })
-                }}
-              />
-            );
-          } else if (block.type === 'image') {
-            const fullPath = resolveImagePath(block.value.trim());
-            return (
-              <div
-                key={`img-${index}`}
-                className="w-full max-w-2xl mx-auto my-4 rounded-[16px] border-2 border-[var(--border)] overflow-hidden bg-[var(--bg-surface)] cursor-zoom-in hover:border-[var(--accent)] transition-all shadow-md group flex justify-center"
-                onClick={() => onImageClick?.(fullPath)}
+    <div className="w-full space-y-4 animate-in fade-in duration-300">
+      <div className="text-[15px] sm:text-[16px] leading-relaxed text-[var(--text-primary)] break-words">
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm, remarkBreaks]}
+          components={{
+            h1: ({ children }) => (
+              <h1 className="text-2xl font-black tracking-tight text-[var(--text-primary)] mt-6 mb-3 border-b border-[var(--border)] pb-2">
+                {children}
+              </h1>
+            ),
+            h2: ({ children }) => (
+              <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)] mt-5 mb-2.5">
+                {children}
+              </h2>
+            ),
+            h3: ({ children }) => (
+              <h3 className="text-lg font-bold text-[var(--text-primary)] mt-4 mb-2">
+                {children}
+              </h3>
+            ),
+            p: ({ children }) => (
+              <p className="my-2.5 leading-relaxed text-[var(--text-primary)] font-normal">
+                {children}
+              </p>
+            ),
+            strong: ({ children }) => (
+              <strong className="font-bold text-[var(--text-primary)] text-[var(--accent-text)]">
+                {children}
+              </strong>
+            ),
+            em: ({ children }) => <em className="italic text-[var(--text-secondary)]">{children}</em>,
+            ul: ({ children }) => (
+              <ul className="list-disc list-inside space-y-1.5 my-3 pl-2 text-[var(--text-primary)]">
+                {children}
+              </ul>
+            ),
+            ol: ({ children }) => (
+              <ol className="list-decimal list-inside space-y-1.5 my-3 pl-2 text-[var(--text-primary)]">
+                {children}
+              </ol>
+            ),
+            li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+            blockquote: ({ children }) => (
+              <blockquote className="border-l-4 border-[var(--accent)] pl-4 py-2 my-3 italic bg-[var(--bg-subtle)]/50 rounded-r-xl text-[var(--text-secondary)]">
+                {children}
+              </blockquote>
+            ),
+            a: ({ href, children }) => (
+              <a
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[var(--accent)] underline hover:text-[var(--accent-hover)] transition-colors font-medium"
               >
-                <img
-                  src={fullPath}
-                  alt="Content diagram"
-                  className="max-w-full max-h-[40vh] sm:max-h-[50vh] w-auto h-auto object-contain group-hover:scale-[1.01] transition-transform duration-500"
-                  onError={(e) => (e.currentTarget.parentElement!.style.display = 'none')}
-                />
-              </div>
-            );
-          }
-          return null;
-        })}
+                {children}
+              </a>
+            ),
+            img: ({ src, alt }) => {
+              if (!src) return null;
+              let imageSrc = typeof src === "string" ? src : "";
+              if (imageSrc.startsWith("/public/")) {
+                imageSrc = imageSrc.replace(/^\/public\//, "/");
+              } else if (imageSrc.startsWith("public/")) {
+                imageSrc = "/" + imageSrc.replace(/^public\//, "");
+              } else if (imageSrc.startsWith("assets/")) {
+                imageSrc = "/" + imageSrc;
+              }
+
+              return (
+                <span className="block my-4 rounded-xl border border-[var(--border-strong)] overflow-hidden bg-[var(--bg-surface)] shadow-md group">
+                  <img
+                    src={imageSrc}
+                    alt={alt || "Content image"}
+                    className="max-w-full max-h-[45vh] w-auto h-auto mx-auto object-contain cursor-zoom-in group-hover:scale-[1.01] transition-transform duration-300"
+                    onClick={() => imageSrc && onImageClick?.(imageSrc)}
+                  />
+                </span>
+              );
+            },
+            code: ({ className, children }) => {
+              const isBlock = Boolean(className);
+              if (isBlock) {
+                return (
+                  <pre className="bg-[#0f0f0f] p-4 sm:p-5 rounded-xl text-[13px] sm:text-[14px] border border-[var(--border)] font-mono overflow-x-auto text-gray-200 shadow-lg my-4 leading-relaxed">
+                    <code>{children}</code>
+                  </pre>
+                );
+              }
+              return (
+                <code className="bg-[var(--bg-subtle)] px-1.5 py-0.5 rounded text-xs font-mono text-[var(--accent)] border border-[var(--border)]">
+                  {children}
+                </code>
+              );
+            },
+          }}
+        >
+          {processedContent}
+        </ReactMarkdown>
       </div>
 
       {/* Legacy Fallback for images */}
-      {!hasInlineImages && (image || image2) && (
-        <div className="flex flex-col gap-6 pt-6 border-t border-[var(--border)] border-dashed items-center">
+      {!content.includes("${image(") && (image || image2) && (
+        <div className="flex flex-col gap-4 pt-4 border-t border-[var(--border)] border-dashed items-center">
           {image && (
             <div
               className="w-full max-w-2xl rounded-xl border border-[var(--border)] overflow-hidden bg-[var(--bg-surface)] cursor-zoom-in shadow-sm hover:border-[var(--accent)] transition-all flex justify-center"
               onClick={() => onImageClick?.(image)}
             >
-              <img src={image} className="max-w-full max-h-[40vh] sm:max-h-[50vh] w-auto h-auto object-contain" alt="Reference" />
+              <img src={image} className="max-w-full max-h-[40vh] object-contain" alt="Reference" />
             </div>
           )}
           {image2 && (
@@ -109,30 +149,26 @@ export default function ContentRenderer({
               className="w-full max-w-2xl rounded-xl border border-[var(--border)] overflow-hidden bg-[var(--bg-surface)] cursor-zoom-in shadow-sm hover:border-[var(--accent)] transition-all flex justify-center"
               onClick={() => onImageClick?.(image2)}
             >
-              <img src={image2} className="max-w-full max-h-[40vh] sm:max-h-[50vh] w-auto h-auto object-contain" alt="Reference" />
+              <img src={image2} className="max-w-full max-h-[40vh] object-contain" alt="Reference" />
             </div>
           )}
         </div>
       )}
 
-      {/* Code Snippet */}
+      {/* Additional Code Snippet */}
       {code && (
-        <div className="space-y-3 pt-6">
+        <div className="space-y-2 pt-4">
           <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></div>
+            <div className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]" />
             <span className="text-[11px] font-black text-[var(--text-muted)] uppercase tracking-widest">
               Code Implementation
             </span>
           </div>
-          <div className="relative group">
-            <pre className="bg-[#0f0f0f] p-5 sm:p-6 rounded-xl text-[13px] sm:text-[14px] border border-[var(--border)] font-mono overflow-x-auto text-gray-300 shadow-xl scrollbar-thin scrollbar-thumb-[var(--border)]">
-              <code className="block min-w-full leading-relaxed">{code}</code>
-            </pre>
-          </div>
+          <pre className="bg-[#0f0f0f] p-4 rounded-xl text-xs sm:text-sm border border-[var(--border)] font-mono overflow-x-auto text-gray-200">
+            <code>{code}</code>
+          </pre>
         </div>
       )}
     </div>
   );
 }
-
-

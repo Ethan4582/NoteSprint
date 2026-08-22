@@ -16,7 +16,6 @@ import {
   SelectValue,
 } from "@/src/components/ui/select";
 import RichMarkdownEditor from "@/src/components/admin/RichMarkdownEditor";
-import ImageUploader from "@/src/components/admin/ImageUploader";
 import { Loader2 } from "lucide-react";
 
 export default function QuestionEditClient({ id }: { id: number }) {
@@ -25,7 +24,6 @@ export default function QuestionEditClient({ id }: { id: number }) {
   const [topicId, setTopicId] = useState<string>("");
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +36,6 @@ export default function QuestionEditClient({ id }: { id: number }) {
           setTopicId(String(qRes.topicId));
           setQuestion(qRes.question);
           setAnswer(qRes.answer);
-          setImageUrl(qRes.imageUrl || null);
         }
       })
       .finally(() => setInitialLoading(false));
@@ -58,7 +55,6 @@ export default function QuestionEditClient({ id }: { id: number }) {
         topicId: parseInt(topicId, 10),
         question: question.trim(),
         answer: answer.trim(),
-        imageUrl,
       });
       router.push("/admin/questions");
     } catch (err) {
@@ -83,7 +79,7 @@ export default function QuestionEditClient({ id }: { id: number }) {
             Edit Question #{id}
           </h1>
           <p className="text-xs text-[var(--text-secondary)] mt-0.5">
-            Modify question title, explanation, or media.
+            Modify question title and answer content.
           </p>
         </div>
         <Link href="/admin/questions">
@@ -140,13 +136,6 @@ export default function QuestionEditClient({ id }: { id: number }) {
             size="small"
             placeholder="Write the explanation in markdown..."
           />
-        </div>
-
-        <div className="space-y-1.5 rounded-2xl border border-[var(--border-strong)] bg-raised p-4 shadow-raised-crisp">
-          <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-2 block">
-            Cover / Question Image (Optional)
-          </label>
-          <ImageUploader value={imageUrl} onChange={setImageUrl} />
         </div>
 
         <Button type="submit" disabled={loading} className="w-full h-12 text-base font-bold">

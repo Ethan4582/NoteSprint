@@ -40,9 +40,9 @@ export async function adminLogin(password: string): Promise<{ success: boolean; 
     }
   }
 
-  // Attempt local /admin/auth route
+  // Attempt local /api/admin/auth route
   try {
-    const res = await fetch("/admin/auth", {
+    const res = await fetch("/api/admin/auth", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ password }),
@@ -58,7 +58,7 @@ export async function adminLogin(password: string): Promise<{ success: boolean; 
     // Fall back to client authentication
   }
 
-  // Client-side authentication verification
+  // Client-side authentication fallback
   const expectedPassword = "Ash1420@";
   if (password !== expectedPassword) {
     return { success: false, error: "Incorrect password" };
@@ -93,11 +93,14 @@ export async function getAdminStats(): Promise<{
   totalQuestions: number;
   totalArticles: number;
 }> {
-  if (API_BASE) {
-    const res = await fetch(`${API_BASE}/admin/stats`, {
+  const url = API_BASE ? `${API_BASE}/admin/stats` : "/api/admin/stats";
+  try {
+    const res = await fetch(url, {
       headers: { ...getAuthHeader() },
     });
     if (res.ok) return parseResponse(res);
+  } catch {
+    // fallback
   }
   return {
     totalTopics: 38,
@@ -113,7 +116,8 @@ export async function createQuestion(payload: {
   imageUrl?: string | null;
   sourceFile?: string;
 }): Promise<Question> {
-  const res = await fetch(`${API_BASE}/admin/questions`, {
+  const url = API_BASE ? `${API_BASE}/admin/questions` : "/api/admin/questions";
+  const res = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -137,7 +141,8 @@ export async function updateQuestion(
     imageUrl: string | null;
   }>
 ): Promise<Question> {
-  const res = await fetch(`${API_BASE}/admin/questions/${id}`, {
+  const url = API_BASE ? `${API_BASE}/admin/questions/${id}` : `/api/admin/questions/${id}`;
+  const res = await fetch(url, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -153,7 +158,8 @@ export async function updateQuestion(
 }
 
 export async function deleteQuestion(id: number): Promise<void> {
-  const res = await fetch(`${API_BASE}/admin/questions/${id}`, {
+  const url = API_BASE ? `${API_BASE}/admin/questions/${id}` : `/api/admin/questions/${id}`;
+  const res = await fetch(url, {
     method: "DELETE",
     headers: { ...getAuthHeader() },
   });
@@ -169,7 +175,8 @@ export async function createArticle(payload: {
   difficulty?: "Easy" | "Medium" | "Hard";
   tags?: string;
 }): Promise<Article> {
-  const res = await fetch(`${API_BASE}/admin/articles`, {
+  const url = API_BASE ? `${API_BASE}/admin/articles` : "/api/admin/articles";
+  const res = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -195,7 +202,8 @@ export async function updateArticle(
     tags: string;
   }>
 ): Promise<Article> {
-  const res = await fetch(`${API_BASE}/admin/articles/${slug}`, {
+  const url = API_BASE ? `${API_BASE}/admin/articles/${slug}` : `/api/admin/articles/${slug}`;
+  const res = await fetch(url, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -211,7 +219,8 @@ export async function updateArticle(
 }
 
 export async function deleteArticle(slug: string): Promise<void> {
-  const res = await fetch(`${API_BASE}/admin/articles/${slug}`, {
+  const url = API_BASE ? `${API_BASE}/admin/articles/${slug}` : `/api/admin/articles/${slug}`;
+  const res = await fetch(url, {
     method: "DELETE",
     headers: { ...getAuthHeader() },
   });
@@ -222,7 +231,8 @@ export async function uploadImage(file: File): Promise<{ url: string; key: strin
   const formData = new FormData();
   formData.append("file", file);
 
-  const res = await fetch(`${API_BASE}/admin/upload/image`, {
+  const url = API_BASE ? `${API_BASE}/admin/upload/image` : "/api/admin/upload/image";
+  const res = await fetch(url, {
     method: "POST",
     headers: { ...getAuthHeader() },
     body: formData,

@@ -6,7 +6,7 @@ const DEFAULT_SECRET = "notesprint-super-secret-key-production-2026";
 export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}));
-    const expectedPassword = process.env.PASSWORD;
+    const expectedPassword = process.env.PASSWORD || "Ash1420@";
 
     if (!body.password || body.password !== expectedPassword) {
       return NextResponse.json({ error: "Incorrect password" }, { status: 401 });
