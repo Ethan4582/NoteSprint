@@ -1,5 +1,9 @@
-allowBuilds:
-  "@cloudflare/workerd-windows-64": true
-  esbuild: true
-  sharp: true
-  workerd: true
+packages:
+  - "."
+
+onlyBuiltDependencies:
+  - sharp
+  - better-sqlite3
+  - "@cloudflare/workerd-windows-64"
+  - workerd
+  - esbuild
