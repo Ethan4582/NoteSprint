@@ -16,7 +16,8 @@ import {
   SelectValue,
 } from "@/src/components/ui/select";
 import RichMarkdownEditor from "@/src/components/admin/RichMarkdownEditor";
-import { Loader2 } from "lucide-react";
+import UploadedMediaManager from "@/src/components/admin/UploadedMediaManager";
+import { Loader2, ArrowLeft, Save } from "lucide-react";
 
 export default function QuestionEditClient({ id }: { id: number }) {
   const router = useRouter();
@@ -27,6 +28,7 @@ export default function QuestionEditClient({ id }: { id: number }) {
   const [topicId, setTopicId] = useState<string>("");
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
+  const [sessionImages, setSessionImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -61,6 +63,17 @@ export default function QuestionEditClient({ id }: { id: number }) {
     loadData();
   }, [id, topicParam]);
 
+  const handleImageUploaded = (url: string) => {
+    setSessionImages((prev) => (prev.includes(url) ? prev : [...prev, url]));
+  };
+
+  const handleRemoveFromContent = (imageUrl: string) => {
+    const escaped = imageUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const regex = new RegExp(`!\\[.*?\\]\\(${escaped}\\)\\n?`, "g");
+    setAnswer((prev) => prev.replace(regex, ""));
+    setSessionImages((prev) => prev.filter((u) => u !== imageUrl));
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!question.trim() || !answer.trim()) {
@@ -85,82 +98,111 @@ export default function QuestionEditClient({ id }: { id: number }) {
 
   if (initialLoading) {
     return (
-      <div className="py-24 flex justify-center items-center">
+      <div className="py-32 flex justify-center items-center">
         <Loader2 className="h-8 w-8 animate-spin text-[var(--accent)]" />
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 pb-12">
-      <div className="flex items-center justify-between border-b border-[var(--border)] pb-4">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-[var(--text-primary)]">
-            Edit Question #{id} {topicParam ? `(${topicParam})` : ""}
-          </h1>
-          <p className="text-xs text-[var(--text-secondary)] mt-0.5">
-            Modify question title and answer content.
-          </p>
+    <div className="w-full space-y-6 pb-16">
+      {/* Top Header Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--border)] pb-4">
+        <div className="flex items-center gap-3 min-w-0">
+          <Link href="/admin/questions">
+            <Button variant="outline" size="icon" className="h-9 w-9 rounded-xl flex-shrink-0">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </Link>
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-[var(--text-primary)] truncate">
+              Edit Question #{id}
+            </h1>
+            <p className="text-xs text-[var(--text-muted)] mt-0.5 font-mono">
+              Topic: {topicParam || "General"}
+            </p>
+          </div>
         </div>
-        <Link href="/admin/questions">
-          <Button variant="ghost" size="sm">Cancel</Button>
-        </Link>
+
+        <div className="flex items-center gap-3 flex-shrink-0">
+          <Link href="/admin/questions">
+            <Button variant="ghost" size="sm">Cancel</Button>
+          </Link>
+          <Button onClick={handleSubmit} disabled={loading} size="sm">
+            {loading ? <Loader2 className="h-4 w-4 animate-spin mr-1.5" /> : <Save className="h-4 w-4 mr-1.5" />}
+            Save Changes
+          </Button>
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {error && (
-          <div className="rounded-xl bg-rose-500/10 border border-rose-500/20 p-3 text-xs text-[var(--error)] font-medium">
-            {error}
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
-              Topic
-            </label>
-            <Select value={topicId} onValueChange={setTopicId}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select topic" />
-              </SelectTrigger>
-              <SelectContent>
-                {topics.map((t) => (
-                  <SelectItem key={t.id} value={String(t.id)}>
-                    {t.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="sm:col-span-2 space-y-1.5">
-            <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
-              Question Title
-            </label>
-            <Input
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              placeholder="What is..."
-              required
-            />
-          </div>
+      {error && (
+        <div className="rounded-xl bg-rose-500/10 border border-rose-500/20 p-3.5 text-xs text-[var(--error)] font-medium">
+          {error}
         </div>
+      )}
 
-        <div className="space-y-1.5">
-          <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
-            Answer & Explanation
-          </label>
-          <RichMarkdownEditor
-            value={answer}
-            onChange={setAnswer}
-            size="small"
-            placeholder="Write the explanation in markdown..."
+      {/* 2-Column Full Width Layout */}
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* Left Column: Sticky & Scrollable Metadata & Media */}
+        <div className="lg:col-span-4 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto custom-scrollbar space-y-5 pr-1">
+          <div className="rounded-2xl border border-[var(--border-strong)] bg-raised p-5 shadow-raised-crisp space-y-4">
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-black uppercase tracking-wider text-[var(--text-secondary)]">
+                Topic
+              </label>
+              <Select value={topicId} onValueChange={setTopicId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select topic" />
+                </SelectTrigger>
+                <SelectContent>
+                  {topics.map((t) => (
+                    <SelectItem key={t.id} value={String(t.id)}>
+                      {t.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-black uppercase tracking-wider text-[var(--text-secondary)]">
+                Question Title
+              </label>
+              <Input
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                placeholder="What is..."
+                required
+              />
+            </div>
+          </div>
+
+          <UploadedMediaManager
+            content={answer}
+            sessionImages={sessionImages}
+            onRemoveFromContent={handleRemoveFromContent}
           />
         </div>
 
-        <Button type="submit" disabled={loading} className="w-full h-12 text-base font-bold">
-          {loading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : "Save Changes"}
-        </Button>
+        {/* Right Column: Main Editor */}
+        <div className="lg:col-span-8 space-y-4">
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-black uppercase tracking-wider text-[var(--text-secondary)]">
+              Answer & Explanation
+            </label>
+            <RichMarkdownEditor
+              value={answer}
+              onChange={setAnswer}
+              size="large"
+              onImageUploaded={handleImageUploaded}
+              placeholder="Write the explanation in markdown..."
+            />
+          </div>
+
+          <Button type="submit" disabled={loading} className="w-full h-11 text-sm font-bold">
+            {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : "Save Changes"}
+          </Button>
+        </div>
       </form>
     </div>
   );

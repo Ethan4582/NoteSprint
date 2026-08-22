@@ -19,7 +19,6 @@ async function parseResponse<T = unknown>(res: Response): Promise<T> {
 }
 
 export async function adminLogin(password: string): Promise<{ success: boolean; token?: string; error?: string }> {
-  // If external worker URL is provided
   if (API_BASE) {
     try {
       const res = await fetch(`${API_BASE}/admin/auth`, {
@@ -40,7 +39,6 @@ export async function adminLogin(password: string): Promise<{ success: boolean; 
     }
   }
 
-  // Attempt local /api/admin/auth route
   try {
     const res = await fetch("/api/admin/auth", {
       method: "POST",
@@ -58,7 +56,6 @@ export async function adminLogin(password: string): Promise<{ success: boolean; 
     // Fall back to client authentication
   }
 
-  // Client-side authentication fallback
   const expectedPassword = "Ash1420@";
   if (password !== expectedPassword) {
     return { success: false, error: "Incorrect password" };
@@ -243,4 +240,18 @@ export async function uploadImage(file: File): Promise<{ url: string; key: strin
     throw new Error(err.error || "Failed to upload image");
   }
   return parseResponse<{ url: string; key: string }>(res);
+}
+
+export async function deleteUploadedImage(urlOrKey: string): Promise<void> {
+  const url = API_BASE
+    ? `${API_BASE}/admin/upload/image?url=${encodeURIComponent(urlOrKey)}`
+    : `/api/admin/upload/image?url=${encodeURIComponent(urlOrKey)}`;
+  const res = await fetch(url, {
+    method: "DELETE",
+    headers: { ...getAuthHeader() },
+  });
+  if (!res.ok) {
+    const err = await parseResponse<{ error?: string }>(res).catch(() => ({ error: "Failed to delete image" }));
+    throw new Error(err.error || "Failed to delete image");
+  }
 }

@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Button } from "@/src/components/ui/button";
 import ThemeToggle from "@/src/components/ThemeToggle";
 import { adminLogout } from "@/src/lib/admin-api";
 import { LayoutDashboard, HelpCircle, FileText, LogOut } from "lucide-react";
@@ -26,34 +25,40 @@ export default function AdminNav() {
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-[var(--border)] bg-[var(--bg-surface)]/80 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto flex h-16 items-center justify-between px-4 sm:px-8">
-        <div className="flex items-center gap-6">
-          <Link href="/admin" className="flex items-center gap-2">
+    <header className="sticky top-0 z-40 w-full border-b border-[var(--border)] bg-[var(--bg-base)]/85 backdrop-blur-xl">
+      <div className="max-w-[1600px] mx-auto flex h-16 items-center justify-between px-4 sm:px-8">
+        {/* Brand */}
+        <div className="flex items-center gap-8">
+          <Link href="/admin" className="flex items-center gap-2.5 group">
             <span className="text-base font-black tracking-tight text-[var(--text-primary)]">
               Note<span className="text-[var(--accent)]">Sprint</span>
             </span>
-            <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20">
+            <span className="text-[10px] uppercase font-black tracking-widest px-2 py-0.5 rounded-md bg-[var(--accent)]/15 text-[var(--accent)] border border-[var(--accent)]/25">
               Admin
             </span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-1">
+          {/* Nav Items Tabs */}
+          <nav className="hidden md:flex items-center gap-1.5 p-1 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border)] shadow-inset-cavity">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const active = pathname === item.href;
+              const active =
+                item.href === "/admin"
+                  ? pathname === "/admin"
+                  : pathname.startsWith(item.href);
+
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors",
+                    "flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all",
                     active
-                      ? "bg-[var(--bg-subtle)] text-[var(--accent)] border border-[var(--border)]"
-                      : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)]"
+                      ? "bg-[var(--bg-surface)] text-[var(--text-primary)] shadow-raised-crisp border border-[var(--border-strong)]"
+                      : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]/50"
                   )}
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon className={cn("h-3.5 w-3.5", active ? "text-[var(--accent)]" : "text-[var(--text-muted)]")} />
                   {item.label}
                 </Link>
               );
@@ -61,12 +66,23 @@ export default function AdminNav() {
           </nav>
         </div>
 
+        {/* Right Section */}
         <div className="flex items-center gap-3">
-          <ThemeToggle />
-          <Button variant="ghost" size="sm" onClick={handleLogout} className="text-xs font-bold text-[var(--error)] hover:text-[var(--error)] hover:bg-rose-500/10">
-            <LogOut className="h-4 w-4 mr-1.5" />
+          <div className="p-1 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border)]">
+            <ThemeToggle />
+          </div>
+
+          <div className="h-5 w-px bg-[var(--border)] mx-0.5 hidden sm:block" />
+
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl border border-[var(--border)] bg-[var(--bg-subtle)] hover:bg-rose-500/10 hover:border-rose-500/30 text-xs font-bold text-[var(--text-secondary)] hover:text-[var(--error)] transition-all shadow-sm active:scale-95"
+            title="Logout from admin dashboard"
+          >
+            <LogOut className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">Logout</span>
-          </Button>
+          </button>
         </div>
       </div>
     </header>
