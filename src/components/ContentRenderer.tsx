@@ -20,9 +20,13 @@ export default function ContentRenderer({
   image2,
   onImageClick,
 }: ContentRendererProps) {
-  // Pre-process legacy image tags and HTML break tags to standard markdown
+  // Pre-process legacy image tags and HTML tags to standard markdown
   const processedContent = (content || "")
     .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/?strong>/gi, "**")
+    .replace(/<\/?b>/gi, "**")
+    .replace(/<\/?em>/gi, "*")
+    .replace(/<\/?i>/gi, "*")
     .replace(
       /\$\{image\("([^"]+)"\)\}/gi,
       (_match, imgPath: string) => {
