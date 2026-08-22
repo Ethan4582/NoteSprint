@@ -18,6 +18,7 @@ import {
 import RichMarkdownEditor from "@/src/components/admin/RichMarkdownEditor";
 import UploadedMediaManager from "@/src/components/admin/UploadedMediaManager";
 import { Loader2, ArrowLeft, Save } from "lucide-react";
+import { toast } from "sonner";
 
 export default function QuestionEditClient({ id }: { id: number }) {
   const router = useRouter();
@@ -93,9 +94,12 @@ export default function QuestionEditClient({ id }: { id: number }) {
         question: question.trim(),
         answer: answer.trim(),
       });
+      toast.success("Question updated successfully");
       router.push("/admin/questions");
     } catch (err) {
-      setError((err as Error).message);
+      const msg = (err as Error).message;
+      setError(msg);
+      toast.error(`Failed to update question: ${msg}`);
       setLoading(false);
     }
   };

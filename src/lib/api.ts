@@ -41,12 +41,30 @@ export async function fetchQuestionByTopic(
   id: number
 ): Promise<(Question & { topicSlug: string; topicName: string; category: string }) | null> {
   try {
-    const res = await fetch(`${API_BASE}/api/topics/${slug}/questions/${id}`);
-    if (!res.ok) return null;
-    return res.json();
+    const topicData = await fetchTopicQuestions(slug);
+    if (topicData && topicData.questions) {
+      const found = topicData.questions.find((q, idx) => q.id === id || idx + 1 === id);
+      if (found) {
+        return {
+          ...found,
+          topicSlug: slug,
+          topicName: topicData.topic?.name || slug.replace(/_/g, " "),
+          category: topicData.topic?.category || "tech",
+        };
+      }
+    }
   } catch {
-    return null;
+    // fallback
   }
+
+  try {
+    const res = await fetch(`${API_BASE}/api/topics/${slug}/questions/${id}`);
+    if (res.ok) return res.json();
+  } catch {
+    // fallback
+  }
+
+  return null;
 }
 
 export async function fetchArticles(category?: string): Promise<Article[]> {

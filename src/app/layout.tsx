@@ -17,6 +17,8 @@ export const metadata = {
   }
 };
 
+import { Toaster } from "@/src/components/ui/sonner";
+
 export default function RootLayout({
   children,
 }: {
@@ -24,7 +26,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" data-theme="dark" suppressHydrationWarning>
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }

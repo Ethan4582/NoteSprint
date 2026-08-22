@@ -16,6 +16,7 @@ import {
 import RichMarkdownEditor from "@/src/components/admin/RichMarkdownEditor";
 import UploadedMediaManager from "@/src/components/admin/UploadedMediaManager";
 import { Loader2, ArrowLeft, Save } from "lucide-react";
+import { toast } from "sonner";
 
 export default function NewArticlePage() {
   const router = useRouter();
@@ -71,9 +72,12 @@ export default function NewArticlePage() {
         difficulty,
         tags: JSON.stringify(tagArray),
       });
+      toast.success("Article created successfully");
       router.push("/admin/articles");
     } catch (err) {
-      setError((err as Error).message);
+      const msg = (err as Error).message;
+      setError(msg);
+      toast.error(`Failed to create article: ${msg}`);
       setLoading(false);
     }
   };

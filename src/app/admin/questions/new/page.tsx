@@ -18,6 +18,7 @@ import {
 import RichMarkdownEditor from "@/src/components/admin/RichMarkdownEditor";
 import UploadedMediaManager from "@/src/components/admin/UploadedMediaManager";
 import { Loader2, ArrowLeft, Save } from "lucide-react";
+import { toast } from "sonner";
 
 export default function NewQuestionPage() {
   const router = useRouter();
@@ -62,9 +63,12 @@ export default function NewQuestionPage() {
         question: question.trim(),
         answer: answer.trim(),
       });
+      toast.success("Question created successfully");
       router.push("/admin/questions");
     } catch (err) {
-      setError((err as Error).message);
+      const msg = (err as Error).message;
+      setError(msg);
+      toast.error(`Failed to create question: ${msg}`);
       setLoading(false);
     }
   };

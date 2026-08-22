@@ -17,6 +17,7 @@ import {
 import RichMarkdownEditor from "@/src/components/admin/RichMarkdownEditor";
 import UploadedMediaManager from "@/src/components/admin/UploadedMediaManager";
 import { Loader2, ArrowLeft, Save } from "lucide-react";
+import { toast } from "sonner";
 
 export default function ArticleEditClient({ slug }: { slug: string }) {
   const router = useRouter();
@@ -83,9 +84,12 @@ export default function ArticleEditClient({ slug }: { slug: string }) {
         difficulty,
         tags: JSON.stringify(tagArray),
       });
+      toast.success("Article updated successfully");
       router.push("/admin/articles");
     } catch (err) {
-      setError((err as Error).message);
+      const msg = (err as Error).message;
+      setError(msg);
+      toast.error(`Failed to update article: ${msg}`);
       setLoading(false);
     }
   };
