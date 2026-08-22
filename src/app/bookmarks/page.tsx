@@ -9,17 +9,23 @@ import BottomNav from "@/src/components/BottomNav";
 import ThemeToggle from "@/src/components/ThemeToggle";
 import BookmarkButton from "@/src/components/BookmarkButton";
 import ContentRenderer from "@/src/components/ContentRenderer";
+import { Input } from "@/src/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/src/components/ui/select";
 import {
   Bookmark,
   Play,
   Search,
   ChevronRight,
-  Layers,
-  Sparkles,
   Loader2,
   ArrowRight,
+  BookOpen,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 
 type BookmarkItem = Question & {
   topicSlug?: string;
@@ -80,24 +86,26 @@ export default function BookmarksPage() {
   };
 
   const startSession = () => {
-    router.push(`/session?topic=bookmarks&count=${Math.max(1, filteredQuestions.length)}&time=10&mode=flashcard`);
+    router.push(
+      `/session?topic=bookmarks&count=${Math.max(1, filteredQuestions.length)}&time=10&mode=flashcard`
+    );
   };
 
   return (
     <div className="min-h-screen bg-[var(--bg-base)] flex flex-col pb-32 font-sans selection:bg-[var(--accent)] selection:text-white">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-[var(--bg-base)]/85 backdrop-blur-xl border-b border-[var(--border)] px-4 sm:px-8 py-4">
+      <header className="sticky top-0 z-30 bg-[var(--bg-base)]/85 backdrop-blur-xl border-b border-[var(--border)] px-4 sm:px-8 py-3.5">
         <div className="max-w-[1200px] mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-[var(--accent)]/15 border border-[var(--accent)]/25 text-[var(--accent)]">
-              <Bookmark className="h-5 w-5 fill-current" />
+              <Bookmark className="h-4.5 w-4.5 fill-current" />
             </div>
             <div>
-              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-[var(--text-primary)]">
+              <h1 className="text-lg sm:text-xl font-black tracking-tight text-[var(--text-primary)]">
                 Saved Bookmarks
               </h1>
-              <p className="text-xs text-[var(--text-secondary)]">
-                {questions.length} saved question{questions.length === 1 ? "" : "s"}
+              <p className="text-[11px] text-[var(--text-secondary)]">
+                {questions.length} question{questions.length === 1 ? "" : "s"} bookmarked
               </p>
             </div>
           </div>
@@ -105,7 +113,7 @@ export default function BookmarksPage() {
         </div>
       </header>
 
-      <main className="max-w-[1200px] mx-auto w-full p-4 sm:p-8 space-y-6 flex-1">
+      <main className="max-w-[1200px] mx-auto w-full p-4 sm:p-6 space-y-5 flex-1">
         {loading ? (
           <div className="py-24 flex flex-col items-center justify-center gap-3 text-xs text-[var(--text-muted)] font-mono">
             <Loader2 className="h-6 w-6 animate-spin text-[var(--accent)]" />
@@ -118,7 +126,7 @@ export default function BookmarksPage() {
             </div>
             <h2 className="text-lg font-bold text-[var(--text-primary)]">No Bookmarks Saved</h2>
             <p className="text-xs text-[var(--text-muted)] mt-1.5 leading-relaxed">
-              Tap the bookmark icon on any flashcard or preview question to save it for quick practice.
+              Tap the bookmark icon on any flashcard or reading preview to save it for quick practice.
             </p>
             <button
               onClick={() => router.push("/practice")}
@@ -130,107 +138,105 @@ export default function BookmarksPage() {
           </div>
         ) : (
           <>
-            {/* Action & Filter Bar */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-              <div className="flex flex-1 items-center gap-2.5">
-                <div className="relative flex-1 max-w-md">
-                  <Input
-                    type="text"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search bookmarks..."
-                    className="h-10 pl-9 pr-3 rounded-xl bg-raised border-[var(--border-strong)] text-xs text-[var(--text-primary)] w-full"
-                  />
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-[var(--text-muted)] pointer-events-none" />
+            {/* Filter & Search Bar - matching Admin layout */}
+            <div className="flex flex-row items-center gap-2 sm:gap-2.5 w-full">
+              {topics.length > 1 && (
+                <div className="w-[120px] sm:w-48 shrink-0">
+                  <Select value={selectedTopic} onValueChange={setSelectedTopic}>
+                    <SelectTrigger className="h-9 rounded-xl bg-raised border-[var(--border-strong)] text-xs font-semibold px-2.5 sm:px-3">
+                      <SelectValue placeholder="All Topics" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Topics</SelectItem>
+                      {topics.map((t) => (
+                        <SelectItem key={t} value={t}>
+                          {t}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
+              )}
 
-                {topics.length > 1 && (
-                  <select
-                    value={selectedTopic}
-                    onChange={(e) => setSelectedTopic(e.target.value)}
-                    className="h-10 px-3 rounded-xl bg-raised border border-[var(--border-strong)] text-xs font-semibold text-[var(--text-secondary)] outline-none"
-                  >
-                    <option value="all">All Topics</option>
-                    {topics.map((t) => (
-                      <option key={t} value={t}>
-                        {t}
-                      </option>
-                    ))}
-                  </select>
-                )}
+              <div className="relative flex-1 min-w-0 sm:max-w-md">
+                <Input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search bookmarks..."
+                  className="h-9 pl-8 sm:pl-9 pr-2 rounded-xl bg-raised border-[var(--border-strong)] text-xs placeholder:text-[var(--text-muted)] w-full truncate"
+                />
+                <Search className="absolute left-2.5 sm:left-3 top-2.5 h-3.5 w-3.5 text-[var(--text-muted)]" />
               </div>
 
               <button
                 onClick={startSession}
                 disabled={filteredQuestions.length === 0}
-                className="h-10 px-5 bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-50 text-white rounded-xl font-bold text-xs uppercase tracking-wider transition-all shadow-md shadow-[var(--accent)]/20 active:scale-95 flex items-center justify-center gap-2 shrink-0"
+                className="h-9 px-3.5 sm:px-4 bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-50 text-white rounded-xl font-bold text-xs uppercase tracking-wider transition-all shadow-sm active:scale-95 flex items-center justify-center gap-1.5 shrink-0 ml-auto"
               >
-                <Play size={14} fill="currentColor" />
-                <span>Practice Bookmarks ({filteredQuestions.length})</span>
+                <Play size={13} fill="currentColor" />
+                <span className="hidden sm:inline">Practice Bookmarks</span>
+                <span className="sm:hidden">Practice</span>
+                <span>({filteredQuestions.length})</span>
               </button>
             </div>
 
-            {/* Questions List */}
-            <div className="space-y-3">
-              <AnimatePresence>
-                {filteredQuestions.map((q, idx) => {
-                  const isExpanded = !!expandedIds[q.id];
-                  return (
-                    <motion.div
-                      key={q.id}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.98 }}
-                      className="rounded-2xl border border-[var(--border-strong)] bg-raised p-4 sm:p-5 shadow-raised-crisp transition-all space-y-3"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-start gap-3 min-w-0 flex-1">
-                          <span className="text-[11px] font-mono font-bold text-[var(--accent)] opacity-70 mt-0.5 shrink-0">
+            {/* Questions Multi-Column Grid - matching Admin layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {filteredQuestions.map((q, idx) => {
+                const isExpanded = !!expandedIds[q.id];
+                return (
+                  <div
+                    key={q.id}
+                    className="rounded-2xl border border-[var(--border-strong)] bg-raised p-4 shadow-raised-crisp flex flex-col justify-between hover:border-[var(--accent)]/40 transition-all group"
+                  >
+                    <div className="space-y-2 flex-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <span className="font-mono text-xs font-bold text-[var(--text-muted)]">
                             #{(idx + 1).toString().padStart(2, "0")}
                           </span>
-                          <div className="min-w-0 flex-1">
-                            {q.topicName && (
-                              <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[var(--bg-subtle)] text-[var(--text-muted)] border border-[var(--border)] inline-block mb-1.5">
-                                {q.topicName}
-                              </span>
-                            )}
-                            <h2 className="text-sm sm:text-base font-bold text-[var(--text-primary)] leading-snug">
-                              {q.question}
-                            </h2>
-                          </div>
+                          {q.topicName && (
+                            <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[var(--bg-subtle)] text-[var(--text-muted)] border border-[var(--border)] truncate">
+                              {q.topicName}
+                            </span>
+                          )}
                         </div>
-
-                        <div className="flex items-center gap-1 shrink-0">
-                          <BookmarkButton questionId={q.id} size={16} />
-                          <button
-                            type="button"
-                            onClick={() => toggleExpand(q.id)}
-                            className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] rounded-lg transition-colors"
-                            title={isExpanded ? "Collapse answer" : "Expand answer"}
-                          >
-                            <ChevronRight
-                              size={16}
-                              className={`transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`}
-                            />
-                          </button>
-                        </div>
+                        <BookmarkButton questionId={q.id} size={15} />
                       </div>
 
-                      {/* Expandable Answer */}
-                      {isExpanded && (
-                        <div className="pt-3 border-t border-[var(--border)] text-xs text-[var(--text-secondary)] leading-relaxed">
-                          <ContentRenderer
-                            content={q.answer}
-                            code={q.code}
-                            image={q.imageUrl || q.image}
-                            image2={q.image2}
-                          />
-                        </div>
-                      )}
-                    </motion.div>
-                  );
-                })}
-              </AnimatePresence>
+                      <h2 className="text-xs sm:text-[13px] font-semibold text-[var(--text-primary)] leading-relaxed">
+                        {q.question}
+                      </h2>
+                    </div>
+
+                    <div className="pt-2.5 mt-2.5 border-t border-[var(--border)] flex items-center justify-between">
+                      <button
+                        type="button"
+                        onClick={() => toggleExpand(q.id)}
+                        className="text-[11px] font-bold text-[var(--accent)] hover:text-[var(--accent-hover)] flex items-center gap-1 transition-colors"
+                      >
+                        <BookOpen size={12} />
+                        <span>{isExpanded ? "Hide Answer" : "View Answer"}</span>
+                        <ChevronRight
+                          size={12}
+                          className={`transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`}
+                        />
+                      </button>
+                    </div>
+
+                    {isExpanded && (
+                      <div className="pt-3 mt-3 border-t border-[var(--border)] text-xs text-[var(--text-secondary)] leading-relaxed">
+                        <ContentRenderer
+                          content={q.answer}
+                          code={q.code}
+                          image={q.imageUrl || q.image}
+                          image2={q.image2}
+                        />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </>
         )}
@@ -239,8 +245,4 @@ export default function BookmarksPage() {
       <BottomNav />
     </div>
   );
-}
-
-function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
-  return <input {...props} />;
 }
