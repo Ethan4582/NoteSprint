@@ -1,9 +1,18 @@
 import { NextResponse } from "next/server";
+import { insertQuestion } from "@/src/db";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    return NextResponse.json({
+    const result = await insertQuestion({
+      topicId: body.topicId || 1,
+      question: body.question,
+      answer: body.answer,
+      imageUrl: body.imageUrl || null,
+      sourceFile: body.sourceFile || "admin",
+    });
+
+    return NextResponse.json(result[0] || {
       id: Date.now(),
       topicId: body.topicId || 1,
       question: body.question,

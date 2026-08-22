@@ -19,7 +19,7 @@ export default function AdminNav() {
   };
 
   const navItems = [
-    { href: "/admin", label: "Overview", icon: LayoutDashboard },
+    { href: "/admin", label: "Analytics", icon: LineChart },
     { href: "/admin/questions", label: "Questions", icon: HelpCircle },
     { href: "/admin/articles", label: "Articles", icon: FileText },
   ];

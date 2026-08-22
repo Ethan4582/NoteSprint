@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { queryD1 } from "@/src/lib/d1-remote";
+import { getTopTopics, getDbStats } from "@/src/db";
 import type { AnalyticsData, TimeRange, TopTopic } from "@/src/components/admin/analytics/types";
 
 export const dynamic = "force-dynamic";
@@ -197,11 +197,20 @@ export async function GET(req: Request) {
 
   // Fetch D1 database stats
   let dbTopics: Array<{ slug: string; name: string; q_count: number }> = [];
+  let totalTopics = 0;
+  let totalQuestions = 0;
+  let totalArticles = 0;
   try {
-    const topT = await queryD1<{ slug: string; name: string; q_count: number }>(
-      "SELECT t.slug, t.name, COUNT(q.id) as q_count FROM topics t LEFT JOIN questions q ON q.topic_id = t.id GROUP BY t.id ORDER BY q_count DESC LIMIT 5"
-    );
+    const [topT, stats] = await Promise.all([
+      getTopTopics(7),
+      getDbStats(),
+    ]);
     if (topT?.length) dbTopics = topT;
+    if (stats) {
+      totalTopics = stats.totalTopics;
+      totalQuestions = stats.totalQuestions;
+      totalArticles = stats.totalArticles;
+    }
   } catch (err) {
     console.error("D1 analytics query error:", err);
   }
@@ -355,12 +364,12 @@ export async function GET(req: Request) {
       tooltip: "Total pageviews recorded by Cloudflare Analytics in the selected period",
     },
     {
-      title: "Top Country",
-      value: sortedCountries[0] ? (COUNTRY_NAMES[sortedCountries[0][0]] ?? sortedCountries[0][0]) : "N/A",
-      change: sortedCountries[0] ? `${sortedCountries[0][1].toLocaleString()} req` : "No data",
+      title: "Content & Library",
+      value: `${totalQuestions.toLocaleString()} Qs`,
+      change: `${totalTopics} Topics · ${totalArticles} Articles`,
       changeType: "increase" as const,
       iconName: "book" as const,
-      tooltip: "Country with the highest number of requests in the selected period",
+      tooltip: `${totalQuestions} active questions across ${totalTopics} topics and ${totalArticles} articles`,
     },
     {
       title: "Avg Daily Views",

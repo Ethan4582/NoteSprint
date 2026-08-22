@@ -1,7 +1,19 @@
 import { Hono } from "hono";
-import { eq, sql } from "drizzle-orm";
-import { createDb } from "../../db";
-import { topics, questions, articles, authSchema, insertQuestionSchema, updateQuestionSchema, insertArticleSchema, updateArticleSchema } from "../../db/schema";
+import {
+  createDb,
+  getDbStats,
+  insertQuestion,
+  updateQuestion,
+  deleteQuestion,
+  insertArticle,
+  updateArticle,
+  deleteArticle,
+  authSchema,
+  insertQuestionSchema,
+  updateQuestionSchema,
+  insertArticleSchema,
+  updateArticleSchema,
+} from "../../db";
 import { signToken, authMiddleware } from "../middleware/auth";
 import type { Env, Variables } from "../types";
 
@@ -33,15 +45,8 @@ adminRouter.use("/*", authMiddleware);
 // Stats overview
 adminRouter.get("/stats", async (c) => {
   const db = createDb(c.env.DB);
-  const [topicCount] = await db.select({ count: sql<number>`count(*)`.mapWith(Number) }).from(topics);
-  const [questionCount] = await db.select({ count: sql<number>`count(*)`.mapWith(Number) }).from(questions);
-  const [articleCount] = await db.select({ count: sql<number>`count(*)`.mapWith(Number) }).from(articles);
-
-  return c.json({
-    totalTopics: topicCount?.count || 0,
-    totalQuestions: questionCount?.count || 0,
-    totalArticles: articleCount?.count || 0,
-  });
+  const stats = await getDbStats(db);
+  return c.json(stats);
 });
 
 // Question management
@@ -53,13 +58,16 @@ adminRouter.post("/questions", async (c) => {
   }
 
   const db = createDb(c.env.DB);
-  const result = await db.insert(questions).values({
-    topicId: parse.data.topicId,
-    question: parse.data.question,
-    answer: parse.data.answer,
-    imageUrl: parse.data.imageUrl || null,
-    sourceFile: parse.data.sourceFile || "admin",
-  }).returning();
+  const result = await insertQuestion(
+    {
+      topicId: parse.data.topicId,
+      question: parse.data.question,
+      answer: parse.data.answer,
+      imageUrl: parse.data.imageUrl || null,
+      sourceFile: parse.data.sourceFile || "admin",
+    },
+    db
+  );
 
   return c.json(result[0], 201);
 });
@@ -75,14 +83,7 @@ adminRouter.put("/questions/:id", async (c) => {
   }
 
   const db = createDb(c.env.DB);
-  const updated = await db
-    .update(questions)
-    .set({
-      ...parse.data,
-      updatedAt: new Date(),
-    })
-    .where(eq(questions.id, id))
-    .returning();
+  const updated = await updateQuestion(id, parse.data, db);
 
   if (updated.length === 0) return c.json({ error: "Question not found" }, 404);
   return c.json(updated[0]);
@@ -93,7 +94,7 @@ adminRouter.delete("/questions/:id", async (c) => {
   if (isNaN(id)) return c.json({ error: "Invalid question id" }, 400);
 
   const db = createDb(c.env.DB);
-  const deleted = await db.delete(questions).where(eq(questions.id, id)).returning();
+  const deleted = await deleteQuestion(id, db);
   if (deleted.length === 0) return c.json({ error: "Question not found" }, 404);
 
   return c.json({ success: true, deleted: deleted[0] });
@@ -108,15 +109,18 @@ adminRouter.post("/articles", async (c) => {
   }
 
   const db = createDb(c.env.DB);
-  const result = await db.insert(articles).values({
-    slug: parse.data.slug,
-    title: parse.data.title,
-    content: parse.data.content,
-    category: parse.data.category,
-    readingTime: parse.data.readingTime,
-    difficulty: parse.data.difficulty,
-    tags: parse.data.tags || null,
-  }).returning();
+  const result = await insertArticle(
+    {
+      slug: parse.data.slug,
+      title: parse.data.title,
+      content: parse.data.content,
+      category: parse.data.category,
+      readingTime: parse.data.readingTime,
+      difficulty: parse.data.difficulty,
+      tags: parse.data.tags || null,
+    },
+    db
+  );
 
   return c.json(result[0], 201);
 });
@@ -130,14 +134,7 @@ adminRouter.put("/articles/:slug", async (c) => {
   }
 
   const db = createDb(c.env.DB);
-  const updated = await db
-    .update(articles)
-    .set({
-      ...parse.data,
-      updatedAt: new Date(),
-    })
-    .where(eq(articles.slug, slug))
-    .returning();
+  const updated = await updateArticle(slug, parse.data, undefined, db);
 
   if (updated.length === 0) return c.json({ error: "Article not found" }, 404);
   return c.json(updated[0]);
@@ -146,7 +143,7 @@ adminRouter.put("/articles/:slug", async (c) => {
 adminRouter.delete("/articles/:slug", async (c) => {
   const slug = c.req.param("slug");
   const db = createDb(c.env.DB);
-  const deleted = await db.delete(articles).where(eq(articles.slug, slug)).returning();
+  const deleted = await deleteArticle(slug, db);
   if (deleted.length === 0) return c.json({ error: "Article not found" }, 404);
 
   return c.json({ success: true, deleted: deleted[0] });
