@@ -26,17 +26,26 @@ export default function UploadedMediaManager({
 
   // Extract all markdown images from content + session uploads
   useEffect(() => {
-    const regex = /!\[.*?\]\((https?:\/\/[^\s)]+|\/uploads\/[^\s)]+|\/assets\/[^\s)]+)\)/g;
+    const regex = /!\[.*?\]\(([^)]+)\)/g;
     const matches: string[] = [];
     let match;
     while ((match = regex.exec(content)) !== null) {
-      if (match[1] && !matches.includes(match[1])) {
-        matches.push(match[1]);
+      let rawUrl = match[1].trim();
+      let cleanUrl = rawUrl.replace(/^(\.\.\/)+/, "").replace(/^\/?public\//, "/");
+      if (!cleanUrl.startsWith("http://") && !cleanUrl.startsWith("https://") && !cleanUrl.startsWith("/")) {
+        cleanUrl = "/" + cleanUrl;
+      }
+      if (cleanUrl && !matches.includes(cleanUrl)) {
+        matches.push(cleanUrl);
       }
     }
     for (const img of sessionImages) {
-      if (img && !matches.includes(img)) {
-        matches.push(img);
+      let clean = (img || "").trim().replace(/^(\.\.\/)+/, "").replace(/^\/?public\//, "/");
+      if (clean && !clean.startsWith("http://") && !clean.startsWith("https://") && !clean.startsWith("/")) {
+        clean = "/" + clean;
+      }
+      if (clean && !matches.includes(clean)) {
+        matches.push(clean);
       }
     }
     setAllImages(matches);

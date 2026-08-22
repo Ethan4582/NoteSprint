@@ -30,6 +30,32 @@ interface RawQ {
   code?: string;
 }
 
+function resolveImageUrl(img?: string | null): string | null {
+  if (!img) return null;
+  if (img.startsWith("http://") || img.startsWith("https://")) return img;
+  const clean = img.replace(/^\/?(assets\/)?/, "");
+  return `https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/${clean.replace(/\.(png|jpg|jpeg)$/i, ".webp")}`;
+}
+
+function normalizeContent(answer: string, imgUrl: string | null, code?: string): string {
+  let text = (answer || "")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/?strong>/gi, "**")
+    .replace(/<\/?b>/gi, "**")
+    .replace(/<\/?em>/gi, "*")
+    .replace(/<\/?i>/gi, "*");
+
+  if (code) {
+    text += `\n\n\`\`\`\n${code}\n\`\`\``;
+  }
+
+  if (imgUrl && !text.includes(imgUrl) && !text.includes("![")) {
+    text += `\n\n![diagram](${imgUrl})\n`;
+  }
+
+  return text;
+}
+
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ slug: string; id: string }> }
@@ -58,8 +84,8 @@ export async function GET(
     return NextResponse.json({ error: "Question not found" }, { status: 404 });
   }
 
-  let answer = found.answer || "";
-  if (found.code) answer += `\n\`\`\`\n${found.code}\n\`\`\``;
+  const imgUrl = resolveImageUrl(found.image || found.image2 || null);
+  const answer = normalizeContent(found.answer || "", imgUrl, found.code);
 
   return NextResponse.json({
     id: found.id || numId,
@@ -69,7 +95,7 @@ export async function GET(
     category: "tech",
     question: found.question || "",
     answer,
-    imageUrl: found.image || found.image2 || null,
+    imageUrl: imgUrl,
     sourceFile: slug,
     createdAt: new Date(),
     updatedAt: new Date(),

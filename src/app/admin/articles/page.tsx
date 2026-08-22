@@ -30,7 +30,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/src/components/ui/select";
-import ContentRenderer from "@/src/components/ContentRenderer";
 import { toast } from "sonner";
 import {
   Plus,
@@ -41,7 +40,6 @@ import {
   Clock,
   Loader2,
   MoreVertical,
-  BookOpen,
   SlidersHorizontal,
   ChevronLeft,
   ChevronRight,
@@ -58,7 +56,6 @@ export default function AdminArticlesPage() {
   const [loading, setLoading] = useState(true);
   const [deletingSlug, setDeletingSlug] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
-  const [previewArticle, setPreviewArticle] = useState<Article | null>(null);
 
   const loadArticles = async () => {
     setLoading(true);
@@ -226,9 +223,6 @@ export default function AdminArticlesPage() {
                           <Edit2 className="h-3.5 w-3.5 mr-2" /> Edit
                         </Link>
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setPreviewArticle(a)}>
-                        <BookOpen className="h-3.5 w-3.5 mr-2" /> View
-                      </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         variant="destructive"
@@ -318,30 +312,6 @@ export default function AdminArticlesPage() {
             <Button variant="danger" size="sm" onClick={handleDelete} disabled={actionLoading}>
               {actionLoading ? "Deleting..." : "Delete"}
             </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Clean Read / View Dialog */}
-      <Dialog open={Boolean(previewArticle)} onOpenChange={(open) => !open && setPreviewArticle(null)}>
-        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto custom-scrollbar p-6 space-y-4">
-          <div className="space-y-2 pb-3 border-b border-[var(--border)]">
-            <span className="text-[10px] font-black uppercase tracking-wider text-[var(--accent)]">
-              Article
-            </span>
-            <DialogTitle className="text-base sm:text-lg font-bold leading-snug text-[var(--text-primary)]">
-              {previewArticle?.title}
-            </DialogTitle>
-            <p className="text-xs font-mono text-[var(--text-muted)]">{previewArticle?.slug}</p>
-          </div>
-
-          <div className="space-y-2">
-            <span className="text-[10px] font-black uppercase tracking-wider text-[var(--text-muted)]">
-              Article Content
-            </span>
-            <div className="p-4 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border)] text-sm leading-relaxed">
-              <ContentRenderer content={previewArticle?.content || ""} />
-            </div>
           </div>
         </DialogContent>
       </Dialog>

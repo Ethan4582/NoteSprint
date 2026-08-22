@@ -46,7 +46,7 @@ Given an API to track when a certain user listened to a certain song, build a sy
 
 ### Architecture Diagram
 
-![Music Leaderboard System Design](../../../../public/assets/mock/lld/Design_Music_leaderboard_API.png)
+![Music Leaderboard System Design](/assets/mock/lld/Design_Music_leaderboard_API.png)
 
 > 📐 View interactive diagram on [Excalidraw](https://excalidraw.com/#json=lnYPNWD_AvwZr3JnFWAmF,1-jxxQ6ZlC7artKVouBElg)
 

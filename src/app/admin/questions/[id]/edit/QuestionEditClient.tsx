@@ -54,7 +54,14 @@ export default function QuestionEditClient({ id }: { id: number }) {
 
         if (qRes) {
           setQuestion(qRes.question);
-          setAnswer(qRes.answer);
+          let initialAnswer = qRes.answer || "";
+          if (qRes.imageUrl) {
+            setSessionImages((prev) => (!prev.includes(qRes.imageUrl!) ? [...prev, qRes.imageUrl!] : prev));
+            if (!initialAnswer.includes(qRes.imageUrl)) {
+              initialAnswer += `\n\n![diagram](${qRes.imageUrl})\n`;
+            }
+          }
+          setAnswer(initialAnswer);
         }
       } finally {
         setInitialLoading(false);

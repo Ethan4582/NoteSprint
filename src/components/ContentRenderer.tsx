@@ -98,12 +98,9 @@ export default function ContentRenderer({
             ),
             img: ({ src, alt }) => {
               if (!src) return null;
-              let imageSrc = typeof src === "string" ? src : "";
-              if (imageSrc.startsWith("/public/")) {
-                imageSrc = imageSrc.replace(/^\/public\//, "/");
-              } else if (imageSrc.startsWith("public/")) {
-                imageSrc = "/" + imageSrc.replace(/^public\//, "");
-              } else if (imageSrc.startsWith("assets/")) {
+              let imageSrc = typeof src === "string" ? src.trim() : "";
+              imageSrc = imageSrc.replace(/^(\.\.\/)+/, "").replace(/^\/?public\//, "/");
+              if (!imageSrc.startsWith("http://") && !imageSrc.startsWith("https://") && !imageSrc.startsWith("/")) {
                 imageSrc = "/" + imageSrc;
               }
 

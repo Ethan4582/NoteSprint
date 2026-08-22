@@ -16,6 +16,32 @@ interface RawQ {
   code?: string;
 }
 
+function resolveImageUrl(img?: string | null): string | null {
+  if (!img) return null;
+  if (img.startsWith("http://") || img.startsWith("https://")) return img;
+  const clean = img.replace(/^\/?(assets\/)?/, "");
+  return `https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev/assets/${clean.replace(/\.(png|jpg|jpeg)$/i, ".webp")}`;
+}
+
+function normalizeContent(answer: string, imgUrl: string | null, code?: string): string {
+  let text = (answer || "")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/?strong>/gi, "**")
+    .replace(/<\/?b>/gi, "**")
+    .replace(/<\/?em>/gi, "*")
+    .replace(/<\/?i>/gi, "*");
+
+  if (code) {
+    text += `\n\n\`\`\`\n${code}\n\`\`\``;
+  }
+
+  if (imgUrl && !text.includes(imgUrl) && !text.includes("![")) {
+    text += `\n\n![diagram](${imgUrl})\n`;
+  }
+
+  return text;
+}
+
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ slug: string }> }
@@ -29,7 +55,7 @@ export async function GET(
   const topic = {
     id: 1,
     slug,
-    name: slug,
+    name: slug.replace(/_/g, " "),
     category: "tech",
     createdAt: new Date(),
   };
@@ -46,14 +72,15 @@ export async function GET(
 
   let counter = 1;
   const questions = rawList.map((q) => {
-    let answer = q.answer || "";
-    if (q.code) answer += `\n\`\`\`\n${q.code}\n\`\`\``;
+    const imgUrl = resolveImageUrl(q.image || q.image2 || null);
+    const answer = normalizeContent(q.answer || "", imgUrl, q.code);
+
     return {
       id: q.id || counter++,
       topicId: 1,
       question: q.question || "",
       answer,
-      imageUrl: q.image || q.image2 || null,
+      imageUrl: imgUrl,
       sourceFile: slug,
       createdAt: new Date(),
       updatedAt: new Date(),
