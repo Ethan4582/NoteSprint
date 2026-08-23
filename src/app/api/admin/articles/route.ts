@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
 import { insertArticle } from "@/src/db";
+
+export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   try {
@@ -12,59 +12,28 @@ export async function POST(req: Request) {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
 
-    const dir = path.join(process.cwd(), "src/data/mock", category);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-
-    const filePath = path.join(dir, `${slug}.md`);
-    fs.writeFileSync(filePath, body.content, "utf-8");
-
-    const metaPath = path.join(process.cwd(), "src/data/mock", `${category}_metadata.json`);
-    let metaRecord: Record<string, unknown> = {};
-    if (fs.existsSync(metaPath)) {
-      try {
-        metaRecord = JSON.parse(fs.readFileSync(metaPath, "utf-8"));
-      } catch {
-        metaRecord = {};
-      }
-    }
-
-    metaRecord[slug] = {
-      title: body.title,
-      readingTime: body.readingTime || 5,
+    const tagsJson = typeof body.tags === "string" ? body.tags : JSON.stringify(body.tags || []);
+    const result = await insertArticle({
+      slug,
+      title: body.title || slug,
+      content: body.content || "",
+      category,
+      readingTime: Number(body.readingTime) || 5,
       difficulty: body.difficulty || "Medium",
-      tags: typeof body.tags === "string" ? JSON.parse(body.tags || "[]") : body.tags || [],
-    };
-    fs.writeFileSync(metaPath, JSON.stringify(metaRecord, null, 2), "utf-8");
+      tags: tagsJson,
+    });
 
-    try {
-      const tagsJson = typeof body.tags === "string" ? body.tags : JSON.stringify(body.tags || []);
-      await insertArticle({
-        slug,
-        title: body.title || slug,
-        content: body.content || "",
-        category,
-        readingTime: Number(body.readingTime) || 5,
-        difficulty: body.difficulty || "Medium",
-        tags: tagsJson,
-      });
-    } catch {
-      // ignore
-    }
-
-    return NextResponse.json({
-      id: Date.now(),
+    return NextResponse.json(result[0] || {
       slug,
       title: body.title,
       content: body.content,
       category,
       readingTime: body.readingTime || 5,
       difficulty: body.difficulty || "Medium",
-      tags: body.tags || "[]",
+      tags: tagsJson,
       createdAt: new Date(),
       updatedAt: new Date(),
-    });
+    }, { status: 201 });
   } catch (err) {
     return NextResponse.json({ error: (err as Error).message }, { status: 500 });
   }

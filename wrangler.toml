@@ -1,7 +1,9 @@
-name = "notes"
-main = "src/worker/index.ts"
-compatibility_date = "2024-01-01"
+name = "notesprint"
+main = ".open-next/worker.js"
+compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
+
+assets = { directory = ".open-next/assets", binding = "ASSETS" }
 
 [[d1_databases]]
 binding = "DB"
@@ -14,4 +16,3 @@ bucket_name = "quiz-app-images"
 
 [vars]
 R2_PUBLIC_URL = "https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev"
-
