@@ -4,6 +4,13 @@ import { useState } from "react";
 import { getQuestions } from "@/src/lib/data";
 import TopicCard from "./TopicCard";
 import { ArrowUpDown } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/src/components/ui/select";
 
 interface TopicGridProps {
   topics: { topic: string; qCount?: number }[];
@@ -39,23 +46,27 @@ export default function TopicGrid({
           <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
             Available Decks
           </h2>
-          <span className="text-xs px-2 py-0.5 rounded-[6px] bg-white border border-[var(--border)] text-[var(--text-secondary)] font-mono font-semibold">
+          <span className="text-xs px-2 py-0.5 rounded-md bg-white border border-[var(--border)] text-[var(--text-secondary)] font-mono font-semibold">
             {sortedTopics.length} topics
           </span>
         </div>
 
         {/* Sort Controls */}
-        <div className="flex items-center gap-1.5">
-          <ArrowUpDown size={12} className="text-[var(--text-muted)]" />
-          <select
+        <div className="flex items-center gap-2">
+          <ArrowUpDown size={13} className="text-[var(--text-muted)] shrink-0" />
+          <Select
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as "most" | "fewest" | "az")}
-            className="text-xs font-semibold bg-white border border-[var(--border)] rounded-[8px] px-2 py-1 text-[var(--text-secondary)] outline-none shadow-2xs cursor-pointer hover:border-[var(--border-strong)]"
+            onValueChange={(val) => setSortBy(val as "most" | "fewest" | "az")}
           >
-            <option value="most">Most Cards</option>
-            <option value="fewest">Fewest Cards</option>
-            <option value="az">A — Z</option>
-          </select>
+            <SelectTrigger className="h-8 px-2.5 py-1 text-xs font-semibold bg-white border border-[var(--border)] rounded-md text-[var(--text-primary)] shadow-2xs hover:border-[var(--border-strong)] focus:ring-1 focus:ring-[var(--accent)] w-auto min-w-[125px] gap-2">
+              <SelectValue placeholder="Sort topics" />
+            </SelectTrigger>
+            <SelectContent className="bg-white border border-[var(--border)] rounded-md shadow-xl text-xs">
+              <SelectItem value="most" className="text-xs font-medium cursor-pointer">Most Cards</SelectItem>
+              <SelectItem value="fewest" className="text-xs font-medium cursor-pointer">Fewest Cards</SelectItem>
+              <SelectItem value="az" className="text-xs font-medium cursor-pointer">A — Z</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 

@@ -76,37 +76,32 @@ export default function DashboardSidebar({ activeTab, onSelectTab }: DashboardSi
     <>
       <aside
         className={cn(
-          "hidden md:flex flex-col shrink-0 border-r border-[var(--border)] bg-white h-screen sticky top-0 p-4 justify-between select-none z-20 transition-all duration-300",
-          collapsed ? "w-16 items-center px-2" : "w-60"
+          "hidden md:flex flex-col shrink-0 border-r border-[var(--border)] bg-white h-screen sticky top-0 p-5 justify-between select-none z-20 transition-all duration-300",
+          collapsed ? "w-16 items-center px-2.5 py-5" : "w-60"
         )}
       >
-        {/* Top Brand & Collapse Toggle */}
-        <div className="space-y-4 w-full">
-          <div className={cn("flex items-center justify-between", collapsed ? "flex-col gap-3" : "px-2 py-1")}>
+        {/* Top Brand, Search & Navigation */}
+        <div className="space-y-5 w-full">
+          <div className={cn("flex items-center justify-between", collapsed ? "flex-col gap-3" : "px-1")}>
             <Link href="/" className="flex items-center gap-2.5 min-w-0" aria-label="NoteSprint Home">
               <Image
                 src="/logo.png"
                 alt="NoteSprint Logo"
                 width={28}
                 height={28}
-                className="w-7 h-7 rounded-[8px] object-cover border border-[var(--border)] shadow-xs shrink-0"
+                className="w-7 h-7 rounded-md object-cover border border-[var(--border)] shadow-xs shrink-0"
               />
               {!collapsed && (
-                <div className="min-w-0">
-                  <div className="text-[10px] font-black tracking-wider uppercase text-[var(--accent)] leading-tight">
-                    NOTE SPRINTS
-                  </div>
-                  <div className="text-sm font-bold tracking-tight text-[var(--text-primary)] leading-none mt-0.5 truncate">
-                    Flashcards
-                  </div>
-                </div>
+                <span className="text-sm font-bold tracking-tight text-[var(--text-primary)] truncate">
+                  NoteSprint
+                </span>
               )}
             </Link>
 
             <button
               type="button"
               onClick={toggleCollapse}
-              className="p-1.5 rounded-[8px] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] transition-colors"
+              className="p-1.5 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] transition-colors"
               title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
               aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
@@ -119,7 +114,7 @@ export default function DashboardSidebar({ activeTab, onSelectTab }: DashboardSi
             type="button"
             onClick={() => setSearchOpen(true)}
             className={cn(
-              "w-full flex items-center gap-2.5 p-2 rounded-[10px] bg-[var(--bg-subtle)] border border-[var(--border)] text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--border-strong)] transition-all",
+              "w-full flex items-center gap-2.5 p-2.5 rounded-md bg-[var(--bg-subtle)] border border-[var(--border)] text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--border-strong)] transition-all shadow-2xs",
               collapsed ? "justify-center px-0" : "px-3"
             )}
             title="Search (⌘ K)"
@@ -127,17 +122,16 @@ export default function DashboardSidebar({ activeTab, onSelectTab }: DashboardSi
             <Search size={14} className="shrink-0 text-[var(--text-muted)]" />
             {!collapsed && (
               <>
-                <span className="flex-1 text-left font-medium truncate">Search topics...</span>
-                <kbd className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold px-2 py-0.5 rounded-md bg-white border border-[var(--border)] text-[var(--text-muted)] leading-none select-none shadow-2xs">
-                  <span>⌘</span>
-                  <span>K</span>
-                </kbd>
+                <span className="flex-1 text-left font-medium truncate text-[var(--text-muted)]">Search topics...</span>
+                <span className="text-[11px] font-mono text-[var(--text-muted)] select-none">
+                  ⌘ K
+                </span>
               </>
             )}
           </button>
 
           {/* Nav Links */}
-          <nav className="space-y-1 w-full pt-1">
+          <nav className="space-y-1.5 w-full pt-1">
             {navItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -147,7 +141,7 @@ export default function DashboardSidebar({ activeTab, onSelectTab }: DashboardSi
                   onClick={item.onClick}
                   title={collapsed ? item.label : undefined}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-xs font-semibold transition-all",
+                    "flex items-center gap-3 px-3 py-2.5 rounded-md text-xs font-semibold transition-all",
                     collapsed && "justify-center px-0",
                     item.isActive
                       ? "bg-[var(--accent-subtle)] text-[var(--accent)] font-bold shadow-2xs"
@@ -169,18 +163,18 @@ export default function DashboardSidebar({ activeTab, onSelectTab }: DashboardSi
 
         {/* Bottom Footer: Creator Link */}
         <div className="pt-3 border-t border-[var(--border)] w-full">
-          <div className={cn("flex items-center", collapsed ? "justify-center" : "px-1")}>
+          <div className={cn("flex items-center", collapsed ? "justify-center" : "px-2 py-1")}>
             <a
               href="https://x.com/ashirwadsingh_"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 text-[11px] font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors group"
+              className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors group"
               title="Creator on Twitter"
             >
               <svg
                 viewBox="0 0 24 24"
                 aria-hidden="true"
-                className="w-3.5 h-3.5 fill-current text-[var(--text-muted)] group-hover:text-[var(--accent)] shrink-0"
+                className="w-3.5 h-3.5 fill-current text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] shrink-0"
               >
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
               </svg>

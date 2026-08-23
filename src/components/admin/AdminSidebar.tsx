@@ -67,10 +67,6 @@ export default function AdminSidebar() {
       </div>
 
       <div className="pt-4 border-t border-[var(--border)] space-y-3">
-        <div className="flex items-center justify-between px-3 py-2 rounded-md bg-[var(--bg-subtle)] border border-[var(--border)] text-[11px]">
-          <span className="flex items-center gap-2 font-semibold text-[var(--text-secondary)]"><span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> Edge Worker</span>
-          <span className="font-mono text-[10px] text-[var(--text-muted)]">v1.0 D1</span>
-        </div>
         <button type="button" onClick={handleLogout} className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-md border border-[var(--border)] hover:bg-[var(--error-subtle)] hover:border-rose-200 text-xs font-bold text-[var(--text-secondary)] hover:text-[var(--error)] transition-colors">
           <LogOut className="w-3.5 h-3.5" /> Sign Out
         </button>
