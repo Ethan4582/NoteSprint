@@ -43,6 +43,8 @@ interface AdaptiveGroup {
   dimensions: {
     clientCountryName: string;
     userAgentBrowser: string;
+    clientDeviceType: string;
+    clientRequestPath: string;
   };
   count: number;
 }
@@ -83,14 +85,6 @@ const ICON_MAP: Record<string, string> = {
   oops: "/icon/oops.png",
 };
 
-const COUNTRY_FLAGS: Record<string, string> = {
-  US: "🇺🇸", IN: "🇮🇳", GB: "🇬🇧", DE: "🇩🇪", CA: "🇨🇦", AU: "🇦🇺",
-  FR: "🇫🇷", JP: "🇯🇵", SG: "🇸🇬", NL: "🇳🇱", SE: "🇸🇪", BR: "🇧🇷",
-  KR: "🇰🇷", PK: "🇵🇰", TR: "🇹🇷", NG: "🇳🇬", EG: "🇪🇬", ID: "🇮🇩",
-  MY: "🇲🇾", PH: "🇵🇭", HK: "🇭🇰", ZA: "🇿🇦", RU: "🇷🇺", IT: "🇮🇹",
-  ES: "🇪🇸", MX: "🇲🇽", AR: "🇦🇷", PT: "🇵🇹", CH: "🇨🇭", IL: "🇮🇱",
-};
-
 const COUNTRY_NAMES: Record<string, string> = {
   US: "United States", IN: "India", GB: "United Kingdom", DE: "Germany",
   CA: "Canada", AU: "Australia", FR: "France", JP: "Japan", SG: "Singapore",
@@ -99,6 +93,19 @@ const COUNTRY_NAMES: Record<string, string> = {
   HK: "Hong Kong", ZA: "South Africa", RU: "Russia", IT: "Italy",
   ES: "Spain", MX: "Mexico", MA: "Morocco", SA: "Saudi Arabia",
 };
+
+function getCountryFlag(code: string): string {
+  if (!code || code.length !== 2) return "🌐";
+  try {
+    const codePoints = code
+      .toUpperCase()
+      .split("")
+      .map((char) => 127397 + char.charCodeAt(0));
+    return String.fromCodePoint(...codePoints);
+  } catch {
+    return "🌐";
+  }
+}
 
 async function queryCloudflareRealData(startDateIso: string, endDateIso: string, since23hIso: string) {
   const { token, accountId, zoneId, scriptName, hostname } = getCfCredentials();
@@ -129,7 +136,12 @@ async function queryCloudflareRealData(startDateIso: string, endDateIso: string,
               datetime_geq: "${since23hIso}"
             }
           ) {
-            dimensions { clientCountryName userAgentBrowser }
+            dimensions {
+              clientCountryName
+              userAgentBrowser
+              clientDeviceType
+              clientRequestPath
+            }
             count
           }
         }
@@ -223,6 +235,19 @@ export async function GET(req: Request) {
   const totalRequests = invocations.reduce((s, item) => s + (item.sum?.requests ?? 0), 0);
   const totalErrors = invocations.reduce((s, item) => s + (item.sum?.errors ?? 0), 0);
 
+  // Calculate real path counts for article reads vs flashcard drills from edge adaptive telemetry
+  let realArticleReadsCount = 0;
+  let realFlashcardDrillsCount = 0;
+
+  for (const group of adaptiveGroups) {
+    const path = group.dimensions.clientRequestPath || "";
+    if (path.startsWith("/system-design") || path.startsWith("/articles") || path.startsWith("/api/articles")) {
+      realArticleReadsCount += group.count;
+    } else {
+      realFlashcardDrillsCount += group.count;
+    }
+  }
+
   // Time-series Trend Data construction
   const trendData = [];
   const studyActivity = [];
@@ -239,7 +264,6 @@ export async function GET(req: Request) {
         ? `${bucketStart.getHours().toString().padStart(2, "0")}:${bucketStart.getMinutes().toString().padStart(2, "0")}`
         : `${bucketStart.getHours().toString().padStart(2, "0")}:00`;
 
-      // Aggregate matching invocations within this interval
       let bucketReqs = 0;
       for (const inv of invocations) {
         const invTime = new Date(inv.dimensions.datetime).getTime();
@@ -259,7 +283,7 @@ export async function GET(req: Request) {
       studyActivity.push({
         date: label,
         flashcardSessions: bucketReqs,
-        articleReads: Math.round(bucketReqs * 0.3),
+        articleReads: realArticleReadsCount > 0 && bucketReqs > 0 ? Math.min(bucketReqs, realArticleReadsCount) : 0,
       });
     }
   } else {
@@ -289,54 +313,48 @@ export async function GET(req: Request) {
       studyActivity.push({
         date: label,
         flashcardSessions: dayReqs,
-        articleReads: Math.round(dayReqs * 0.3),
+        articleReads: 0,
       });
     }
   }
 
-  // Country breakdown from real notes.aash7.xyz adaptive groups
+  // Country breakdown from real notes.aash7.xyz telemetry
   const countryCountMap = new Map<string, number>();
-  const browserCountMap = new Map<string, number>();
+  let totalCountryCount = 0;
 
   for (const group of adaptiveGroups) {
     const c = group.dimensions.clientCountryName;
     if (c && c !== "Unknown" && c !== "XX") {
       countryCountMap.set(c, (countryCountMap.get(c) ?? 0) + group.count);
-    }
-    const b = group.dimensions.userAgentBrowser;
-    if (b) {
-      browserCountMap.set(b, (browserCountMap.get(b) ?? 0) + group.count);
+      totalCountryCount += group.count;
     }
   }
 
   const sortedCountries = [...countryCountMap.entries()]
     .sort((a, b) => b[1] - a[1])
     .slice(0, 5);
-  const maxCountryReqs = sortedCountries[0]?.[1] ?? 1;
 
   const topCountries = sortedCountries.map(([code, count]) => ({
     code,
     name: COUNTRY_NAMES[code] ?? code,
-    flag: COUNTRY_FLAGS[code] ?? "🌐",
+    flag: getCountryFlag(code),
     visitors: count,
-    percentage: Math.round((count / maxCountryReqs) * 100),
+    percentage: totalCountryCount > 0 ? Math.round((count / totalCountryCount) * 100) : 0,
   }));
 
-  // Device breakdown from real user agents
-  const mobileBrowsers = new Set([
-    "MobileSafari", "ChromeMobile", "OperaMobile", "SamsungBrowser", "AndroidBrowser", "UCBrowser"
-  ]);
+  // Device breakdown from real Cloudflare clientDeviceType
   let desktopCount = 0;
   let mobileCount = 0;
   let tabletCount = 0;
 
-  for (const [browser, count] of browserCountMap) {
-    if (mobileBrowsers.has(browser)) {
-      mobileCount += count;
-    } else if (browser === "MobileSafari") {
-      tabletCount += count;
+  for (const group of adaptiveGroups) {
+    const device = (group.dimensions.clientDeviceType || "").toLowerCase();
+    if (device === "mobile") {
+      mobileCount += group.count;
+    } else if (device === "tablet") {
+      tabletCount += group.count;
     } else {
-      desktopCount += count;
+      desktopCount += group.count;
     }
   }
 
@@ -364,16 +382,16 @@ export async function GET(req: Request) {
   }));
 
   // Top topics from D1
-  const maxQ = dbTopics.length > 0 ? Math.max(...dbTopics.map((t) => t.q_count || 1)) : 1;
+  const sumQuestions = totalQuestions || dbTopics.reduce((s, t) => s + (t.q_count || 0), 1);
   const topTopics: TopTopic[] = dbTopics.map((t) => ({
     slug: t.slug,
     name: t.name || t.slug.replace(/_/g, " "),
     iconPath: ICON_MAP[t.slug] || "/icon/nodejs.png",
     visitors: t.q_count,
-    percentage: Math.min(100, Math.round((t.q_count / maxQ) * 100)),
+    percentage: Math.min(100, Math.round((t.q_count / sumQuestions) * 100)),
   }));
 
-  // KPI cards with real metrics
+  // KPI metrics
   const daysSpan = Math.max(1, Math.round((endDate.getTime() - startDate.getTime()) / (24 * 60 * 60 * 1000)));
   const avgDaily = Math.round(totalRequests / daysSpan);
 

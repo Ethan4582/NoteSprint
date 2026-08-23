@@ -18,7 +18,7 @@ import type { PeakHourData } from "./types";
 
 const chartConfig = {
   activity: {
-    label: "Active Learners",
+    label: "Hourly Requests",
     color: "var(--accent)",
   },
 } satisfies ChartConfig;
@@ -38,10 +38,10 @@ export default function PeakHoursChart({
           </div>
           <div>
             <h3 className="text-sm font-black tracking-tight text-[var(--text-primary)]">
-              Study Peak Hours (UTC)
+              Activity Peak Hours (UTC)
             </h3>
             <p className="text-xs text-[var(--text-muted)]">
-              Hourly learner distribution pattern
+              Hourly request distribution pattern
             </p>
           </div>
         </div>

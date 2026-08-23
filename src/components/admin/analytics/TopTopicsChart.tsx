@@ -21,16 +21,16 @@ export default function TopTopicsChart({
           </div>
           <div>
             <h3 className="text-sm font-black tracking-tight text-[var(--text-primary)]">
-              Top Studied Topics
+              Content Library by Topic
             </h3>
             <p className="text-xs text-[var(--text-muted)]">
-              Most visited study categories & roadmaps
+              Question distribution across modules
             </p>
           </div>
         </div>
 
         <span className="text-[11px] font-mono font-bold px-2.5 py-1 rounded-lg bg-[var(--bg-subtle)] text-[var(--text-secondary)] border border-[var(--border)]">
-          {topics.length} Topics
+          {totalQuestions} Total Qs
         </span>
       </div>
 
@@ -98,7 +98,7 @@ export default function TopTopicsChart({
               {/* Stat badges */}
               <div className="flex items-center gap-1.5 shrink-0 font-mono pl-2">
                 <span className="text-xs font-black text-[var(--text-primary)]">
-                  {topic.visitors.toLocaleString()} <span className="text-[10px] font-medium text-[var(--text-muted)]">qs</span>
+                  {topic.visitors.toLocaleString()} <span className="text-[10px] font-medium text-[var(--text-muted)]">Qs</span>
                 </span>
                 <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[var(--bg-subtle)] text-[var(--text-secondary)] border border-[var(--border)]">
                   {share}%
