@@ -94,14 +94,12 @@ export default function DashboardClient({ systemDocs }: { systemDocs: MarkdownMe
         {/* Mobile-Only Top Brand Bar */}
         <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-xl border-b border-[var(--border)] px-4 h-14 flex items-center justify-between md:hidden">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-xl bg-[var(--accent)] flex items-center justify-center text-white font-extrabold text-xs shadow-xs p-1">
-              <img src="/logo.png" alt="NoteSprint" className="w-full h-full object-contain" />
-            </div>
+            <img src="/logo.png" alt="NoteSprint" className="w-7 h-7 rounded-[8px] object-cover border border-[var(--border)]" />
             <span className="text-sm font-extrabold tracking-tight text-[var(--text-primary)]">
               Note<span className="text-[var(--accent)]">Sprint</span>
             </span>
           </div>
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded-[10px] bg-[var(--bg-subtle)] text-[var(--text-muted)] border border-[var(--border)]">
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded-[8px] bg-[var(--bg-subtle)] text-[var(--text-muted)] border border-[var(--border)]">
             Offline Ready
           </span>
         </header>
@@ -135,7 +133,7 @@ export default function DashboardClient({ systemDocs }: { systemDocs: MarkdownMe
                   return (
                     <button
                       key={slug}
-                      onClick={() => router.push(`/practice?topic=${slug}`)}
+                      onClick={() => router.push(`/session?topic=${slug}&count=10&time=5&mode=flashcard`)}
                       className="text-left p-3 rounded-[11px] bg-[var(--bg-subtle)] border border-[var(--border)] hover:bg-white hover:border-[var(--accent)]/40 transition-all shadow-2xs group"
                     >
                       <p className="text-xs font-bold tracking-tight text-[var(--text-primary)] truncate group-hover:text-[var(--accent)]">

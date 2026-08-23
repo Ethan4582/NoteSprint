@@ -133,7 +133,7 @@ export default function BookmarksPage() {
                 Tap the bookmark icon on any flashcard or question to save it for targeted practice.
               </p>
               <button
-                onClick={() => router.push("/practice")}
+                onClick={() => router.push("/library")}
                 className="mt-6 px-6 py-2.5 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs font-bold uppercase tracking-wider rounded-[11px] transition-all shadow-sm active:scale-95 flex items-center gap-2"
               >
                 <span>Explore Topics</span>

@@ -30,7 +30,7 @@ export default async function MarkdownReaderPage({
         <div className="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link
-              href="/dashboard"
+              href="/system-design/articles"
               className="w-9 h-9 rounded-[10px] flex items-center justify-center bg-white border border-[var(--border)] hover:bg-[var(--bg-subtle)] transition-all text-[var(--text-secondary)] hover:text-[var(--text-primary)] shadow-xs"
             >
               <ArrowLeft size={16} />

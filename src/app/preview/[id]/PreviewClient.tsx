@@ -55,10 +55,10 @@ export default function PreviewClient({ id }: { id: string }) {
           <h1 className="text-xl font-normal font-serif text-[var(--text-primary)]">Topic Not Found</h1>
           <p className="text-[var(--text-muted)] mt-2 text-xs">The topic &quot;{id}&quot; doesn&apos;t exist in our records yet.</p>
           <button
-            onClick={() => router.push("/practice")}
-            className="mt-6 w-full px-6 py-2.5 bg-[var(--accent)] text-white rounded-md font-bold text-xs uppercase tracking-wider hover:bg-[var(--accent-hover)] transition-all shadow-sm"
+            onClick={() => router.push("/library")}
+            className="mt-6 w-full px-6 py-2.5 bg-[var(--accent)] text-white rounded-[10px] font-bold text-xs uppercase tracking-wider hover:bg-[var(--accent-hover)] transition-all shadow-sm"
           >
-            Back to Practice
+            Back to Library
           </button>
         </motion.div>
       </div>

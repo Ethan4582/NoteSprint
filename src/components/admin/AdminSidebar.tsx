@@ -59,7 +59,7 @@ export default function AdminSidebar() {
         </div>
 
         <div className="pt-1">
-          <Link href="/dashboard" target="_blank" className="flex items-center justify-between px-3 py-2 rounded-md text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] border border-transparent hover:border-[var(--border)] transition-colors">
+          <Link href="/library" target="_blank" className="flex items-center justify-between px-3 py-2 rounded-md text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] border border-transparent hover:border-[var(--border)] transition-colors">
             <span className="flex items-center gap-2"><Zap className="w-3.5 h-3.5 text-amber-500" /> Live Website</span>
             <ArrowUpRight className="w-3.5 h-3.5 opacity-60" />
           </Link>

@@ -29,12 +29,12 @@ export default function SystemDesignReadView({ search = "", systemDocs }: System
 
   return (
     <div className="w-full space-y-5">
-      <div className="flex items-center gap-1.5 p-1 rounded-full bg-white border border-[var(--border)] shadow-sm w-fit max-w-full overflow-x-auto scrollbar-hide">
+      <div className="flex items-center gap-1.5 p-1 rounded-[10px] bg-white border border-[var(--border)] shadow-sm w-fit max-w-full overflow-x-auto scrollbar-hide">
         {(["HLD", "LLD", "Quiz"] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-1.5 rounded-full text-xs font-bold tracking-wide whitespace-nowrap transition-colors ${activeTab === tab ? "bg-[var(--text-primary)] text-white shadow-sm" : "text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)]"}`}
+            className={`px-4 py-1.5 rounded-[8px] text-xs font-bold tracking-wide whitespace-nowrap transition-colors ${activeTab === tab ? "bg-[var(--text-primary)] text-white shadow-sm" : "text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)]"}`}
           >
             {tab}
           </button>
@@ -45,14 +45,14 @@ export default function SystemDesignReadView({ search = "", systemDocs }: System
         {activeTab === "Quiz" ? (
           <div className="space-y-4">
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              <TopicCard subject="System Design" topic="hld" qCount={getQuestions([], "hld").length} basePath="/practice" isSelected={selectedTopics.includes("hld")} onToggle={() => toggleTopic("hld")} />
-              <TopicCard subject="System Design" topic="lld" qCount={getQuestions([], "lld").length} basePath="/practice" isSelected={selectedTopics.includes("lld")} onToggle={() => toggleTopic("lld")} />
+              <TopicCard subject="System Design" topic="hld" qCount={getQuestions([], "hld").length} basePath="/library" isSelected={selectedTopics.includes("hld")} onToggle={() => toggleTopic("hld")} />
+              <TopicCard subject="System Design" topic="lld" qCount={getQuestions([], "lld").length} basePath="/library" isSelected={selectedTopics.includes("lld")} onToggle={() => toggleTopic("lld")} />
             </div>
             {selectedTopics.length > 0 && (
               <div className="fixed bottom-[84px] sm:bottom-6 left-0 right-0 flex justify-center z-40 pointer-events-none px-4">
                 <button
                   onClick={() => setIsModalOpen(true)}
-                  className="pointer-events-auto inline-flex items-center gap-2 bg-[var(--text-primary)] text-white px-5 py-3 rounded-full shadow-[0_12px_32px_rgba(28,25,23,0.2)] font-bold text-xs tracking-wide"
+                  className="pointer-events-auto inline-flex items-center gap-2 bg-[var(--text-primary)] text-white px-5 py-3 rounded-[12px] shadow-[0_12px_32px_rgba(28,25,23,0.2)] font-bold text-xs tracking-wide"
                 >
                   <Play size={14} fill="currentColor" /> Configure session ({selectedTopics.length})
                 </button>

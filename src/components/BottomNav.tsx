@@ -1,35 +1,38 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
-import { LayoutGrid, Sparkles, Bookmark } from "lucide-react";
+import { LayoutGrid, Sparkles, BookOpen, Bookmark } from "lucide-react";
 
 export default function BottomNav() {
   const router = useRouter();
   const pathname = usePathname();
 
   const navItems = [
-    { label: "Practice", path: "/practice", altPath: "/interview", icon: Sparkles },
+    { label: "Library", path: "/library", altPath: "/dashboard", icon: LayoutGrid },
+    { label: "Interview", path: "/interview", icon: Sparkles },
+    { label: "System Design", path: "/system-design/articles", altPath: "/system-design", icon: BookOpen },
     { label: "Saved", path: "/bookmarks", icon: Bookmark },
   ];
 
   return (
-    <div className="fixed bottom-4 left-0 right-0 z-50 flex justify-center px-4 md:hidden pointer-events-none">
+    <div className="fixed bottom-3 left-0 right-0 z-50 flex justify-center px-4 md:hidden pointer-events-none">
       <nav
         aria-label="Mobile Navigation"
-        className="pointer-events-auto flex items-center gap-1 p-1.5 rounded-[12px] bg-white/95 backdrop-blur-xl border border-[var(--border)] shadow-[0_4px_20px_rgba(0,0,0,0.06)] max-w-xs w-full"
+        className="pointer-events-auto flex items-center gap-1 p-1 rounded-[12px] bg-white/95 backdrop-blur-xl border border-[var(--border)] shadow-[0_4px_20px_rgba(0,0,0,0.08)] max-w-sm w-full"
       >
         {navItems.map((item) => {
           const isActive =
             pathname === item.path ||
             (item.altPath && pathname === item.altPath) ||
-            (item.path === "/bookmarks" && pathname.startsWith("/bookmarks"));
+            (item.path === "/bookmarks" && pathname.startsWith("/bookmarks")) ||
+            (item.path === "/system-design/articles" && pathname.startsWith("/system-design"));
           const Icon = item.icon;
           return (
             <button
               key={item.path}
               onClick={() => router.push(item.path)}
               aria-current={isActive ? "page" : undefined}
-              className={`flex-1 flex flex-col items-center justify-center py-2 px-3 rounded-[10px] transition-all duration-200 ${
+              className={`flex-1 flex flex-col items-center justify-center py-1.5 px-2 rounded-[10px] transition-all duration-150 ${
                 isActive
                   ? "bg-[var(--accent)] text-white shadow-xs font-bold"
                   : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)]"
