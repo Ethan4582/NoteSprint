@@ -17,7 +17,7 @@ export default function BottomNav() {
     <div className="fixed bottom-4 left-0 right-0 z-50 flex justify-center px-4 md:hidden pointer-events-none">
       <nav
         aria-label="Mobile Navigation"
-        className="pointer-events-auto flex items-center gap-1 p-1.5 rounded-full bg-white/90 backdrop-blur-xl border border-[var(--border)] shadow-[0_8px_30px_rgba(28,25,23,0.08)] max-w-sm w-full"
+        className="pointer-events-auto flex items-center gap-1 p-1.5 rounded-xl bg-white/90 backdrop-blur-xl border border-[var(--border)] shadow-[0_8px_30px_rgba(28,25,23,0.08)] max-w-sm w-full"
       >
         {navItems.map((item) => {
           const isActive =
@@ -30,7 +30,7 @@ export default function BottomNav() {
               key={item.path}
               onClick={() => router.push(item.path)}
               aria-current={isActive ? "page" : undefined}
-              className={`flex-1 flex flex-col items-center justify-center py-2 px-3 rounded-full transition-all duration-200 ${
+              className={`flex-1 flex flex-col items-center justify-center py-2 px-3 rounded-lg transition-all duration-200 ${
                 isActive
                   ? "bg-[var(--text-primary)] text-white shadow-sm font-semibold"
                   : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)]"

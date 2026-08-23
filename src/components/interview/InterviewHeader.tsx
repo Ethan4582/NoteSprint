@@ -16,11 +16,11 @@ export default function InterviewHeader() {
           <ArrowLeft className="w-4 h-4" />
         </button>
         <div>
-          <h1 className="text-base sm:text-lg font-extrabold tracking-tight text-[var(--text-primary)]">
-            Interview Prep
+          <h1 className="text-lg sm:text-xl font-normal font-serif tracking-tight text-[var(--text-primary)]">
+            Interview Prep Decks
           </h1>
-          <p className="text-[11px] font-semibold text-[var(--text-muted)]">
-            Configure active recall session
+          <p className="text-[11px] text-[var(--text-muted)]">
+            Configure targeted active recall session
           </p>
         </div>
       </div>

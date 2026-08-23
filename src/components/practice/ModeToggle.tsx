@@ -7,30 +7,32 @@ interface ModeToggleProps {
 
 export default function ModeToggle({ mode, setMode }: ModeToggleProps) {
   return (
-    <div className="space-y-3">
-      <h3 className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest drop-shadow-md">
+    <div className="space-y-2">
+      <label className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block">
         Session Mode
-      </h3>
-      <div className="flex bg-[var(--bg-subtle)] p-1 rounded-[12px] h-12 border border-[var(--border-strong)] shadow-inset-cavity relative">
+      </label>
+      <div className="flex bg-[var(--bg-subtle)] p-1 rounded-2xl border border-[var(--border)] relative">
         <button
+          type="button"
           onClick={() => setMode("flashcard")}
-          className={`flex-1 flex items-center justify-center text-[10px] font-black uppercase tracking-widest rounded-[9px] transition-all z-10 ${
+          className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all ${
             mode === "flashcard"
-              ? "bg-raised shadow-raised-crisp text-[var(--accent)] border border-[var(--border-strong)]"
-              : "text-[var(--text-muted)] hover:text-[var(--text-primary)] border border-transparent"
+              ? "bg-white text-[var(--text-primary)] shadow-xs"
+              : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           }`}
         >
-          Flashcard
+          Flashcard Drill
         </button>
         <button
+          type="button"
           onClick={() => setMode("notes")}
-          className={`flex-1 flex items-center justify-center text-[10px] font-black uppercase tracking-widest rounded-[9px] transition-all z-10 ${
+          className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all ${
             mode === "notes"
-              ? "bg-raised shadow-raised-crisp text-[var(--accent)] border border-[var(--border-strong)]"
-              : "text-[var(--text-muted)] hover:text-[var(--text-primary)] border border-transparent"
+              ? "bg-white text-[var(--text-primary)] shadow-xs"
+              : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           }`}
         >
-          Read
+          Read Overview
         </button>
       </div>
     </div>

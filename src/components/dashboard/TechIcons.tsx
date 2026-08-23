@@ -70,7 +70,7 @@ export function getTechIcon(topic: string, subject?: string) {
     return <MonitorSmartphone className="w-8 h-8 text-pink-500 drop-shadow-[0_0_8px_rgba(236,72,153,0.4)]" />;
   }
   if (topic === "interview_hr") {
-    return <Users className="w-8 h-8 text-orange-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.4)]" />;
+    return <Users className="w-8 h-8 text-[var(--accent)] drop-shadow-[0_0_8px_rgba(61,5,4,0.3)]" />;
   }
 
   return <FileCode className="w-6 h-6 text-[var(--accent)]" />;

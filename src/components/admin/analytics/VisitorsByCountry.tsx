@@ -9,11 +9,11 @@ export default function VisitorsByCountry({
   countries: CountryVisitor[];
 }) {
   return (
-    <div className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-sm space-y-4 flex flex-col justify-between">
+    <div className="rounded-lg border border-[var(--border)] bg-white p-5 shadow-sm space-y-4 flex flex-col justify-between">
       {/* Header */}
       <div className="flex items-center justify-between pb-2 border-b border-[var(--border)]">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+          <div className="p-2 rounded-md bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
             <Globe className="h-4 w-4" />
           </div>
           <div>
@@ -45,9 +45,9 @@ export default function VisitorsByCountry({
               </span>
             </div>
 
-            <div className="h-2 w-full rounded-full bg-[var(--bg-subtle)] overflow-hidden border border-[var(--border)]">
+            <div className="h-2 w-full rounded-xs bg-[var(--bg-subtle)] overflow-hidden border border-[var(--border)]">
               <div
-                className="h-full rounded-full bg-emerald-500 transition-all duration-500 group-hover:brightness-110"
+                className="h-full rounded-xs bg-emerald-500 transition-all duration-500 group-hover:brightness-110"
                 style={{ width: `${country.percentage}%` }}
               />
             </div>

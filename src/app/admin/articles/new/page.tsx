@@ -88,12 +88,12 @@ export default function NewArticlePage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--border)] pb-4">
         <div className="flex items-center gap-3">
           <Link href="/admin/articles">
-            <Button variant="outline" size="icon" className="h-9 w-9 rounded-xl">
+            <Button variant="outline" size="icon" className="h-9 w-9 rounded-full bg-white border-[var(--border)] shadow-xs">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
           <div>
-            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-[var(--text-primary)]">
+            <h1 className="text-2xl sm:text-3xl font-normal font-serif tracking-tight text-[var(--text-primary)]">
               Create Article
             </h1>
             <p className="text-xs text-[var(--text-secondary)] mt-0.5">
@@ -104,109 +104,116 @@ export default function NewArticlePage() {
 
         <div className="flex items-center gap-3">
           <Link href="/admin/articles">
-            <Button variant="ghost" size="sm">Cancel</Button>
+            <Button variant="ghost" size="sm" className="rounded-full text-xs font-bold">Cancel</Button>
           </Link>
-          <Button onClick={handleSubmit} disabled={loading} size="sm">
+          <Button
+            onClick={handleSubmit}
+            disabled={loading}
+            size="sm"
+            className="rounded-full px-5 font-bold text-xs bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white shadow-sm"
+          >
             {loading ? <Loader2 className="h-4 w-4 animate-spin mr-1.5" /> : <Save className="h-4 w-4 mr-1.5" />}
-            Publish Article
+            Save Changes
           </Button>
         </div>
       </div>
 
       {error && (
-        <div className="rounded-xl bg-rose-500/10 border border-rose-500/20 p-3.5 text-xs text-[var(--error)] font-medium">
+        <div className="rounded-md bg-rose-50 border border-rose-200 p-3.5 text-xs text-rose-600 font-medium">
           {error}
         </div>
       )}
 
       {/* 2-Column Full Width Layout */}
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Column: Sticky & Scrollable Metadata & Media */}
-        <div className="lg:col-span-4 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto custom-scrollbar space-y-5 pr-1">
-          <div className="rounded-2xl border border-[var(--border-strong)] bg-raised p-5 shadow-raised-crisp space-y-4">
+        {/* Left Column: Metadata & Media */}
+        <div className="lg:col-span-4 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto space-y-5 pr-1">
+          <div className="rounded-lg border border-[var(--border)] bg-white p-5 shadow-sm space-y-4">
             <div className="space-y-1.5">
-              <label className="text-[11px] font-black uppercase tracking-wider text-[var(--text-secondary)]">
-                Category
-              </label>
-              <Select value={category} onValueChange={setCategory}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="lld">Low Level Design (LLD)</SelectItem>
-                  <SelectItem value="hld">High Level Design (HLD)</SelectItem>
-                  <SelectItem value="system_design">System Design</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-black uppercase tracking-wider text-[var(--text-secondary)]">
-                Article Title
+              <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                Title
               </label>
               <Input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g. Distributed Cache Design"
+                placeholder="e.g. Distributed Rate Limiter System Design"
                 required
+                className="h-10 rounded-md bg-white border-[var(--border)] text-xs shadow-xs"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-[11px] font-black uppercase tracking-wider text-[var(--text-secondary)]">
-                Slug
+              <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                Slug (URL Identifier)
               </label>
               <Input
                 value={slug}
                 onChange={(e) => setSlug(e.target.value)}
-                placeholder="distributed-cache-design"
+                placeholder="distributed-rate-limiter"
                 required
+                className="h-10 rounded-md bg-white border-[var(--border)] text-xs font-mono shadow-xs"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="text-[11px] font-black uppercase tracking-wider text-[var(--text-secondary)]">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                  Category
+                </label>
+                <Select value={category} onValueChange={setCategory}>
+                  <SelectTrigger className="h-10 rounded-md bg-white border-[var(--border)] text-xs">
+                    <SelectValue placeholder="Category" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white border-[var(--border)] rounded-md shadow-xl">
+                    <SelectItem value="lld">LLD</SelectItem>
+                    <SelectItem value="hld">HLD</SelectItem>
+                    <SelectItem value="system_design">System Design</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
                   Difficulty
                 </label>
-                <Select
-                  value={difficulty}
-                  onValueChange={(val: "Easy" | "Medium" | "Hard") => setDifficulty(val)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
+                <Select value={difficulty} onValueChange={(v) => setDifficulty(v as "Easy" | "Medium" | "Hard")}>
+                  <SelectTrigger className="h-10 rounded-md bg-white border-[var(--border)] text-xs">
+                    <SelectValue placeholder="Difficulty" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white border-[var(--border)] rounded-md shadow-xl">
                     <SelectItem value="Easy">Easy</SelectItem>
                     <SelectItem value="Medium">Medium</SelectItem>
                     <SelectItem value="Hard">Hard</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
+            </div>
 
+            <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="text-[11px] font-black uppercase tracking-wider text-[var(--text-secondary)]">
-                  Read Time (min)
+                <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                  Reading Time (Mins)
                 </label>
                 <Input
                   type="number"
-                  min={1}
+                  min="1"
                   value={readingTime}
-                  onChange={(e) => setReadingTime(parseInt(e.target.value, 10) || 1)}
-                  required
+                  onChange={(e) => setReadingTime(Number(e.target.value))}
+                  className="h-10 rounded-md bg-white border-[var(--border)] text-xs font-mono shadow-xs"
                 />
               </div>
-            </div>
 
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-black uppercase tracking-wider text-[var(--text-secondary)]">
-                Tags (comma separated)
-              </label>
-              <Input
-                value={tags}
-                onChange={(e) => setTags(e.target.value)}
-                placeholder="redis, cache, scaling"
-              />
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+                  Tags (Comma separated)
+                </label>
+                <Input
+                  value={tags}
+                  onChange={(e) => setTags(e.target.value)}
+                  placeholder="redis, cache, scale"
+                  className="h-10 rounded-md bg-white border-[var(--border)] text-xs shadow-xs"
+                />
+              </div>
             </div>
           </div>
 
@@ -220,20 +227,24 @@ export default function NewArticlePage() {
         {/* Right Column: Main Editor */}
         <div className="lg:col-span-8 space-y-4">
           <div className="space-y-1.5">
-            <label className="text-[11px] font-black uppercase tracking-wider text-[var(--text-secondary)]">
-              Article Content
+            <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+              Article Content (Markdown)
             </label>
             <RichMarkdownEditor
               value={content}
               onChange={setContent}
               size="large"
               onImageUploaded={handleImageUploaded}
-              placeholder="Write your article in markdown..."
+              placeholder="Write the article in markdown..."
             />
           </div>
 
-          <Button type="submit" disabled={loading} className="w-full h-11 text-sm font-bold">
-            {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : "Publish Article"}
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full h-11 rounded-md text-xs font-bold uppercase tracking-wider bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white shadow-md"
+          >
+            {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : "Save Changes"}
           </Button>
         </div>
       </form>

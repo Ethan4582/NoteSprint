@@ -52,7 +52,7 @@ export default function AdminNav() {
           </Link>
 
           {/* Desktop Nav Items Tabs */}
-          <nav className="hidden md:flex items-center gap-1.5 p-1 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border)] shadow-inset-cavity">
+          <nav className="hidden md:flex items-center gap-1.5 p-1 rounded-md bg-[var(--bg-subtle)] border border-[var(--border)] shadow-inset-cavity">
             {navItems.map((item) => {
               const Icon = item.icon;
               const active =
@@ -65,7 +65,7 @@ export default function AdminNav() {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all",
+                    "flex items-center gap-2 px-3.5 py-1.5 rounded text-xs font-bold transition-all",
                     active
                       ? "bg-[var(--bg-surface)] text-[var(--text-primary)] shadow-raised-crisp border border-[var(--border-strong)]"
                       : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]/50"
@@ -89,13 +89,13 @@ export default function AdminNav() {
               <DropdownMenuTrigger asChild>
                 <button
                   type="button"
-                  className="flex items-center gap-1.5 h-9 px-3 rounded-xl border border-[var(--border)] bg-[var(--bg-subtle)] text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-surface)] transition-all shadow-sm active:scale-95"
+                  className="flex items-center gap-1.5 h-9 px-3 rounded-md border border-[var(--border)] bg-[var(--bg-subtle)] text-xs font-bold text-[var(--text-primary)] hover:bg-[var(--bg-surface)] transition-all shadow-sm active:scale-95"
                 >
                   <span>{currentNav.label}</span>
                   <ChevronDown className="h-3.5 w-3.5 text-[var(--text-muted)] ml-0.5" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-44 p-1 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-strong)] shadow-lg">
+              <DropdownMenuContent align="end" className="w-44 p-1 rounded-md bg-[var(--bg-surface)] border border-[var(--border-strong)] shadow-lg">
                 {navItems.map((item) => {
                   const Icon = item.icon;
                   const active =
@@ -108,7 +108,7 @@ export default function AdminNav() {
                       <Link
                         href={item.href}
                         className={cn(
-                          "flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-lg cursor-pointer transition-colors w-full",
+                          "flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded cursor-pointer transition-colors w-full",
                           active
                             ? "bg-[var(--accent)]/10 text-[var(--accent)] font-bold"
                             : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)]"
@@ -123,7 +123,7 @@ export default function AdminNav() {
                 <DropdownMenuSeparator className="my-1 bg-[var(--border)]" />
                 <DropdownMenuItem
                   onClick={handleLogout}
-                  className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 rounded-lg cursor-pointer"
+                  className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 rounded cursor-pointer"
                 >
                   <LogOut className="h-4 w-4" />
                   <span>Logout</span>
@@ -138,7 +138,7 @@ export default function AdminNav() {
           <button
             type="button"
             onClick={handleLogout}
-            className="hidden md:flex items-center gap-2 px-3.5 py-2 rounded-xl border border-[var(--border)] bg-[var(--bg-subtle)] hover:bg-rose-500/10 hover:border-rose-500/30 text-xs font-bold text-[var(--text-secondary)] hover:text-[var(--error)] transition-all shadow-sm active:scale-95"
+            className="hidden md:flex items-center gap-2 px-3.5 py-2 rounded-md border border-[var(--border)] bg-[var(--bg-subtle)] hover:bg-rose-500/10 hover:border-rose-500/30 text-xs font-bold text-[var(--text-secondary)] hover:text-[var(--error)] transition-all shadow-sm active:scale-95"
             title="Logout from admin dashboard"
           >
             <LogOut className="h-3.5 w-3.5" />

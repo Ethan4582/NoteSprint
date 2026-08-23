@@ -60,7 +60,7 @@ export default async function MarkdownReaderPage({
             </div>
           </aside>
 
-          <div className="w-full max-w-3xl bg-white p-6 sm:p-12 rounded-3xl border border-[var(--border)] shadow-sm">
+          <div className="w-full max-w-3xl bg-white p-6 sm:p-12 rounded-lg border border-[var(--border)] shadow-sm">
             <ClientMarkdownRenderer content={content} />
           </div>
         </div>

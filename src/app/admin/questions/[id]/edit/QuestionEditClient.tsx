@@ -123,27 +123,32 @@ export default function QuestionEditClient({ id }: { id: number }) {
     <div className="w-full space-y-6 pb-16">
       {/* Top Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--border)] pb-4">
-        <div className="flex items-center gap-3 min-w-0">
+        <div className="flex items-center gap-3">
           <Link href="/admin/questions">
-            <Button variant="outline" size="icon" className="h-9 w-9 rounded-xl flex-shrink-0">
+            <Button variant="outline" size="icon" className="h-9 w-9 rounded-full bg-white border-[var(--border)] shadow-xs">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
-          <div className="min-w-0">
-            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-[var(--text-primary)] truncate">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-normal font-serif tracking-tight text-[var(--text-primary)]">
               Edit Question #{id}
             </h1>
-            <p className="text-xs text-[var(--text-muted)] mt-0.5 font-mono">
-              Topic: {topicParam || "General"}
+            <p className="text-xs text-[var(--text-secondary)] mt-0.5">
+              Update question text, explanation, and diagram assets.
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 flex-shrink-0">
+        <div className="flex items-center gap-3">
           <Link href="/admin/questions">
-            <Button variant="ghost" size="sm">Cancel</Button>
+            <Button variant="ghost" size="sm" className="rounded-full text-xs font-bold">Cancel</Button>
           </Link>
-          <Button onClick={handleSubmit} disabled={loading} size="sm">
+          <Button
+            onClick={handleSubmit}
+            disabled={loading}
+            size="sm"
+            className="rounded-md px-5 font-bold text-xs bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white shadow-sm"
+          >
             {loading ? <Loader2 className="h-4 w-4 animate-spin mr-1.5" /> : <Save className="h-4 w-4 mr-1.5" />}
             Save Changes
           </Button>
@@ -151,25 +156,25 @@ export default function QuestionEditClient({ id }: { id: number }) {
       </div>
 
       {error && (
-        <div className="rounded-xl bg-rose-500/10 border border-rose-500/20 p-3.5 text-xs text-[var(--error)] font-medium">
+        <div className="rounded-md bg-rose-50 border border-rose-200 p-3.5 text-xs text-rose-600 font-medium">
           {error}
         </div>
       )}
 
       {/* 2-Column Full Width Layout */}
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Column: Sticky & Scrollable Metadata & Media */}
-        <div className="lg:col-span-4 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto custom-scrollbar space-y-5 pr-1">
-          <div className="rounded-2xl border border-[var(--border-strong)] bg-raised p-5 shadow-raised-crisp space-y-4">
+        {/* Left Column: Metadata & Media */}
+        <div className="lg:col-span-4 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto space-y-5 pr-1">
+          <div className="rounded-lg border border-[var(--border)] bg-white p-5 shadow-sm space-y-4">
             <div className="space-y-1.5">
-              <label className="text-[11px] font-black uppercase tracking-wider text-[var(--text-secondary)]">
+              <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
                 Topic
               </label>
               <Select value={topicId} onValueChange={setTopicId}>
-                <SelectTrigger>
+                <SelectTrigger className="h-10 rounded-md bg-white border-[var(--border)] text-xs">
                   <SelectValue placeholder="Select topic" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white border-[var(--border)] rounded-md shadow-xl">
                   {topics.map((t) => (
                     <SelectItem key={t.id} value={String(t.id)}>
                       {t.name}
@@ -180,14 +185,15 @@ export default function QuestionEditClient({ id }: { id: number }) {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-[11px] font-black uppercase tracking-wider text-[var(--text-secondary)]">
+              <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
                 Question Title
               </label>
               <Input
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
-                placeholder="What is..."
+                placeholder="Enter question text..."
                 required
+                className="h-10 rounded-md bg-white border-[var(--border)] text-xs shadow-xs"
               />
             </div>
           </div>
@@ -202,7 +208,7 @@ export default function QuestionEditClient({ id }: { id: number }) {
         {/* Right Column: Main Editor */}
         <div className="lg:col-span-8 space-y-4">
           <div className="space-y-1.5">
-            <label className="text-[11px] font-black uppercase tracking-wider text-[var(--text-secondary)]">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--text-secondary)]">
               Answer & Explanation
             </label>
             <RichMarkdownEditor
@@ -210,11 +216,15 @@ export default function QuestionEditClient({ id }: { id: number }) {
               onChange={setAnswer}
               size="large"
               onImageUploaded={handleImageUploaded}
-              placeholder="Write the explanation in markdown..."
+              placeholder="Write the answer in markdown..."
             />
           </div>
 
-          <Button type="submit" disabled={loading} className="w-full h-11 text-sm font-bold">
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full h-11 rounded-md text-xs font-bold uppercase tracking-wider bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white shadow-md"
+          >
             {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : "Save Changes"}
           </Button>
         </div>

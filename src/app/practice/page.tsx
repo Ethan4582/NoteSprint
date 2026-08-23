@@ -74,7 +74,7 @@ function PracticeContent() {
         <div className="fixed bottom-[84px] sm:bottom-6 left-0 right-0 flex justify-center z-40 pointer-events-none px-4">
           <button
             onClick={() => setIsModalOpen(true)}
-            className="pointer-events-auto bg-[var(--text-primary)] text-white px-5 py-3 rounded-full shadow-[0_12px_32px_rgba(28,25,23,0.2)] font-bold text-xs tracking-wide flex items-center gap-2 hover:translate-y-[-1px] transition-transform"
+            className="pointer-events-auto bg-[var(--text-primary)] text-white px-5 py-3 rounded-md shadow-[0_12px_32px_rgba(28,25,23,0.2)] font-bold text-xs tracking-wide flex items-center gap-2 hover:translate-y-[-1px] transition-transform"
           >
             <Play size={14} fill="currentColor" />
             Start session · {selectedTopics.length} deck{selectedTopics.length > 1 ? "s" : ""} · {totalSelectedQuestions} cards

@@ -14,38 +14,39 @@ export default function TimerConfig({
   setTimerEnabled,
 }: TimerConfigProps) {
   return (
-    <div className="space-y-3">
-      <h3 className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest drop-shadow-md">
-        Session Timer
-      </h3>
-      <div className="flex items-center gap-3">
-        <div className="flex-1 flex items-center gap-3 bg-[var(--bg-subtle)] px-4 h-12 rounded-xl shadow-inset-cavity transition-all">
-          <input
-            type="number"
-            min="0"
-            max="120"
-            value={time}
-            onChange={(e) => setTime(Math.max(0, parseInt(e.target.value) || 0))}
-            className="w-full bg-transparent text-lg font-bold text-[var(--text-primary)] focus:outline-none drop-shadow-md"
-          />
-          <span className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-tighter whitespace-nowrap drop-shadow-md">
-            Mins
-          </span>
-        </div>
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <label className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider block">
+          Session Timer
+        </label>
         <button
+          type="button"
           onClick={() => setTimerEnabled(!timerEnabled)}
-          className={`px-4 sm:px-6 h-12 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all z-10 ${
+          className={`px-3 py-1 rounded-full text-[11px] font-bold transition-all ${
             timerEnabled
-              ? "bg-raised shadow-raised-crisp text-[var(--accent)] border border-[var(--border-strong)]"
-              : "bg-transparent shadow-inset-cavity text-[var(--text-muted)] border border-transparent"
+              ? "bg-[var(--accent-subtle)] text-[var(--accent)] border border-[var(--accent)]/20"
+              : "bg-[var(--bg-subtle)] text-[var(--text-muted)] border border-[var(--border)]"
           }`}
         >
-          {timerEnabled ? "On" : "Off"}
+          {timerEnabled ? "Timer Enabled" : "Untimed"}
         </button>
       </div>
-      <p className="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-tighter opacity-70 px-1 drop-shadow-md">
-        Set to 0 for an untimed session.
-      </p>
+
+      {timerEnabled && (
+        <div className="flex items-center gap-3 bg-[var(--bg-subtle)] px-4 h-12 rounded-2xl border border-[var(--border)]">
+          <input
+            type="number"
+            min="1"
+            max="120"
+            value={time}
+            onChange={(e) => setTime(Math.max(1, parseInt(e.target.value) || 1))}
+            className="w-full bg-transparent text-base font-bold text-[var(--text-primary)] focus:outline-none font-mono"
+          />
+          <span className="text-xs font-bold text-[var(--text-muted)] uppercase">
+            Minutes
+          </span>
+        </div>
+      )}
     </div>
   );
 }

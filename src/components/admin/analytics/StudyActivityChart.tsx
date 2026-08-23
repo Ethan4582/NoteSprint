@@ -34,11 +34,11 @@ export default function StudyActivityChart({
   data: StudyActivityPoint[];
 }) {
   return (
-    <div className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-sm space-y-4 flex flex-col justify-between">
+    <div className="rounded-lg border border-[var(--border)] bg-white p-5 shadow-sm space-y-4 flex flex-col justify-between">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-[var(--border)]">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-blue-500/10 text-blue-500 border border-blue-500/20">
+          <div className="p-2 rounded-md bg-blue-500/10 text-blue-500 border border-blue-500/20">
             <BookOpen className="h-4 w-4" />
           </div>
           <div>
@@ -54,11 +54,11 @@ export default function StudyActivityChart({
         {/* Legend */}
         <div className="flex items-center gap-4 text-xs font-semibold">
           <div className="flex items-center gap-1.5">
-            <div className="h-2.5 w-2.5 rounded-full bg-[var(--accent)]" />
+            <div className="h-2.5 w-2.5 rounded-xs bg-[var(--accent)]" />
             <span className="text-[var(--text-secondary)]">Flashcards</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="h-2.5 w-2.5 rounded-full bg-[#a855f7]" />
+            <div className="h-2.5 w-2.5 rounded-xs bg-[#a855f7]" />
             <span className="text-[var(--text-secondary)]">System Design</span>
           </div>
         </div>

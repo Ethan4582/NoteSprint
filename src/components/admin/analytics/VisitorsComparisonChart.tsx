@@ -72,11 +72,11 @@ export default function VisitorsComparisonChart({
   ].filter(Boolean).join(" & ");
 
   return (
-    <div className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-sm space-y-4">
+    <div className="rounded-lg border border-[var(--border)] bg-white p-5 shadow-sm space-y-4">
       {/* Chart Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-[var(--border)]">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20">
+          <div className="p-2 rounded-md bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20">
             <LineChartIcon className="h-4 w-4" />
           </div>
           <div>
@@ -94,13 +94,13 @@ export default function VisitorsComparisonChart({
           <DropdownMenuTrigger asChild>
             <button
               type="button"
-              className="h-8 px-3 rounded-xl border border-[var(--border-strong)] bg-[var(--bg-subtle)] text-xs font-bold text-[var(--text-primary)] flex items-center justify-between gap-2 transition-all self-start sm:self-auto shadow-sm"
+              className="h-8 px-3 rounded-md border border-[var(--border-strong)] bg-[var(--bg-subtle)] text-xs font-bold text-[var(--text-primary)] flex items-center justify-between gap-2 transition-all self-start sm:self-auto shadow-sm"
             >
               <span>{activeLabels || "Select Metrics"}</span>
               <ChevronDown className="h-3.5 w-3.5 text-[var(--text-muted)]" />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-52 p-1.5 bg-[var(--bg-surface)] border border-[var(--border-strong)] shadow-xl rounded-xl">
+          <DropdownMenuContent align="end" className="w-52 p-1.5 bg-[var(--bg-surface)] border border-[var(--border-strong)] shadow-xl rounded-md">
             <DropdownMenuLabel className="text-[11px] font-bold text-[var(--text-muted)] px-2 py-1 uppercase tracking-wider">
               Toggle Displayed Metrics
             </DropdownMenuLabel>
@@ -109,7 +109,7 @@ export default function VisitorsComparisonChart({
             <DropdownMenuCheckboxItem
               checked={selectedMetrics.visitors}
               onCheckedChange={() => toggleMetric("visitors")}
-              className="text-xs font-semibold cursor-pointer py-1.5 focus:bg-[var(--bg-subtle)] focus:text-[var(--text-primary)] rounded-lg"
+              className="text-xs font-semibold cursor-pointer py-1.5 focus:bg-[var(--bg-subtle)] focus:text-[var(--text-primary)] rounded"
             >
               Unique Visitors
             </DropdownMenuCheckboxItem>
@@ -117,7 +117,7 @@ export default function VisitorsComparisonChart({
             <DropdownMenuCheckboxItem
               checked={selectedMetrics.pageviews}
               onCheckedChange={() => toggleMetric("pageviews")}
-              className="text-xs font-semibold cursor-pointer py-1.5 focus:bg-[var(--bg-subtle)] focus:text-[var(--text-primary)] rounded-lg"
+              className="text-xs font-semibold cursor-pointer py-1.5 focus:bg-[var(--bg-subtle)] focus:text-[var(--text-primary)] rounded"
             >
               Pageviews
             </DropdownMenuCheckboxItem>
@@ -125,7 +125,7 @@ export default function VisitorsComparisonChart({
             <DropdownMenuCheckboxItem
               checked={selectedMetrics.sessions}
               onCheckedChange={() => toggleMetric("sessions")}
-              className="text-xs font-semibold cursor-pointer py-1.5 focus:bg-[var(--bg-subtle)] focus:text-[var(--text-primary)] rounded-lg"
+              className="text-xs font-semibold cursor-pointer py-1.5 focus:bg-[var(--bg-subtle)] focus:text-[var(--text-primary)] rounded"
             >
               Study Sessions
             </DropdownMenuCheckboxItem>
