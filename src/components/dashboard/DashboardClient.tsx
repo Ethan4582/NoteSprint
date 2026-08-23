@@ -101,7 +101,7 @@ export default function DashboardClient({ systemDocs }: { systemDocs: MarkdownMe
               Note<span className="text-[var(--accent)]">Sprint</span>
             </span>
           </div>
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[var(--bg-subtle)] text-[var(--text-muted)] border border-[var(--border)]">
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded-[10px] bg-[var(--bg-subtle)] text-[var(--text-muted)] border border-[var(--border)]">
             Offline Ready
           </span>
         </header>
@@ -115,7 +115,7 @@ export default function DashboardClient({ systemDocs }: { systemDocs: MarkdownMe
 
           {/* Recently Viewed Shelf (Local Only) */}
           {hydrated && recent.length > 0 && activeTab === "ALL" && !search && (
-            <div className="rounded-3xl bg-white border border-[var(--border)] shadow-sm p-4 sm:p-5">
+            <div className="rounded-[12px] bg-white border border-[var(--border)] shadow-sm p-4 sm:p-5">
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-1.5">
                   <Clock3 size={13} />
@@ -136,7 +136,7 @@ export default function DashboardClient({ systemDocs }: { systemDocs: MarkdownMe
                     <button
                       key={slug}
                       onClick={() => router.push(`/practice?topic=${slug}`)}
-                      className="text-left p-3 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border)] hover:bg-white hover:border-[var(--accent)]/40 transition-all shadow-2xs group"
+                      className="text-left p-3 rounded-[11px] bg-[var(--bg-subtle)] border border-[var(--border)] hover:bg-white hover:border-[var(--accent)]/40 transition-all shadow-2xs group"
                     >
                       <p className="text-xs font-bold tracking-tight text-[var(--text-primary)] truncate group-hover:text-[var(--accent)]">
                         {slug.replace(/^interview_/, "").replace(/_/g, " ")}
@@ -191,7 +191,7 @@ export default function DashboardClient({ systemDocs }: { systemDocs: MarkdownMe
         <div className="fixed bottom-24 sm:bottom-8 left-0 right-0 md:left-64 flex justify-center z-40 pointer-events-none px-4">
           <button
             onClick={() => setIsModalOpen(true)}
-            className="pointer-events-auto inline-flex items-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white px-6 py-3.5 rounded-full shadow-xl shadow-[var(--accent)]/25 font-bold text-xs uppercase tracking-wider hover:scale-105 active:scale-95 transition-all"
+            className="pointer-events-auto inline-flex items-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white px-6 py-3.5 rounded-[12px] shadow-xl shadow-[var(--accent)]/25 font-bold text-xs uppercase tracking-wider hover:scale-105 active:scale-95 transition-all"
           >
             <Play size={14} fill="currentColor" />
             <span>

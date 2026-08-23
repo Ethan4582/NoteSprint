@@ -8,7 +8,6 @@ export default function BottomNav() {
   const pathname = usePathname();
 
   const navItems = [
-    { label: "Library", path: "/dashboard", altPath: "/", icon: LayoutGrid },
     { label: "Practice", path: "/practice", altPath: "/interview", icon: Sparkles },
     { label: "Saved", path: "/bookmarks", icon: Bookmark },
   ];
@@ -17,7 +16,7 @@ export default function BottomNav() {
     <div className="fixed bottom-4 left-0 right-0 z-50 flex justify-center px-4 md:hidden pointer-events-none">
       <nav
         aria-label="Mobile Navigation"
-        className="pointer-events-auto flex items-center gap-1 p-1.5 rounded-2xl bg-white/95 backdrop-blur-xl border border-[var(--border)] shadow-[0_4px_20px_rgba(60,45,35,0.08)] max-w-xs w-full"
+        className="pointer-events-auto flex items-center gap-1 p-1.5 rounded-[12px] bg-white/95 backdrop-blur-xl border border-[var(--border)] shadow-[0_4px_20px_rgba(0,0,0,0.06)] max-w-xs w-full"
       >
         {navItems.map((item) => {
           const isActive =
@@ -30,7 +29,7 @@ export default function BottomNav() {
               key={item.path}
               onClick={() => router.push(item.path)}
               aria-current={isActive ? "page" : undefined}
-              className={`flex-1 flex flex-col items-center justify-center py-2 px-3 rounded-xl transition-all duration-200 ${
+              className={`flex-1 flex flex-col items-center justify-center py-2 px-3 rounded-[10px] transition-all duration-200 ${
                 isActive
                   ? "bg-[var(--accent)] text-white shadow-xs font-bold"
                   : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)]"

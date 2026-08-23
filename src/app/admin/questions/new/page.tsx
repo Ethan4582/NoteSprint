@@ -79,7 +79,7 @@ export default function NewQuestionPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--border)] pb-4">
         <div className="flex items-center gap-3">
           <Link href="/admin/questions">
-            <Button variant="outline" size="icon" className="h-9 w-9 rounded-full bg-white border-[var(--border)] shadow-xs">
+            <Button variant="outline" size="icon" className="h-9 w-9 rounded-[10px] bg-white border-[var(--border)] shadow-xs">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
@@ -95,13 +95,13 @@ export default function NewQuestionPage() {
 
         <div className="flex items-center gap-3">
           <Link href="/admin/questions">
-            <Button variant="ghost" size="sm" className="rounded-full text-xs font-bold">Cancel</Button>
+            <Button variant="ghost" size="sm" className="rounded-[10px] text-xs font-bold">Cancel</Button>
           </Link>
           <Button
             onClick={handleSubmit}
             disabled={loading}
             size="sm"
-            className="rounded-full px-5 font-bold text-xs bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white shadow-sm"
+            className="rounded-[10px] px-5 font-bold text-xs bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white shadow-sm"
           >
             {loading ? <Loader2 className="h-4 w-4 animate-spin mr-1.5" /> : <Save className="h-4 w-4 mr-1.5" />}
             Save Changes

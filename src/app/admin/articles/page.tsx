@@ -285,7 +285,7 @@ export default function AdminArticlesPage() {
 
       {/* Delete Dialog */}
       <Dialog open={!!deletingSlug} onOpenChange={(open) => !open && setDeletingSlug(null)}>
-        <DialogContent className="bg-white border-[var(--border)] rounded-lg shadow-2xl">
+        <DialogContent className="bg-white border-[var(--border)] rounded-[12px] shadow-2xl">
           <DialogHeader>
             <DialogTitle className="font-serif text-lg font-normal">Delete Article</DialogTitle>
           </DialogHeader>
@@ -297,7 +297,7 @@ export default function AdminArticlesPage() {
               variant="outline"
               size="sm"
               onClick={() => setDeletingSlug(null)}
-              className="rounded-full text-xs font-bold"
+              className="rounded-[10px] text-xs font-bold"
             >
               Cancel
             </Button>
@@ -306,7 +306,7 @@ export default function AdminArticlesPage() {
               size="sm"
               disabled={actionLoading}
               onClick={handleDelete}
-              className="rounded-full text-xs font-bold bg-red-600 hover:bg-red-700 text-white"
+              className="rounded-[10px] text-xs font-bold bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white"
             >
               {actionLoading ? "Deleting..." : "Confirm Delete"}
             </Button>

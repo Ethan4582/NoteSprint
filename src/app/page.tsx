@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Sparkles,
   ArrowRight,
@@ -121,13 +122,14 @@ export default function LandingPage() {
           className="flex items-center justify-between gap-4 sm:gap-8 px-4 sm:px-6 py-2.5 rounded-xl bg-white/85 backdrop-blur-xl border border-[var(--border)] shadow-[0_8px_30px_rgb(0,0,0,0.06)] max-w-4xl w-full"
         >
           {/* Brand */}
-          <Link href="/" className="flex items-center gap-2.5 shrink-0">
-            <div className="w-7 h-7 rounded-md bg-[var(--accent)] flex items-center justify-center text-white font-black text-xs shadow-xs">
-              N
-            </div>
-            <span className="text-sm font-extrabold tracking-tight text-[var(--text-primary)]">
-              Note<span className="text-[var(--accent)]">Sprint</span>
-            </span>
+          <Link href="/" className="flex items-center shrink-0" aria-label="NoteSprint Home">
+            <Image
+              src="/logo.png"
+              alt="NoteSprint Logo"
+              width={28}
+              height={28}
+              className="w-7 h-7 rounded-md object-cover border border-[var(--border)] shadow-xs"
+            />
           </Link>
 
           {/* Center Links */}
@@ -562,9 +564,13 @@ export default function LandingPage() {
       <footer className="border-t border-[var(--border)] bg-[var(--bg-base)] py-8 text-center text-[11px] text-[var(--text-muted)] font-medium">
         <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <div className="w-5 h-5 rounded-md bg-[var(--accent)] text-white font-bold text-[10px] flex items-center justify-center">
-              N
-            </div>
+            <Image
+              src="/logo.png"
+              alt="NoteSprint Logo"
+              width={20}
+              height={20}
+              className="w-5 h-5 rounded-md object-cover border border-[var(--border)] shadow-xs"
+            />
             <span className="font-bold text-[var(--text-primary)]">NoteSprint</span>
             <span>· Crafted for lifelong engineering curiosity.</span>
           </div>

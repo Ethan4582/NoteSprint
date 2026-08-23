@@ -23,14 +23,14 @@ export default function Flashcard({
   return (
     <div className="w-full max-w-xl mx-auto">
       <motion.div
-        className="w-full bg-white rounded-lg p-6 sm:p-10 border border-[var(--border)] shadow-sm hover:shadow-md flex flex-col justify-between cursor-pointer transition-all hover:border-[var(--accent)] min-h-[340px]"
+        className="w-full bg-white rounded-[12px] p-6 sm:p-10 border border-[var(--border)] shadow-sm hover:shadow-md flex flex-col justify-between cursor-pointer transition-all hover:border-[var(--accent)] min-h-[340px]"
         onClick={onFlip}
-        whileHover={{ y: -3 }}
+        whileHover={{ y: -2 }}
         whileTap={{ scale: 0.99 }}
       >
         <div className="flex justify-between items-center">
           <BookmarkButton questionId={question.id} size={16} />
-          <span className="text-[11px] font-bold text-[var(--text-secondary)] font-mono bg-[var(--bg-subtle)] px-3 py-1 rounded-md border border-[var(--border)]">
+          <span className="text-[11px] font-bold text-[var(--text-secondary)] font-mono bg-[var(--bg-subtle)] px-3 py-1 rounded-[8px] border border-[var(--border)]">
             {current} / {total}
           </span>
         </div>

@@ -285,7 +285,7 @@ export default function AdminQuestionsPage() {
 
       {/* Delete Dialog */}
       <Dialog open={!!deletingId} onOpenChange={(open) => !open && setDeletingId(null)}>
-        <DialogContent className="bg-white border-[var(--border)] rounded-lg shadow-2xl">
+        <DialogContent className="bg-white border-[var(--border)] rounded-[12px] shadow-2xl">
           <DialogHeader>
             <DialogTitle className="font-serif text-lg font-normal">Delete Question #{deletingId}</DialogTitle>
           </DialogHeader>
@@ -297,7 +297,7 @@ export default function AdminQuestionsPage() {
               variant="outline"
               size="sm"
               onClick={() => setDeletingId(null)}
-              className="rounded-md text-xs font-bold"
+              className="rounded-[10px] text-xs font-bold"
             >
               Cancel
             </Button>
@@ -306,7 +306,7 @@ export default function AdminQuestionsPage() {
               size="sm"
               disabled={actionLoading}
               onClick={handleDelete}
-              className="rounded-md text-xs font-bold bg-red-600 hover:bg-red-700 text-white"
+              className="rounded-[10px] text-xs font-bold bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white"
             >
               {actionLoading ? "Deleting..." : "Confirm Delete"}
             </Button>
@@ -316,7 +316,7 @@ export default function AdminQuestionsPage() {
 
       {/* Preview Dialog */}
       <Dialog open={!!previewQuestion} onOpenChange={(open) => !open && setPreviewQuestion(null)}>
-        <DialogContent className="max-w-2xl bg-white border-[var(--border)] rounded-lg shadow-2xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl bg-white border-[var(--border)] rounded-[12px] shadow-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="font-serif text-lg font-normal text-[var(--text-primary)]">
               {previewQuestion?.question}

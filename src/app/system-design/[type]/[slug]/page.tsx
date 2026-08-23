@@ -31,7 +31,7 @@ export default async function MarkdownReaderPage({
           <div className="flex items-center gap-3">
             <Link
               href="/dashboard"
-              className="w-9 h-9 rounded-full flex items-center justify-center bg-white border border-[var(--border)] hover:bg-[var(--bg-subtle)] transition-all text-[var(--text-secondary)] hover:text-[var(--text-primary)] shadow-xs"
+              className="w-9 h-9 rounded-[10px] flex items-center justify-center bg-white border border-[var(--border)] hover:bg-[var(--bg-subtle)] transition-all text-[var(--text-secondary)] hover:text-[var(--text-primary)] shadow-xs"
             >
               <ArrowLeft size={16} />
             </Link>
@@ -60,7 +60,7 @@ export default async function MarkdownReaderPage({
             </div>
           </aside>
 
-          <div className="w-full max-w-3xl bg-white p-6 sm:p-12 rounded-lg border border-[var(--border)] shadow-sm">
+          <div className="w-full max-w-3xl bg-white p-6 sm:p-12 rounded-[12px] border border-[var(--border)] shadow-sm">
             <ClientMarkdownRenderer content={content} />
           </div>
         </div>

@@ -124,8 +124,8 @@ export default function BookmarksPage() {
               <span>Loading bookmarks...</span>
             </div>
           ) : questions.length === 0 ? (
-            <div className="py-20 flex flex-col items-center justify-center text-center p-8 bg-white rounded-3xl border border-[var(--border)] shadow-sm max-w-md mx-auto">
-              <div className="p-4 rounded-full bg-[var(--accent-subtle)] text-[var(--accent)] mb-4">
+            <div className="py-20 flex flex-col items-center justify-center text-center p-8 bg-white rounded-[12px] border border-[var(--border)] shadow-sm max-w-md mx-auto">
+              <div className="p-4 rounded-[12px] bg-[var(--accent-subtle)] text-[var(--accent)] mb-4">
                 <Bookmark className="h-8 w-8 opacity-75" />
               </div>
               <h2 className="text-lg font-bold text-[var(--text-primary)]">No Bookmarks Saved</h2>
@@ -134,7 +134,7 @@ export default function BookmarksPage() {
               </p>
               <button
                 onClick={() => router.push("/practice")}
-                className="mt-6 px-6 py-2.5 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs font-bold uppercase tracking-wider rounded-full transition-all shadow-sm active:scale-95 flex items-center gap-2"
+                className="mt-6 px-6 py-2.5 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs font-bold uppercase tracking-wider rounded-[11px] transition-all shadow-sm active:scale-95 flex items-center gap-2"
               >
                 <span>Explore Topics</span>
                 <ArrowRight size={14} />
@@ -147,10 +147,10 @@ export default function BookmarksPage() {
                 {topics.length > 1 && (
                   <div className="w-36 sm:w-48 shrink-0">
                     <Select value={selectedTopic} onValueChange={setSelectedTopic}>
-                      <SelectTrigger className="h-10 rounded-2xl bg-white border-[var(--border)] text-xs font-semibold px-3 shadow-xs">
+                      <SelectTrigger className="h-10 rounded-[10px] bg-white border-[var(--border)] text-xs font-semibold px-3 shadow-xs">
                         <SelectValue placeholder="All Topics" />
                       </SelectTrigger>
-                      <SelectContent className="bg-white border-[var(--border)] rounded-2xl shadow-xl">
+                      <SelectContent className="bg-white border-[var(--border)] rounded-[12px] shadow-xl">
                         <SelectItem value="all">All Topics</SelectItem>
                         {topics.map((t) => (
                           <SelectItem key={t} value={t}>
@@ -167,7 +167,7 @@ export default function BookmarksPage() {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="Search bookmarks..."
-                    className="h-10 pl-9 pr-3 rounded-2xl bg-white border-[var(--border)] text-xs placeholder:text-[var(--text-muted)] w-full shadow-xs focus:ring-2 focus:ring-[var(--accent)]/15"
+                    className="h-10 pl-9 pr-3 rounded-[10px] bg-white border-[var(--border)] text-xs placeholder:text-[var(--text-muted)] w-full shadow-xs focus:ring-2 focus:ring-[var(--accent)]/15"
                   />
                   <Search className="absolute left-3 top-3 h-4 w-4 text-[var(--text-muted)]" />
                 </div>
@@ -175,7 +175,7 @@ export default function BookmarksPage() {
                 <button
                   onClick={startSession}
                   disabled={filteredQuestions.length === 0}
-                  className="h-10 px-4 bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-50 text-white rounded-full font-bold text-xs uppercase tracking-wider transition-all shadow-sm active:scale-95 flex items-center justify-center gap-1.5 shrink-0 ml-auto"
+                  className="h-10 px-4 bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-50 text-white rounded-[10px] font-bold text-xs uppercase tracking-wider transition-all shadow-sm active:scale-95 flex items-center justify-center gap-1.5 shrink-0 ml-auto"
                 >
                   <Play size={13} fill="currentColor" />
                   <span className="hidden sm:inline">Practice Deck</span>
@@ -191,7 +191,7 @@ export default function BookmarksPage() {
                   return (
                     <div
                       key={q.id}
-                      className="rounded-2xl border border-[var(--border)] bg-white p-4 shadow-sm flex flex-col justify-between hover:border-[var(--accent)]/40 hover:shadow-md transition-all group"
+                      className="rounded-[11px] border border-[var(--border)] bg-white p-4 shadow-sm flex flex-col justify-between hover:border-[var(--accent)]/40 hover:shadow-md transition-all group"
                     >
                       <div className="space-y-2 flex-1">
                         <div className="flex items-center justify-between gap-2">
@@ -200,7 +200,7 @@ export default function BookmarksPage() {
                               #{(idx + 1).toString().padStart(2, "0")}
                             </span>
                             {q.topicName && (
-                              <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[var(--bg-subtle)] text-[var(--text-secondary)] border border-[var(--border)] truncate">
+                              <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-[6px] bg-[var(--bg-subtle)] text-[var(--text-secondary)] border border-[var(--border)] truncate">
                                 {q.topicName}
                               </span>
                             )}

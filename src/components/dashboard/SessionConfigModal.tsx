@@ -51,10 +51,10 @@ export default function SessionConfigModal({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="bg-white border border-[var(--border)] rounded-lg p-6 sm:p-8 w-full max-w-sm space-y-6 relative shadow-2xl animate-in zoom-in-95 duration-200">
+      <div className="bg-white border border-[var(--border)] rounded-[12px] p-6 sm:p-8 w-full max-w-sm space-y-6 relative shadow-2xl animate-in zoom-in-95 duration-200">
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 w-8 h-8 flex items-center justify-center rounded-md bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all"
+          className="absolute top-5 right-5 w-8 h-8 flex items-center justify-center rounded-[8px] bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all"
         >
           <X size={16} />
         </button>
@@ -78,11 +78,11 @@ export default function SessionConfigModal({
                   <label className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">
                     Question Count
                   </label>
-                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-[var(--bg-subtle)] text-[var(--text-secondary)] font-mono">
+                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-[6px] bg-[var(--bg-subtle)] text-[var(--text-secondary)] font-mono">
                     Max {totalAvailable}
                   </span>
                 </div>
-                <div className="flex items-center gap-3 bg-[var(--bg-subtle)] px-4 h-12 rounded-md border border-[var(--border)]">
+                <div className="flex items-center gap-3 bg-[var(--bg-subtle)] px-4 h-12 rounded-[10px] border border-[var(--border)]">
                   <input
                     type="number"
                     min="1"
@@ -113,7 +113,7 @@ export default function SessionConfigModal({
           <button
             onClick={startSession}
             disabled={totalAvailable === 0 || (mode === "notes" && topic.includes(","))}
-            className="w-full py-3.5 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs font-bold uppercase tracking-wider rounded-md transition-all shadow-md active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full py-3.5 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs font-bold uppercase tracking-wider rounded-[11px] transition-all shadow-md active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {mode === "notes" ? (
               <>

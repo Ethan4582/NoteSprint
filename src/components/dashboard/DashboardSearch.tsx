@@ -16,7 +16,7 @@ export default function DashboardSearch({ tabs, activeTab, setActiveTab }: Dashb
             key={tab}
             type="button"
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap active:scale-95 shrink-0 ${
+            className={`px-3.5 py-1.5 rounded-[10px] text-xs font-bold transition-all whitespace-nowrap active:scale-95 shrink-0 ${
               isActive
                 ? "bg-[var(--accent)] text-white shadow-xs"
                 : "bg-white text-[var(--text-secondary)] border border-[var(--border)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)]"

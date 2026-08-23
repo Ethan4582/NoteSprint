@@ -84,7 +84,7 @@ function InterviewContent() {
               placeholder="Search interview topics..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full h-11 pl-10 pr-4 bg-white rounded-2xl text-[var(--text-primary)] font-medium text-xs outline-none transition-all border border-[var(--border)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10 shadow-xs placeholder:text-[var(--text-muted)]"
+              className="w-full h-11 pl-10 pr-4 bg-white rounded-[11px] text-[var(--text-primary)] font-medium text-xs outline-none transition-all border border-[var(--border)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/10 shadow-xs placeholder:text-[var(--text-muted)]"
             />
           </div>
 
@@ -100,7 +100,7 @@ function InterviewContent() {
         <div className="fixed bottom-24 sm:bottom-8 left-0 right-0 md:left-60 flex justify-center z-40 pointer-events-none px-4">
           <button
             onClick={() => setIsModalOpen(true)}
-            className="pointer-events-auto inline-flex items-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white px-6 py-3.5 rounded-full shadow-xl font-bold text-xs uppercase tracking-wider hover:scale-105 active:scale-95 transition-all"
+            className="pointer-events-auto inline-flex items-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white px-6 py-3.5 rounded-[12px] shadow-xl font-bold text-xs uppercase tracking-wider hover:scale-105 active:scale-95 transition-all"
           >
             <Play size={14} fill="currentColor" />
             <span>

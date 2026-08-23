@@ -45,7 +45,7 @@ export default function DashboardSidebar({ activeTab, onSelectTab }: DashboardSi
     },
     {
       label: "System Design",
-      href: "/system-design/articles/music-leaderboard-system-design",
+      href: "/system-design/articles",
       icon: BookOpen,
       isActive: pathname.startsWith("/system-design") || activeTab === "System Design",
       onClick: () => onSelectTab && onSelectTab("System Design"),

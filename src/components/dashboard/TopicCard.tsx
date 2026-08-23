@@ -56,7 +56,7 @@ export default function TopicCard({ topic, qCount, basePath = "/practice", isSel
       <button
         onClick={handleStart}
         aria-pressed={isSelected ? "true" : "false"}
-        className={`group relative flex items-center gap-3 p-3 bg-white rounded-lg border text-left w-full overflow-hidden transition-all duration-200 ${
+        className={`group relative flex items-center gap-3 p-3 bg-white rounded-[11px] border text-left w-full overflow-hidden transition-all duration-200 ${
           isSelected
             ? "border-[var(--accent)] shadow-[var(--shadow-card)] ring-1 ring-[var(--accent)]/20"
             : "border-[var(--border)] shadow-sm hover:border-[var(--border-strong)] hover:shadow-[var(--shadow-soft)]"
@@ -64,12 +64,12 @@ export default function TopicCard({ topic, qCount, basePath = "/practice", isSel
       >
         {/* folder-tab hint */}
         <span
-          className="absolute -top-px left-4 h-[6px] w-10 rounded-b-sm border-x border-b hidden sm:block"
+          className="absolute -top-px left-4 h-[6px] w-10 rounded-b-[4px] border-x border-b hidden sm:block"
           style={{ background: tint.bg, borderColor: tint.bd }}
         />
 
         <div
-          className="w-11 h-11 rounded-md flex items-center justify-center shrink-0 border"
+          className="w-11 h-11 rounded-[10px] flex items-center justify-center shrink-0 border"
           style={{ background: tint.bg, borderColor: tint.bd }}
         >
           <span className="scale-[0.9]">{getTechIcon(topic)}</span>
@@ -84,12 +84,12 @@ export default function TopicCard({ topic, qCount, basePath = "/practice", isSel
               <span className="w-1.5 h-1.5 rounded-full" style={{ background: tint.dot }} />
               {qCount} cards
             </span>
-            {isSelected && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[var(--accent-soft)] border border-[var(--accent-border)] text-[var(--accent)]">Selected</span>}
+            {isSelected && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-[6px] bg-[var(--accent-soft)] border border-[var(--accent-border)] text-[var(--accent)]">Selected</span>}
           </div>
         </div>
 
         <span
-          className={`hidden sm:grid place-items-center w-7 h-7 rounded-md border shrink-0 transition-colors ${
+          className={`hidden sm:grid place-items-center w-7 h-7 rounded-[8px] border shrink-0 transition-colors ${
             isSelected ? "bg-[var(--accent)] border-[var(--accent)] text-white" : "bg-[var(--bg-subtle)] border-[var(--border)] text-[var(--text-muted)] group-hover:bg-white"
           }`}
         >
