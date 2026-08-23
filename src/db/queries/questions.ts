@@ -1,4 +1,4 @@
-import { asc, eq } from "drizzle-orm";
+import { asc, eq, inArray } from "drizzle-orm";
 import { getDb, AppDb } from "../index";
 import { questions, topics, Question, NewQuestion } from "../schema";
 
@@ -39,6 +39,28 @@ export async function getQuestionById(id: number, dbInstance?: AppDb): Promise<Q
     .limit(1);
 
   return rows[0] || null;
+}
+
+export async function getQuestionsByIds(ids: number[], dbInstance?: AppDb): Promise<QuestionWithTopic[]> {
+  if (!ids.length) return [];
+  const db = dbInstance || getDb();
+  return db
+    .select({
+      id: questions.id,
+      topicId: questions.topicId,
+      question: questions.question,
+      answer: questions.answer,
+      imageUrl: questions.imageUrl,
+      sourceFile: questions.sourceFile,
+      createdAt: questions.createdAt,
+      updatedAt: questions.updatedAt,
+      topicSlug: topics.slug,
+      topicName: topics.name,
+      category: topics.category,
+    })
+    .from(questions)
+    .innerJoin(topics, eq(topics.id, questions.topicId))
+    .where(inArray(questions.id, ids));
 }
 
 export async function updateQuestion(

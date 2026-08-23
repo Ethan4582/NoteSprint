@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { X } from "lucide-react";
+import { X, Play, BookOpen } from "lucide-react";
 import ModeToggle from "@/src/components/practice/ModeToggle";
 import TimerConfig from "@/src/components/practice/TimerConfig";
 
@@ -13,7 +13,12 @@ interface SessionConfigModalProps {
   onClose: () => void;
 }
 
-export default function SessionConfigModal({ topic, totalAvailable, isOpen, onClose }: SessionConfigModalProps) {
+export default function SessionConfigModal({
+  topic,
+  totalAvailable,
+  isOpen,
+  onClose,
+}: SessionConfigModalProps) {
   const router = useRouter();
   const [count, setCount] = useState(totalAvailable);
   const [time, setTime] = useState(5);
@@ -42,49 +47,64 @@ export default function SessionConfigModal({ topic, totalAvailable, isOpen, onCl
     }
   };
 
+  const formattedTopic = topic.replace(/interview_/g, "").replace(/_/g, " ");
+
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="bg-raised shadow-raised border border-[var(--border-strong)] rounded-2xl p-6 sm:p-8 w-full max-w-sm space-y-6 relative animate-in fade-in zoom-in duration-200">
-        <button 
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+      <div className="bg-white border border-[var(--border)] rounded-[12px] p-6 sm:p-8 w-full max-w-sm space-y-6 relative shadow-2xl animate-in zoom-in-95 duration-200">
+        <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-raised shadow-raised-crisp text-[var(--text-muted)] hover:text-[var(--accent)] active:scale-[0.95] transition-all border border-[var(--border-strong)]"
+          className="absolute top-5 right-5 w-8 h-8 flex items-center justify-center rounded-[8px] bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all"
         >
           <X size={16} />
         </button>
 
-        <div className="space-y-1">
-          <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] flex items-center gap-2 drop-shadow-[0_2px_2px_rgba(0,0,0,1)]">
-            <div className="w-1 h-3 bg-[var(--accent)] rounded-sm shadow-[0_0_8px_rgba(255,69,0,0.6)]"></div>
-            Session Config
-          </h3>
+        <div className="space-y-1 pr-8">
+          <span className="text-[11px] font-extrabold uppercase tracking-wider text-[var(--accent)]">
+            Configure Deck
+          </span>
+          <h2 className="text-xl font-bold capitalize tracking-tight text-[var(--text-primary)] truncate">
+            {formattedTopic}
+          </h2>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-5">
           <ModeToggle mode={mode} setMode={setMode} />
 
           {mode === "flashcard" && (
             <>
-              <div className="space-y-4">
-                <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)] ml-1 drop-shadow-md">Question Count</label>
-                <div className="flex items-center gap-4 bg-[var(--bg-subtle)] px-5 h-14 rounded-xl shadow-inset-cavity transition-all">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider">
+                    Question Count
+                  </label>
+                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-[6px] bg-[var(--bg-subtle)] text-[var(--text-secondary)] font-mono">
+                    Max {totalAvailable}
+                  </span>
+                </div>
+                <div className="flex items-center gap-3 bg-[var(--bg-subtle)] px-4 h-12 rounded-[10px] border border-[var(--border)]">
                   <input
                     type="number"
                     min="1"
                     max={totalAvailable || 1}
                     value={count}
-                    onChange={(e) => setCount(Math.min(totalAvailable, Math.max(1, parseInt(e.target.value) || 1)))}
-                    className="w-full bg-transparent text-2xl font-black text-[var(--text-primary)] focus:outline-none drop-shadow-md"
+                    onChange={(e) =>
+                      setCount(Math.min(totalAvailable, Math.max(1, parseInt(e.target.value) || 1)))
+                    }
+                    className="w-full bg-transparent text-base font-bold text-[var(--text-primary)] focus:outline-none font-mono"
                   />
-                  <div className="flex items-center gap-2 shrink-0">
-                    <span className="text-[9px] font-black text-[var(--text-muted)] uppercase">Max</span>
-                    <span className="px-2.5 py-1 bg-raised shadow-raised-crisp border border-[var(--border-strong)] rounded-md text-[10px] font-bold text-[var(--accent)] drop-shadow-[0_0_5px_rgba(255,69,0,0.3)]">
-                      {totalAvailable}
-                    </span>
-                  </div>
+                  <span className="text-xs font-bold text-[var(--text-muted)] uppercase">
+                    Cards
+                  </span>
                 </div>
               </div>
 
-              <TimerConfig time={time} setTime={setTime} timerEnabled={timerEnabled} setTimerEnabled={setTimerEnabled} />
+              <TimerConfig
+                time={time}
+                setTime={setTime}
+                timerEnabled={timerEnabled}
+                setTimerEnabled={setTimerEnabled}
+              />
             </>
           )}
         </div>
@@ -93,15 +113,20 @@ export default function SessionConfigModal({ topic, totalAvailable, isOpen, onCl
           <button
             onClick={startSession}
             disabled={totalAvailable === 0 || (mode === "notes" && topic.includes(","))}
-            className="w-full h-12 bg-raised shadow-raised border border-[var(--border-strong)] text-[var(--accent)] text-[11px] font-black uppercase tracking-[0.2em] rounded-xl hover:text-[var(--accent-hover)] transition-all active:scale-[0.97] disabled:opacity-30 disabled:grayscale disabled:cursor-not-allowed drop-shadow-[0_0_8px_rgba(255,69,0,0.3)] flex items-center justify-center"
+            className="w-full py-3.5 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs font-bold uppercase tracking-wider rounded-[11px] transition-all shadow-md active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            {mode === "notes" ? "Read Notes" : "Launch Session"}
+            {mode === "notes" ? (
+              <>
+                <BookOpen size={14} />
+                <span>Read Notes Overview</span>
+              </>
+            ) : (
+              <>
+                <Play size={14} fill="currentColor" />
+                <span>Launch Practice Session</span>
+              </>
+            )}
           </button>
-          {mode === "notes" && topic.includes(",") && (
-            <p className="text-[10px] text-[var(--error)] text-center mt-3 font-bold uppercase tracking-widest drop-shadow-md">
-              Please select only 1 topic to read notes.
-            </p>
-          )}
         </div>
       </div>
     </div>

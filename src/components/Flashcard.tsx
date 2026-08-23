@@ -14,37 +14,36 @@ interface FlashcardProps {
   current: number;
 }
 
-export default function Flashcard({ 
-  question, 
-  isFlipped, 
+export default function Flashcard({
+  question,
   onFlip,
   total,
-  current 
+  current,
 }: FlashcardProps) {
-
   return (
-    <div className="w-full max-w-[560px] mx-auto">
+    <div className="w-full max-w-xl mx-auto">
       <motion.div
-        className="w-full bg-[var(--bg-surface)] rounded-[12px] p-5 sm:p-8 border border-[var(--border)] shadow-sm flex flex-col justify-between cursor-pointer transition-all hover:border-[var(--accent)] hover:shadow-md min-h-[300px]"
+        className="w-full bg-white rounded-[12px] p-6 sm:p-10 border border-[var(--border)] shadow-sm hover:shadow-md flex flex-col justify-between cursor-pointer transition-all hover:border-[var(--accent)] min-h-[340px]"
         onClick={onFlip}
-        whileHover={{ y: -4 }}
+        whileHover={{ y: -2 }}
+        whileTap={{ scale: 0.99 }}
       >
         <div className="flex justify-between items-center">
-          <BookmarkButton questionId={question.id} size={15} />
-          <span className="text-[10px] font-semibold text-[var(--text-muted)] uppercase tracking-widest bg-[var(--bg-subtle)] px-2 py-1 rounded-[6px]">
-            Question {current} / {total}
+          <BookmarkButton questionId={question.id} size={16} />
+          <span className="text-[11px] font-bold text-[var(--text-secondary)] font-mono bg-[var(--bg-subtle)] px-3 py-1 rounded-[8px] border border-[var(--border)]">
+            {current} / {total}
           </span>
         </div>
 
         <div className="flex-1 flex items-center justify-center py-8">
-          <h2 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] leading-tight text-center tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-extrabold text-[var(--text-primary)] leading-snug text-center tracking-tight">
             {question.question}
           </h2>
         </div>
 
-        <div className="text-center pt-5 border-t border-[var(--border)]">
-          <span className="text-[11px] font-semibold text-[var(--accent)] uppercase tracking-widest animate-pulse">
-            Tap to reveal answer
+        <div className="text-center pt-4 border-t border-[var(--border)]">
+          <span className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider">
+            Tap anywhere to flip card
           </span>
         </div>
       </motion.div>

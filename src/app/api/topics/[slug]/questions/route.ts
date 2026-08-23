@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getTopicBySlug, getQuestionsByTopicId } from "@/src/db";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 function resolveImageUrl(img?: string | null): string | null {
   if (!img) return null;
@@ -59,7 +59,14 @@ export async function GET(
       };
     });
 
-    return NextResponse.json({ topic, questions });
+    return NextResponse.json(
+      { topic, questions },
+      {
+        headers: {
+          "Cache-Control": "public, max-age=300, s-maxage=86400, stale-while-revalidate=604800",
+        },
+      }
+    );
   } catch (err) {
     console.error("D1 query error for topic questions:", err);
     return NextResponse.json({ error: "Failed to fetch topic questions" }, { status: 500 });

@@ -57,10 +57,10 @@ export default function FinishedView({ stats }: FinishedViewProps) {
             Try Again
           </button>
           <button
-            onClick={() => router.push("/dashboard")}
+            onClick={() => router.push("/library")}
             className="w-full h-10 bg-[var(--bg-subtle)] text-[var(--text-primary)] text-sm font-semibold rounded-[8px] hover:bg-[var(--border)] transition-all"
           >
-            Back to Dashboard
+            Back to Library
           </button>
         </div>
       </motion.div>

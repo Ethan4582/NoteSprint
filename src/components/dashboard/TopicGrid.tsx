@@ -1,7 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import { getQuestions } from "@/src/lib/data";
 import TopicCard from "./TopicCard";
+import { ArrowUpDown } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/src/components/ui/select";
 
 interface TopicGridProps {
   topics: { topic: string; qCount?: number }[];
@@ -10,22 +19,58 @@ interface TopicGridProps {
   onToggleTopic?: (topic: string) => void;
 }
 
-export default function TopicGrid({ topics, basePath, selectedTopics = [], onToggleTopic }: TopicGridProps) {
-  const sortedTopics = topics
+export default function TopicGrid({
+  topics,
+  basePath,
+  selectedTopics = [],
+  onToggleTopic,
+}: TopicGridProps) {
+  const [sortBy, setSortBy] = useState<"most" | "fewest" | "az">("most");
+
+  const sortedTopics = [...topics]
     .map(({ topic, qCount }) => ({
       topic,
       qCount: typeof qCount === "number" ? qCount : getQuestions([], topic).length,
     }))
-    .sort((a, b) => b.qCount - a.qCount);
+    .sort((a, b) => {
+      if (sortBy === "most") return b.qCount - a.qCount;
+      if (sortBy === "fewest") return a.qCount - b.qCount;
+      if (sortBy === "az") return a.topic.localeCompare(b.topic);
+      return 0;
+    });
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-[10px] font-black tracking-widest text-[var(--text-primary)] opacity-60 uppercase">Discovery topics</h2>
-        <div className="h-px flex-1 bg-[var(--border)] ml-6 opacity-30"></div>
+    <div className="space-y-3">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
+            Available Decks
+          </h2>
+          <span className="text-xs px-2 py-0.5 rounded-md bg-white border border-[var(--border)] text-[var(--text-secondary)] font-mono font-semibold">
+            {sortedTopics.length} topics
+          </span>
+        </div>
+
+        {/* Sort Controls */}
+        <div className="flex items-center gap-2">
+          <ArrowUpDown size={13} className="text-[var(--text-muted)] shrink-0" />
+          <Select
+            value={sortBy}
+            onValueChange={(val) => setSortBy(val as "most" | "fewest" | "az")}
+          >
+            <SelectTrigger className="h-8 px-2.5 py-1 text-xs font-semibold bg-white border border-[var(--border)] rounded-md text-[var(--text-primary)] shadow-2xs hover:border-[var(--border-strong)] focus:ring-1 focus:ring-[var(--accent)] w-auto min-w-[125px] gap-2">
+              <SelectValue placeholder="Sort topics" />
+            </SelectTrigger>
+            <SelectContent className="bg-white border border-[var(--border)] rounded-md shadow-xl text-xs">
+              <SelectItem value="most" className="text-xs font-medium cursor-pointer">Most Cards</SelectItem>
+              <SelectItem value="fewest" className="text-xs font-medium cursor-pointer">Fewest Cards</SelectItem>
+              <SelectItem value="az" className="text-xs font-medium cursor-pointer">A — Z</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
-      
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4">
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-3">
         {sortedTopics.map(({ topic, qCount }) => (
           <TopicCard
             key={topic}

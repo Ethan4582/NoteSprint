@@ -45,21 +45,21 @@ export default function AnalyticsHeader({
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
       {/* Title */}
       <div className="flex items-center gap-3">
-        <div className="p-2.5 rounded-2xl bg-[var(--accent)]/15 text-[var(--accent)] border border-[var(--accent)]/25 shadow-sm">
+        <div className="p-2.5 rounded-md bg-[var(--accent-subtle)] text-[var(--accent)] border border-[var(--accent)]/20 shadow-xs">
           <TrendingUp className="h-5 w-5" />
         </div>
         <div>
-          <h1 className="text-xl sm:text-2xl font-black tracking-tight text-[var(--text-primary)]">
-            Analytics
+          <h1 className="text-2xl sm:text-3xl font-normal font-serif tracking-tight text-[var(--text-primary)]">
+            Analytics & Telemetry
           </h1>
           <p className="text-xs text-[var(--text-muted)] font-medium">
-            Overview of your platform performance
+            Real-time Cloudflare edge metrics & learner activity.
           </p>
         </div>
       </div>
 
       {/* Range Pills Filter */}
-      <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-strong)] self-start sm:self-auto overflow-x-auto max-w-full">
+      <div className="flex items-center gap-1.5 p-1 rounded-md bg-white border border-[var(--border)] shadow-xs self-start sm:self-auto overflow-x-auto max-w-full">
         {RANGES.map((range) => {
           const isActive = activeRange === range.id;
           return (
@@ -68,10 +68,10 @@ export default function AnalyticsHeader({
               type="button"
               onClick={() => onSelectRange(range.id)}
               className={cn(
-                "px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0",
+                "px-3.5 py-1.5 rounded text-xs font-bold transition-all shrink-0",
                 isActive
-                  ? "bg-[var(--accent)] text-white shadow-sm"
-                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]"
+                  ? "bg-[var(--text-primary)] text-white shadow-xs"
+                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)]"
               )}
             >
               {range.label}
@@ -85,20 +85,20 @@ export default function AnalyticsHeader({
             <button
               type="button"
               className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer",
+                "flex items-center gap-1.5 px-3.5 py-1.5 rounded text-xs font-bold transition-all shrink-0 cursor-pointer",
                 activeRange === "custom"
-                  ? "bg-[var(--accent)] text-white shadow-sm"
-                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]"
+                  ? "bg-[var(--text-primary)] text-white shadow-xs"
+                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)]"
               )}
             >
               <CalendarIcon className="h-3.5 w-3.5" />
               <span>Custom</span>
             </button>
           </PopoverTrigger>
-          <PopoverContent align="end" className="w-72 p-4 bg-[var(--bg-surface)] border border-[var(--border-strong)] shadow-xl rounded-2xl space-y-3.5">
+          <PopoverContent align="end" className="w-72 p-4 bg-white border border-[var(--border)] shadow-2xl rounded-md space-y-3.5">
             <div className="space-y-1">
               <h4 className="text-xs font-bold text-[var(--text-primary)]">Custom Date Horizon</h4>
-              <p className="text-[11px] text-[var(--text-muted)]">Select custom timeframe range</p>
+              <p className="text-[11px] text-[var(--text-muted)]">Select timeframe range</p>
             </div>
 
             <div className="space-y-2 text-xs">
@@ -108,7 +108,7 @@ export default function AnalyticsHeader({
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full px-2.5 py-1.5 rounded-lg border border-[var(--border-strong)] bg-[var(--bg-subtle)] text-xs text-[var(--text-primary)] font-mono outline-none focus:border-[var(--accent)]"
+                  className="w-full px-3 py-1.5 rounded-md border border-[var(--border)] bg-[var(--bg-subtle)] text-xs text-[var(--text-primary)] font-mono outline-none focus:border-[var(--accent)]"
                 />
               </div>
 
@@ -118,7 +118,7 @@ export default function AnalyticsHeader({
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full px-2.5 py-1.5 rounded-lg border border-[var(--border-strong)] bg-[var(--bg-subtle)] text-xs text-[var(--text-primary)] font-mono outline-none focus:border-[var(--accent)]"
+                  className="w-full px-3 py-1.5 rounded-md border border-[var(--border)] bg-[var(--bg-subtle)] text-xs text-[var(--text-primary)] font-mono outline-none focus:border-[var(--accent)]"
                 />
               </div>
             </div>
@@ -126,7 +126,7 @@ export default function AnalyticsHeader({
             <button
               type="button"
               onClick={handleApplyCustom}
-              className="w-full py-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-sm"
+              className="w-full py-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-bold text-xs rounded-md flex items-center justify-center gap-1.5 transition-all shadow-sm"
             >
               <Check className="h-3.5 w-3.5" />
               Apply Range

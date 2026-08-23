@@ -1,23 +1,34 @@
 import "./globals.css";
-import { Inter } from "next/font/google";
+import { Plus_Jakarta_Sans, Newsreader } from "next/font/google";
+import { Toaster } from "@/src/components/ui/sonner";
 
-const inter = Inter({ subsets: ["latin"] });
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-sans",
+  display: "swap",
+});
 
-export const dynamic = 'force-static';
+const newsreader = Newsreader({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-serif",
+  display: "swap",
+});
+
+export const dynamic = "force-static";
 export const revalidate = false;
 
 export const metadata = {
-  title: "Note Sprints - Dev Practice",
-  description: "Master technical concepts at lightning speed.",
-  //make the logo rounded
+  title: "NoteSprint · Dev Mastery & System Design",
+  description: "Master technical engineering concepts at lightning speed with interactive card decks and system design guides.",
   icons: {
     icon: "/logo.png",
     shortcut: "/logo.png",
     apple: "/logo.png",
-  }
+  },
 };
-
-import { Toaster } from "@/src/components/ui/sonner";
 
 export default function RootLayout({
   children,
@@ -25,8 +36,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" data-theme="dark" suppressHydrationWarning>
-      <body className={inter.className}>
+    <html lang="en" suppressHydrationWarning className={`${plusJakartaSans.variable} ${newsreader.variable}`}>
+      <body className={plusJakartaSans.className}>
         {children}
         <Toaster />
       </body>

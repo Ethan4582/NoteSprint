@@ -18,8 +18,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
@@ -43,6 +41,7 @@ import {
   SlidersHorizontal,
   ChevronLeft,
   ChevronRight,
+  ExternalLink,
 } from "lucide-react";
 
 const PAGE_SIZE = 30;
@@ -100,11 +99,11 @@ export default function AdminArticlesPage() {
   const paginatedArticles = processedArticles.slice(startIndex, startIndex + PAGE_SIZE);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {/* Header Title & Add Button */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[var(--text-primary)]">
+          <h1 className="text-2xl sm:text-3xl font-normal font-serif tracking-tight text-[var(--text-primary)]">
             Articles Manager
           </h1>
           <p className="text-xs text-[var(--text-secondary)] mt-0.5">
@@ -113,20 +112,20 @@ export default function AdminArticlesPage() {
         </div>
 
         <Link href="/admin/articles/new">
-          <Button size="sm" className="h-9 px-4 rounded-xl font-bold bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white shadow-sm">
+          <Button size="sm" className="h-10 px-5 rounded-md font-bold bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white shadow-sm">
             <Plus className="h-4 w-4 mr-1.5" /> Add Article
           </Button>
         </Link>
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="flex flex-row items-center gap-2 sm:gap-2.5 w-full">
-        <div className="w-[130px] sm:w-52 shrink-0">
+      <div className="flex flex-row items-center gap-2 sm:gap-3 w-full">
+        <div className="w-36 sm:w-56 shrink-0">
           <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger className="h-9 rounded-xl bg-raised border-[var(--border-strong)] text-xs font-semibold px-2.5 sm:px-3">
+            <SelectTrigger className="h-10 rounded-md bg-white border-[var(--border)] text-xs font-semibold px-3 shadow-xs">
               <SelectValue placeholder="All Categories" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white border-[var(--border)] rounded-md shadow-xl">
               <SelectItem value="all">All Categories</SelectItem>
               <SelectItem value="lld">Low Level Design (LLD)</SelectItem>
               <SelectItem value="hld">High Level Design (HLD)</SelectItem>
@@ -135,7 +134,7 @@ export default function AdminArticlesPage() {
           </Select>
         </div>
 
-        <div className="relative flex-1 min-w-0 sm:w-80 md:w-96 sm:flex-initial">
+        <div className="relative flex-1 min-w-0">
           <Input
             value={search}
             onChange={(e) => {
@@ -143,32 +142,32 @@ export default function AdminArticlesPage() {
               setCurrentPage(1);
             }}
             placeholder="Search articles by title or slug..."
-            className="h-9 pl-8 sm:pl-9 pr-2 rounded-xl bg-raised border-[var(--border-strong)] text-xs truncate"
+            className="h-10 pl-9 pr-3 rounded-md bg-white border-[var(--border)] text-xs truncate shadow-xs focus:ring-2 focus:ring-[var(--accent)]/15"
           />
-          <Search className="absolute left-2.5 sm:left-3 top-2.5 h-3.5 w-3.5 text-[var(--text-muted)]" />
+          <Search className="absolute left-3 top-3 h-4 w-4 text-[var(--text-muted)]" />
         </div>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
               type="button"
-              className="h-9 px-2.5 sm:px-3 flex items-center gap-1.5 rounded-xl bg-raised border border-[var(--border-strong)] text-xs font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors shrink-0"
+              className="h-10 px-3.5 flex items-center gap-1.5 rounded-md bg-white border border-[var(--border)] text-xs font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors shrink-0 shadow-xs"
               title="Filter and Sort"
             >
               <SlidersHorizontal className="h-3.5 w-3.5" />
               <span className="capitalize hidden sm:inline">{sortOrder}</span>
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-32 p-1">
+          <DropdownMenuContent align="end" className="w-36 p-1 bg-white border-[var(--border)] rounded-md shadow-xl">
             <DropdownMenuItem
               onClick={() => setSortOrder("oldest")}
-              className={`text-xs font-semibold cursor-pointer ${sortOrder === "oldest" ? "text-[var(--accent)] bg-[var(--bg-subtle)] font-bold" : ""}`}
+              className={`text-xs font-semibold cursor-pointer rounded ${sortOrder === "oldest" ? "text-[var(--accent)] bg-[var(--bg-subtle)] font-bold" : ""}`}
             >
               Oldest First
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => setSortOrder("newest")}
-              className={`text-xs font-semibold cursor-pointer ${sortOrder === "newest" ? "text-[var(--accent)] bg-[var(--bg-subtle)] font-bold" : ""}`}
+              className={`text-xs font-semibold cursor-pointer rounded ${sortOrder === "newest" ? "text-[var(--accent)] bg-[var(--bg-subtle)] font-bold" : ""}`}
             >
               Newest First
             </DropdownMenuItem>
@@ -182,17 +181,17 @@ export default function AdminArticlesPage() {
           <Loader2 className="h-7 w-7 animate-spin text-[var(--accent)]" />
         </div>
       ) : processedArticles.length === 0 ? (
-        <Card className="py-16 text-center text-xs text-[var(--text-muted)]">
+        <Card className="py-16 text-center text-xs text-[var(--text-muted)] bg-white border-[var(--border)] rounded-lg shadow-sm">
           <FileText className="h-8 w-8 mx-auto mb-2 opacity-40 text-[var(--accent)]" />
           No articles found. Click &quot;Add Article&quot; to write a new one.
         </Card>
       ) : (
         <div className="space-y-5">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
             {paginatedArticles.map((a, idx) => (
               <div
                 key={a.slug}
-                className="rounded-2xl border border-[var(--border-strong)] bg-raised p-4 shadow-raised-crisp flex flex-col justify-between hover:border-[var(--accent)]/40 transition-all group"
+                className="rounded-lg border border-[var(--border)] bg-white p-4 shadow-sm flex flex-col justify-between hover:border-[var(--accent)]/40 hover:shadow-md transition-all group"
               >
                 <div className="flex items-start gap-3">
                   <span className="font-mono text-xs font-bold text-[var(--text-muted)] pt-0.5 min-w-[1.25rem]">
@@ -212,21 +211,27 @@ export default function AdminArticlesPage() {
                     <DropdownMenuTrigger asChild>
                       <button
                         type="button"
-                        className="h-7 w-7 rounded-lg flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] transition-colors flex-shrink-0"
+                        className="h-7 w-7 rounded-md flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] transition-colors flex-shrink-0"
                       >
                         <MoreVertical className="h-3.5 w-3.5" />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-32">
+                    <DropdownMenuContent align="end" className="w-32 bg-white border-[var(--border)] rounded-md shadow-xl">
                       <DropdownMenuItem asChild>
-                        <Link href={`/admin/articles/${a.slug}/edit`}>
+                        <Link href={`/admin/articles/${a.slug}/edit`} className="cursor-pointer">
                           <Edit2 className="h-3.5 w-3.5 mr-2" /> Edit
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/system-design/${a.category || "articles"}/${a.slug}`} target="_blank" className="cursor-pointer">
+                          <ExternalLink className="h-3.5 w-3.5 mr-2" /> View Live
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         variant="destructive"
                         onClick={() => setDeletingSlug(a.slug)}
+                        className="cursor-pointer text-red-600 focus:text-red-600"
                       >
                         <Trash2 className="h-3.5 w-3.5 mr-2" /> Delete
                       </DropdownMenuItem>
@@ -234,61 +239,43 @@ export default function AdminArticlesPage() {
                   </DropdownMenu>
                 </div>
 
-                <div className="flex items-center justify-between pt-3 mt-2 border-t border-[var(--border)] text-[10px] text-[var(--text-secondary)] font-bold">
-                  <span className="uppercase tracking-wider text-[var(--accent)]">
-                    {a.category}
+                <div className="mt-3 pt-2.5 border-t border-[var(--border)] flex items-center justify-between text-[11px] text-[var(--text-muted)]">
+                  <span className="uppercase font-bold text-[9px] px-2 py-0.5 rounded-md bg-[var(--bg-subtle)] text-[var(--text-secondary)] border border-[var(--border)]">
+                    {a.category || "General"}
                   </span>
-                  <span className="flex items-center gap-1 font-normal text-[var(--text-muted)]">
-                    <Clock className="h-3 w-3" /> {a.readingTime} min
+                  <span className="flex items-center gap-1">
+                    <Clock size={11} /> {a.readingTime || 5} min read
                   </span>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Pagination (Only displayed if more than 30 cards) */}
-          {processedArticles.length > PAGE_SIZE && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-3 border-t border-[var(--border)] text-xs text-[var(--text-secondary)]">
-              <span>
-                Showing <span className="font-bold text-[var(--text-primary)]">{startIndex + 1}</span> to{" "}
-                <span className="font-bold text-[var(--text-primary)]">
-                  {Math.min(startIndex + PAGE_SIZE, processedArticles.length)}
-                </span>{" "}
-                of <span className="font-bold text-[var(--accent)]">{processedArticles.length}</span> articles
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between pt-4 border-t border-[var(--border)]">
+              <span className="text-xs text-[var(--text-secondary)]">
+                Showing {startIndex + 1}-{Math.min(startIndex + PAGE_SIZE, processedArticles.length)} of {processedArticles.length}
               </span>
-
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5">
                 <button
                   type="button"
+                  disabled={currentPage <= 1}
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                  className="h-8 w-8 rounded-lg flex items-center justify-center border border-[var(--border-strong)] bg-raised text-[var(--text-secondary)] disabled:opacity-30 hover:text-[var(--text-primary)]"
+                  className="p-2 rounded-md border border-[var(--border)] bg-white hover:bg-[var(--bg-subtle)] disabled:opacity-40 text-[var(--text-secondary)] transition-all shadow-xs"
                 >
-                  <ChevronLeft className="h-4 w-4" />
+                  <ChevronLeft size={16} />
                 </button>
-
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <button
-                    key={page}
-                    type="button"
-                    onClick={() => setCurrentPage(page)}
-                    className={`h-8 w-8 rounded-lg font-mono text-xs font-bold transition-all ${
-                      currentPage === page
-                        ? "bg-[var(--accent)] text-white shadow-sm"
-                        : "border border-[var(--border-strong)] bg-raised text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-                    }`}
-                  >
-                    {page}
-                  </button>
-                ))}
-
+                <span className="text-xs font-bold px-3 py-1 text-[var(--text-primary)]">
+                  {currentPage} / {totalPages}
+                </span>
                 <button
                   type="button"
+                  disabled={currentPage >= totalPages}
                   onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages}
-                  className="h-8 w-8 rounded-lg flex items-center justify-center border border-[var(--border-strong)] bg-raised text-[var(--text-secondary)] disabled:opacity-30 hover:text-[var(--text-primary)]"
+                  className="p-2 rounded-md border border-[var(--border)] bg-white hover:bg-[var(--bg-subtle)] disabled:opacity-40 text-[var(--text-secondary)] transition-all shadow-xs"
                 >
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRight size={16} />
                 </button>
               </div>
             </div>
@@ -297,20 +284,31 @@ export default function AdminArticlesPage() {
       )}
 
       {/* Delete Dialog */}
-      <Dialog open={Boolean(deletingSlug)} onOpenChange={(open) => !open && setDeletingSlug(null)}>
-        <DialogContent className="max-w-sm text-center">
+      <Dialog open={!!deletingSlug} onOpenChange={(open) => !open && setDeletingSlug(null)}>
+        <DialogContent className="bg-white border-[var(--border)] rounded-[12px] shadow-2xl">
           <DialogHeader>
-            <DialogTitle>Delete Article?</DialogTitle>
+            <DialogTitle className="font-serif text-lg font-normal">Delete Article</DialogTitle>
           </DialogHeader>
-          <p className="text-xs text-[var(--text-secondary)] py-2">
-            Are you sure you want to delete <strong className="text-[var(--text-primary)]">{deletingSlug}</strong>?
+          <p className="text-xs text-[var(--text-secondary)]">
+            Are you sure you want to delete <span className="font-bold text-[var(--text-primary)]">&quot;{deletingSlug}&quot;</span>? This cannot be undone.
           </p>
-          <div className="flex justify-center gap-3 pt-2">
-            <Button variant="outline" size="sm" onClick={() => setDeletingSlug(null)}>
+          <div className="flex justify-end gap-2 pt-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setDeletingSlug(null)}
+              className="rounded-[10px] text-xs font-bold"
+            >
               Cancel
             </Button>
-            <Button variant="danger" size="sm" onClick={handleDelete} disabled={actionLoading}>
-              {actionLoading ? "Deleting..." : "Delete"}
+            <Button
+              variant="danger"
+              size="sm"
+              disabled={actionLoading}
+              onClick={handleDelete}
+              className="rounded-[10px] text-xs font-bold bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white"
+            >
+              {actionLoading ? "Deleting..." : "Confirm Delete"}
             </Button>
           </div>
         </DialogContent>

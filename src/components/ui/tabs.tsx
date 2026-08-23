@@ -13,7 +13,7 @@ const TabsList = React.forwardRef<
   <TabsPrimitive.List
     ref={ref}
     className={cn(
-      "inline-flex h-11 items-center justify-center rounded-xl bg-[var(--bg-subtle)] p-1 text-[var(--text-muted)] border border-[var(--border)]",
+      "inline-flex h-11 items-center justify-center rounded-md bg-[var(--bg-subtle)] p-1 text-[var(--text-muted)] border border-[var(--border)]",
       className
     )}
     {...props}
@@ -28,7 +28,7 @@ const TabsTrigger = React.forwardRef<
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      "inline-flex items-center justify-center whitespace-nowrap rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-raised data-[state=active]:text-[var(--accent)] data-[state=active]:shadow-raised-crisp border border-transparent data-[state=active]:border-[var(--border-strong)]",
+      "inline-flex items-center justify-center whitespace-nowrap rounded px-4 py-2 text-xs font-bold uppercase tracking-wider ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-raised data-[state=active]:text-[var(--accent)] data-[state=active]:shadow-raised-crisp border border-transparent data-[state=active]:border-[var(--border-strong)]",
       className
     )}
     {...props}

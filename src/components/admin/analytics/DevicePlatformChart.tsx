@@ -12,11 +12,11 @@ export default function DevicePlatformChart({
   const COLORS = ["var(--accent)", "var(--text-secondary)", "var(--border-strong)"];
 
   return (
-    <div className="rounded-2xl border border-[var(--border-strong)] bg-raised p-5 shadow-raised-crisp space-y-4 flex flex-col justify-between h-full">
+    <div className="rounded-lg border border-[var(--border)] bg-white p-5 shadow-sm space-y-4 flex flex-col justify-between h-full">
       {/* Header */}
       <div className="flex items-center justify-between pb-2 border-b border-[var(--border)]">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-500 border border-cyan-500/20">
+          <div className="p-2 rounded-md bg-cyan-500/10 text-cyan-500 border border-cyan-500/20">
             <Laptop className="h-4 w-4" />
           </div>
           <div>
@@ -63,7 +63,7 @@ export default function DevicePlatformChart({
             <div key={device.name} className="flex items-center justify-between text-xs pb-1.5 border-b border-[var(--border)]/60 last:border-0">
               <div className="flex items-center gap-2.5">
                 <div
-                  className="h-3 w-3 rounded-full shrink-0"
+                  className="h-3 w-3 rounded-xs shrink-0"
                   style={{ backgroundColor: COLORS[idx % COLORS.length] }}
                 />
                 <span className="font-bold text-[var(--text-primary)]">

@@ -1,21 +1,43 @@
 "use client";
 
-import ThemeToggle from "@/src/components/ThemeToggle";
+import { Search } from "lucide-react";
 
-export default function DashboardHeader() {
+interface DashboardHeaderProps {
+  search: string;
+  setSearch: (val: string) => void;
+}
+
+export default function DashboardHeader({ search, setSearch }: DashboardHeaderProps) {
   return (
-    <div className="flex flex-row justify-between items-center gap-4 sm:gap-6 mt-2 sm:mt-0">
-      <div className="flex items-center gap-4">
-        <img src="/logo.png" className="w-10 h-10 sm:w-12 sm:h-12 drop-shadow-[0_0_8px_rgba(255,69,0,0.5)] rounded-lg" alt="Logo" />
-        <div className="space-y-0">
-          <p className="text-[9px] sm:text-[10px] font-black text-[var(--accent)] tracking-[0.3em] uppercase drop-shadow-[0_0_5px_rgba(255,69,0,0.3)]">Note sprints</p>
-          <h1 className="text-xl sm:text-4xl font-black text-[var(--text-primary)] tracking-tight drop-shadow-lg">
-            Master the stack
-          </h1>
+    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-1">
+      <div className="space-y-1">
+        <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--accent)] tracking-wide">
+          <span>👋</span>
+          <span>Welcome back!</span>
         </div>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)]">
+          What do you want to learn today?
+        </h1>
+        <p className="text-xs sm:text-sm text-[var(--text-secondary)]">
+          Choose a topic and start mastering it with active recall flashcards.
+        </p>
       </div>
-      <div className="bg-raised shadow-raised-crisp p-1.5 sm:p-2 rounded-2xl border border-[var(--border-strong)] shrink-0">
-        <ThemeToggle />
+
+      {/* Desktop Quick Search Input */}
+      <div className="relative w-full md:w-80 shrink-0">
+        <div className="absolute inset-y-0 left-3.5 flex items-center pointer-events-none">
+          <Search className="w-4 h-4 text-[var(--text-muted)]" />
+        </div>
+        <input
+          type="text"
+          placeholder="Search topics..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full h-11 pl-10 pr-14 bg-white rounded-md text-[var(--text-primary)] text-xs font-medium outline-none border border-[var(--border)] shadow-xs hover:border-[var(--border-strong)] focus:border-[var(--border-strong)] transition-all placeholder:text-[var(--text-muted)]"
+        />
+        <span className="absolute right-3.5 top-3.5 text-[11px] font-mono text-[var(--text-muted)] pointer-events-none hidden sm:inline select-none">
+          ⌘ K
+        </span>
       </div>
     </div>
   );
