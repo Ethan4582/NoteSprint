@@ -2,7 +2,7 @@ import DashboardClient from "@/src/components/dashboard/DashboardClient";
 import { getAllArticles } from "@/src/db";
 import type { MarkdownMeta } from "@/src/lib/markdown";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export default async function LibraryPage() {
   const articles = await getAllArticles();

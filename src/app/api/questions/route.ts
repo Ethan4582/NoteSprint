@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getQuestionById } from "@/src/db";
+import { getQuestionsByIds } from "@/src/db";
 
 export const revalidate = 3600;
 
@@ -29,24 +29,38 @@ function normalizeContent(answer: string, imgUrl: string | null, code?: string):
   return text;
 }
 
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id } = await params;
-  const numId = parseInt(id, 10);
-
+export async function GET(req: Request) {
   try {
-    const found = await getQuestionById(numId);
-
-    if (!found) {
-      return NextResponse.json({ error: "Question not found" }, { status: 404 });
+    const { searchParams } = new URL(req.url);
+    const idsParam = searchParams.get("ids");
+    if (!idsParam) {
+      return NextResponse.json([], {
+        headers: {
+          "Cache-Control": "public, max-age=300, s-maxage=86400, stale-while-revalidate=604800",
+        },
+      });
     }
 
-    const imgUrl = resolveImageUrl(found.imageUrl);
-    const answer = normalizeContent(found.answer || "", imgUrl);
-    return NextResponse.json(
-      {
+    const ids = idsParam
+      .split(",")
+      .map((id) => parseInt(id.trim(), 10))
+      .filter((id) => !isNaN(id) && id > 0);
+
+    if (ids.length === 0) {
+      return NextResponse.json([], {
+        headers: {
+          "Cache-Control": "public, max-age=300, s-maxage=86400, stale-while-revalidate=604800",
+        },
+      });
+    }
+
+    const cappedIds = ids.slice(0, 100);
+    const rows = await getQuestionsByIds(cappedIds);
+
+    const questions = (rows || []).map((found) => {
+      const imgUrl = resolveImageUrl(found.imageUrl);
+      const answer = normalizeContent(found.answer || "", imgUrl);
+      return {
         id: found.id,
         topicId: found.topicId,
         topicSlug: found.topicSlug,
@@ -58,15 +72,16 @@ export async function GET(
         sourceFile: found.sourceFile,
         createdAt: found.createdAt || new Date(),
         updatedAt: found.updatedAt || new Date(),
+      };
+    });
+
+    return NextResponse.json(questions, {
+      headers: {
+        "Cache-Control": "public, max-age=300, s-maxage=86400, stale-while-revalidate=604800",
       },
-      {
-        headers: {
-          "Cache-Control": "public, max-age=300, s-maxage=86400, stale-while-revalidate=604800",
-        },
-      }
-    );
+    });
   } catch (err) {
-    console.error("D1 query error for /api/questions/[id]:", err);
-    return NextResponse.json({ error: "Failed to fetch question" }, { status: 500 });
+    console.error("D1 query error for /api/questions batch:", err);
+    return NextResponse.json({ error: "Failed to fetch questions" }, { status: 500 });
   }
 }

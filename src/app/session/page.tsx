@@ -3,7 +3,7 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect, useMemo, useRef, Suspense } from "react";
 import { getQuestions } from "@/src/lib/data";
-import { fetchTopicQuestions, fetchQuestion } from "@/src/lib/api";
+import { fetchTopicQuestions, fetchQuestions } from "@/src/lib/api";
 import { getBookmarkedIds } from "@/src/hooks/useBookmarks";
 import { saveSessionProgress } from "@/src/lib/progress";
 
@@ -36,10 +36,8 @@ function SessionContent() {
 
       if (config.topic === "bookmarks" || topics.includes("bookmarks")) {
         const bookmarkedIds = getBookmarkedIds();
-        const loaded = await Promise.all(
-          bookmarkedIds.map((id) => fetchQuestion(id).catch(() => null))
-        );
-        allLoaded = (loaded.filter(Boolean) as any[]).map((q) => ({
+        const loaded = await fetchQuestions(bookmarkedIds);
+        allLoaded = (loaded || []).map((q) => ({
           ...q,
           topic: q.topicSlug || "Bookmarks",
           subject: "Tech",

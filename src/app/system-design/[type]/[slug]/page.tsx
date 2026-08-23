@@ -5,7 +5,7 @@ import Link from "next/link";
 import ClientMarkdownRenderer from "@/src/components/read/ClientMarkdownRenderer";
 import TableOfContents from "@/src/components/read/TableOfContents";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export default async function MarkdownReaderPage({
   params,

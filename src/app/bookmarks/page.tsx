@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useBookmarks } from "@/src/hooks/useBookmarks";
-import { fetchQuestion } from "@/src/lib/api";
+import { fetchQuestions } from "@/src/lib/api";
 import type { Question } from "@/src/db/schema";
 import BottomNav from "@/src/components/BottomNav";
 import DashboardSidebar from "@/src/components/dashboard/DashboardSidebar";
@@ -54,10 +54,9 @@ export default function BookmarksPage() {
     }
 
     setLoading(true);
-    Promise.all(bookmarks.map((id) => fetchQuestion(id).catch(() => null)))
+    fetchQuestions(bookmarks)
       .then((results) => {
-        const valid = results.filter(Boolean) as BookmarkItem[];
-        setQuestions(valid);
+        setQuestions(results as BookmarkItem[]);
       })
       .finally(() => setLoading(false));
   }, [bookmarks, isLoaded]);

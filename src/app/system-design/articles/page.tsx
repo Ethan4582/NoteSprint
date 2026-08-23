@@ -2,7 +2,7 @@ import { getAllArticles } from "@/src/db";
 import type { MarkdownMeta } from "@/src/lib/markdown";
 import SystemDesignArticlesClient from "@/src/components/system-design/SystemDesignArticlesClient";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export default async function SystemDesignArticlesPage() {
   const articles = await getAllArticles();

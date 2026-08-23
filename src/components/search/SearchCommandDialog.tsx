@@ -20,13 +20,14 @@ export default function SearchCommandDialog({ open, onOpenChange }: SearchComman
   const [articles, setArticles] = useState<Article[]>([]);
 
   useEffect(() => {
+    if (!open) return;
     fetchTopics().then((res) => {
       if (res && res.length > 0) setDbTopics(res);
     });
     fetchArticles().then((res) => {
       if (res && res.length > 0) setArticles(res);
     });
-  }, []);
+  }, [open]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
