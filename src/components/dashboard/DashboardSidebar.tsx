@@ -9,6 +9,7 @@ import {
   LayoutGrid,
   Sparkles,
   Bookmark,
+  Activity,
   Search,
   PanelLeftClose,
   PanelLeftOpen,
@@ -63,6 +64,12 @@ export default function DashboardSidebar({ activeTab, onSelectTab }: DashboardSi
       icon: BookOpen,
       isActive: pathname.startsWith("/system-design"),
       onClick: () => onSelectTab && onSelectTab("System Design"),
+    },
+    {
+      label: "My Progress",
+      href: "/progress",
+      icon: Activity,
+      isActive: pathname === "/progress",
     },
     {
       label: "Saved Bookmarks",

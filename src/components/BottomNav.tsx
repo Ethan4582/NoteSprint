@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
-import { LayoutGrid, Sparkles, BookOpen, Bookmark } from "lucide-react";
+import { LayoutGrid, Sparkles, BookOpen, Bookmark, Activity } from "lucide-react";
 
 export default function BottomNav() {
   const router = useRouter();
@@ -10,7 +10,8 @@ export default function BottomNav() {
   const navItems = [
     { label: "Library", path: "/library", altPath: "/dashboard", icon: LayoutGrid },
     { label: "Interview", path: "/interview", icon: Sparkles },
-    { label: "System Design", path: "/system-design/articles", altPath: "/system-design", icon: BookOpen },
+    { label: "Design", path: "/system-design/articles", altPath: "/system-design", icon: BookOpen },
+    { label: "Progress", path: "/progress", icon: Activity },
     { label: "Saved", path: "/bookmarks", icon: Bookmark },
   ];
 
@@ -24,6 +25,7 @@ export default function BottomNav() {
           const isActive =
             pathname === item.path ||
             (item.altPath && pathname === item.altPath) ||
+            (item.path === "/progress" && pathname.startsWith("/progress")) ||
             (item.path === "/bookmarks" && pathname.startsWith("/bookmarks")) ||
             (item.path === "/system-design/articles" && pathname.startsWith("/system-design"));
           const Icon = item.icon;

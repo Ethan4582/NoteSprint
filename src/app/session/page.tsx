@@ -1,10 +1,11 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useState, useEffect, useMemo, Suspense } from "react";
+import { useState, useEffect, useMemo, useRef, Suspense } from "react";
 import { getQuestions } from "@/src/lib/data";
 import { fetchTopicQuestions, fetchQuestion } from "@/src/lib/api";
 import { getBookmarkedIds } from "@/src/hooks/useBookmarks";
+import { saveSessionProgress } from "@/src/lib/progress";
 
 // Shared session components
 import FinishedView from "@/src/components/session/FinishedView";
@@ -77,6 +78,7 @@ function SessionContent() {
   const [isFlipped, setIsFlipped] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
   const [activeImage, setActiveImage] = useState<string | null>(null);
+  const recordedRef = useRef(false);
 
   // Timer
   useEffect(() => {
@@ -92,6 +94,26 @@ function SessionContent() {
     }, 1000);
     return () => clearInterval(timer);
   }, [isFinished, timeLeft, loading]);
+
+  // Record session to progress history
+  useEffect(() => {
+    if (isFinished && !recordedRef.current && questions.length > 0) {
+      recordedRef.current = true;
+      const totalAnswered = correctCount + incorrectCount;
+      const accuracy = totalAnswered > 0 ? Math.round((correctCount / totalAnswered) * 100) : 0;
+      const topics = config.topic.split(",").map((t) => t.trim()).filter(Boolean);
+      const isInterview = topics.some((t) => t.startsWith("interview_"));
+      saveSessionProgress({
+        mode: isInterview ? "interview" : config.mode,
+        topics: topics.length > 0 ? topics : ["General"],
+        totalQuestions: questions.length,
+        correct: correctCount,
+        incorrect: incorrectCount,
+        accuracy,
+        timeSpentSeconds: Math.max(0, (config.time * 60) - timeLeft),
+      });
+    }
+  }, [isFinished, correctCount, incorrectCount, questions.length, config, timeLeft]);
 
   const handleAnswer = (success: boolean) => {
     if (success) setCorrectCount((c) => c + 1);
