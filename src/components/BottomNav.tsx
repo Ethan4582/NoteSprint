@@ -1,15 +1,15 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
-import { Compass, Layers, Bookmark } from "lucide-react";
+import { LayoutGrid, Sparkles, Bookmark } from "lucide-react";
 
 export default function BottomNav() {
   const router = useRouter();
   const pathname = usePathname();
 
   const navItems = [
-    { label: "Home", path: "/dashboard", altPath: "/", icon: Compass },
-    { label: "Practice", path: "/interview", altPath: "/practice", icon: Layers },
+    { label: "Library", path: "/dashboard", altPath: "/", icon: LayoutGrid },
+    { label: "Practice", path: "/practice", altPath: "/interview", icon: Sparkles },
     { label: "Saved", path: "/bookmarks", icon: Bookmark },
   ];
 
@@ -17,7 +17,7 @@ export default function BottomNav() {
     <div className="fixed bottom-4 left-0 right-0 z-50 flex justify-center px-4 md:hidden pointer-events-none">
       <nav
         aria-label="Mobile Navigation"
-        className="pointer-events-auto flex items-center gap-1 p-1.5 rounded-xl bg-white/90 backdrop-blur-xl border border-[var(--border)] shadow-[0_8px_30px_rgba(28,25,23,0.08)] max-w-sm w-full"
+        className="pointer-events-auto flex items-center gap-1 p-1.5 rounded-2xl bg-white/95 backdrop-blur-xl border border-[var(--border)] shadow-[0_4px_20px_rgba(60,45,35,0.08)] max-w-xs w-full"
       >
         {navItems.map((item) => {
           const isActive =
@@ -30,14 +30,14 @@ export default function BottomNav() {
               key={item.path}
               onClick={() => router.push(item.path)}
               aria-current={isActive ? "page" : undefined}
-              className={`flex-1 flex flex-col items-center justify-center py-2 px-3 rounded-lg transition-all duration-200 ${
+              className={`flex-1 flex flex-col items-center justify-center py-2 px-3 rounded-xl transition-all duration-200 ${
                 isActive
-                  ? "bg-[var(--text-primary)] text-white shadow-sm font-semibold"
+                  ? "bg-[var(--accent)] text-white shadow-xs font-bold"
                   : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)]"
               }`}
             >
-              <Icon className={`w-[18px] h-[18px] ${isActive ? "text-white stroke-[2.5]" : "stroke-[2]"}`} />
-              <span className={`text-[11px] mt-0.5 tracking-tight ${isActive ? "font-bold text-white" : "font-medium text-[var(--text-secondary)]"}`}>
+              <Icon className={`w-4 h-4 ${isActive ? "text-white stroke-[2.5]" : "stroke-[2]"}`} />
+              <span className={`text-[10px] mt-0.5 tracking-tight ${isActive ? "font-bold text-white" : "font-medium text-[var(--text-secondary)]"}`}>
                 {item.label}
               </span>
             </button>

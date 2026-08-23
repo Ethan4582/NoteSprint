@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
-/* Hallmark · genre: playful-modern · theme: Hum-custom (warm paper · terracotta accent · pastel decks) · pre-emit critique: P5 H5 E5 S5 R5 V5 */
-/* Audience: developers / interview prep · Use: active-recall card study · Tone: soft premium warm-minimal */
+/* NoteSprint — Visual Design System (from design.md) */
+/* Warm minimalism · Editorial · Burgundy accent #7A2F35 · Warm neutral #FBF7F1 */
 
 @theme inline {
   --color-background: var(--bg-base);
@@ -12,85 +12,77 @@
 }
 
 :root {
-  /* Warm paper — light band */
-  --bg-base: #FDFBF7;
-  --bg-surface: #FFFFFF;
-  --bg-subtle: #F5EEE3;
-  --bg-muted: #EDE6D8;
+  /* Core Backgrounds */
+  --background: #FBF7F1;
+  --background-soft: #F6F1EA;
+  --surface: #FFFFFF;
+  --surface-muted: #F4F2EF;
 
-  /* Borders */
-  --border: #E9E0D2;
-  --border-soft: #EDE8DE;
-  --border-strong: #D9CFBE;
-  --border-inner: #EAE5DB;
+  /* Aliases for codebase compatibility */
+  --bg-base: var(--background);
+  --bg-surface: var(--surface);
+  --bg-subtle: var(--background-soft);
+  --bg-muted: var(--surface-muted);
 
-  /* Type */
-  --text-primary: #1C1917;
-  --text-secondary: #6B6560;
-  --text-muted: #9A9590;
+  /* Typography Colors */
+  --text-primary: #242222;
+  --text-secondary: #77736F;
+  --text-muted: #9B9690;
+  --text-inverse: #FFFFFF;
   --text-faint: #B8B2A8;
 
-  /* Accent — #3d0504 */
-  --accent: #3d0504;
-  --accent-hover: #540706;
-  --accent-soft: #F7EFEF;
-  --accent-subtle: #F7EFEF;
+  /* Primary Burgundy Accent */
+  --accent: #7A2F35;
+  --accent-dark: #5F252B;
+  --accent-soft: #B98283;
+  --accent-hover: #5F252B;
+  --accent-subtle: rgba(122, 47, 53, 0.08);
   --accent-border: #E8D3D3;
   --accent-foreground: #FFFFFF;
 
-  /* Semantic */
-  --success: #1A9E6A;
-  --success-subtle: #ECFDF5;
-  --success-border: #A7F3D0;
-  --error: #E5484D;
-  --error-subtle: #FFF0F0;
-  --warning: #E6A817;
-  --warning-subtle: #FFFBEB;
-  --info: #3B82F6;
-  --info-subtle: #EFF6FF;
+  /* Supporting Accent Colors */
+  --peach: #F4DCCB;
+  --champagne: #F5E9D5;
+  --sage: #829B7D;
+  --sage-soft: #DDE8DA;
 
-  /* Deck pastel tints — desaturated refs */
-  --card-yellow: #FFF8E7;
-  --card-yellow-border: #FDE68A;
-  --card-yellow-icon: #F59E0B;
-  --card-green: #EEF6F0;
-  --card-green-border: #B8E6C5;
-  --card-green-icon: #10B981;
-  --card-blue: #EEF3FF;
-  --card-blue-border: #C2D6FF;
-  --card-blue-icon: #3B82F6;
-  --card-purple: #F3EFFE;
-  --card-purple-border: #D9CCFF;
-  --card-purple-icon: #7C3AED;
-  --card-pink: #FFF0F2;
-  --card-pink-border: #FFC9D1;
-  --card-pink-icon: #EC4899;
-  --card-peach: #FFF4EA;
-  --card-peach-border: #FFD8B0;
+  /* Semantic status */
+  --success: #829B7D;
+  --success-subtle: #DDE8DA;
+  --error: #8B3A3A;
+  --error-subtle: #FDF2F2;
+  --warning: #F4DCCB;
+  --warning-subtle: #FEF9F5;
 
-  /* Radius — minimal rounded */
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --radius-xl: 10px;
-  --radius-pill: 6px;
+  /* Borders */
+  --border: #E7E1DA;
+  --border-strong: #D8D1C9;
+  --border-soft: #EDE8DE;
+  --border-inner: #EAE5DB;
 
-  /* Soft studio shadows */
-  --shadow-soft: 0 1px 3px rgba(28, 25, 23, 0.06), 0 4px 12px rgba(28, 25, 23, 0.04);
-  --shadow-card: 0 1px 2px rgba(28, 25, 23, 0.05), 0 8px 24px rgba(28, 25, 23, 0.04);
-  --shadow-raised: 0 4px 16px rgba(28, 25, 23, 0.06), 0 16px 40px rgba(28, 25, 23, 0.05);
-  --shadow-floating: 0 8px 24px rgba(28, 25, 23, 0.08), 0 20px 48px rgba(28, 25, 23, 0.06);
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 9999px;
 
-  /* Focus */
-  --focus: #3d0504;
+  /* Soft Ambient Elevation */
+  --shadow-soft: 0 4px 20px rgba(60, 45, 35, 0.05);
+  --shadow-card: 0 4px 20px rgba(60, 45, 35, 0.05);
+  --shadow-raised: 0 8px 30px rgba(60, 45, 35, 0.07);
+  --shadow-floating: 0 8px 30px rgba(60, 45, 35, 0.07);
+
+  /* Focus Ring */
+  --focus: #7A2F35;
 }
 
-/* Utilities kept for compat — mapped to soft shadows (no skeuomorph) */
+/* Utilities */
 @utility shadow-card { box-shadow: var(--shadow-card); }
 @utility shadow-raised { box-shadow: var(--shadow-raised); }
 @utility shadow-raised-crisp { box-shadow: var(--shadow-card); }
 @utility shadow-floating { box-shadow: var(--shadow-floating); }
-@utility shadow-inset-cavity { box-shadow: inset 0 1px 2px rgba(28,25,23,0.04); }
+@utility shadow-inset-cavity { box-shadow: inset 0 1px 2px rgba(60, 45, 35, 0.04); }
 @utility bg-raised { background-color: var(--bg-surface); }
 
 @utility scrollbar-hide {
@@ -98,41 +90,16 @@
   -ms-overflow-style: none;
   &::-webkit-scrollbar { display: none; }
 }
-@utility custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: var(--border-strong) transparent;
-  &::-webkit-scrollbar { width: 5px; height: 5px; }
-  &::-webkit-scrollbar-track { background: transparent; }
-  &::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 9999px; }
-  &::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
-}
-
-html, body { overflow-x: clip; }
 
 body {
-  background-color: var(--bg-base);
+  background-color: var(--background);
   color: var(--text-primary);
   font-family: var(--font-sans);
-  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* subtle warm dotted texture like refs — very faint */
-  background-image: radial-gradient(rgba(28,25,23,0.04) 1px, transparent 1px);
-  background-size: 22px 22px;
-  background-position: 0 0;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  letter-spacing: -0.025em;
-  font-style: normal;
-  color: var(--text-primary);
-  overflow-wrap: anywhere;
-  min-width: 0;
-}
-
-button { cursor: pointer; transition: all 150ms cubic-bezier(0.16, 1, 0.3, 1); }
-button:active { transform: scale(0.98); }
-button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 2px;
+::selection {
+  background-color: var(--accent);
+  color: var(--text-inverse);
 }

@@ -5,12 +5,11 @@ import { useState, Suspense, useMemo, useEffect } from "react";
 import { fetchTopics, TopicWithCount } from "@/src/lib/api";
 import { DATA, getQuestions } from "@/src/lib/data";
 import BottomNav from "@/src/components/BottomNav";
-import { Play } from "lucide-react";
-
-// Practice components
+import DashboardSidebar from "@/src/components/dashboard/DashboardSidebar";
 import PracticeHeader from "@/src/components/practice/PracticeHeader";
 import TopicGrid from "@/src/components/dashboard/TopicGrid";
 import SessionConfigModal from "@/src/components/dashboard/SessionConfigModal";
+import { Play } from "lucide-react";
 
 function PracticeContent() {
   const searchParams = useSearchParams();
@@ -59,30 +58,38 @@ function PracticeContent() {
   }, 0);
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] flex flex-col pb-32 overflow-x-hidden relative">
-      <PracticeHeader />
+    <div className="min-h-screen bg-[var(--bg-base)] flex font-sans">
+      {/* Desktop Left Sidebar */}
+      <DashboardSidebar />
 
-      <main className="max-w-[1600px] mx-auto w-full p-4 sm:p-10 space-y-8 sm:space-y-10">
-        <TopicGrid 
-          topics={allAvailableTopics}
-          selectedTopics={selectedTopics}
-          onToggleTopic={toggleTopic}
-        />
-      </main>
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-w-0 pb-28">
+        <PracticeHeader />
+
+        <main className="max-w-[1600px] w-full mx-auto px-4 sm:px-8 lg:px-10 py-6 sm:py-8 space-y-6">
+          <TopicGrid
+            topics={allAvailableTopics}
+            selectedTopics={selectedTopics}
+            onToggleTopic={toggleTopic}
+          />
+        </main>
+      </div>
 
       {selectedTopics.length > 0 && (
-        <div className="fixed bottom-[84px] sm:bottom-6 left-0 right-0 flex justify-center z-40 pointer-events-none px-4">
+        <div className="fixed bottom-24 sm:bottom-8 left-0 right-0 md:left-60 flex justify-center z-40 pointer-events-none px-4">
           <button
             onClick={() => setIsModalOpen(true)}
-            className="pointer-events-auto bg-[var(--text-primary)] text-white px-5 py-3 rounded-md shadow-[0_12px_32px_rgba(28,25,23,0.2)] font-bold text-xs tracking-wide flex items-center gap-2 hover:translate-y-[-1px] transition-transform"
+            className="pointer-events-auto inline-flex items-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white px-6 py-3.5 rounded-full shadow-xl font-bold text-xs uppercase tracking-wider hover:scale-105 active:scale-95 transition-all"
           >
             <Play size={14} fill="currentColor" />
-            Start session · {selectedTopics.length} deck{selectedTopics.length > 1 ? "s" : ""} · {totalSelectedQuestions} cards
+            <span>
+              Start Session ({selectedTopics.length} Topics • {totalSelectedQuestions} Cards)
+            </span>
           </button>
         </div>
       )}
 
-      <SessionConfigModal 
+      <SessionConfigModal
         topic={selectedTopics.join(",")}
         totalAvailable={totalSelectedQuestions}
         isOpen={isModalOpen}
@@ -96,7 +103,13 @@ function PracticeContent() {
 
 export default function PracticePage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[var(--bg-base)] flex items-center justify-center font-mono text-xs uppercase tracking-widest text-[var(--text-muted)]">Loading Config...</div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[var(--bg-base)] flex items-center justify-center font-mono text-xs uppercase tracking-widest text-[var(--text-muted)]">
+          Loading Config...
+        </div>
+      }
+    >
       <PracticeContent />
     </Suspense>
   );

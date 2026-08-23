@@ -5,11 +5,11 @@ import { useState, Suspense, useMemo, useEffect } from "react";
 import { fetchTopics, TopicWithCount } from "@/src/lib/api";
 import { DATA, getQuestions } from "@/src/lib/data";
 import BottomNav from "@/src/components/BottomNav";
-import { Play, Search } from "lucide-react";
-
+import DashboardSidebar from "@/src/components/dashboard/DashboardSidebar";
 import InterviewHeader from "@/src/components/interview/InterviewHeader";
 import TopicGrid from "@/src/components/dashboard/TopicGrid";
 import SessionConfigModal from "@/src/components/dashboard/SessionConfigModal";
+import { Play, Search } from "lucide-react";
 
 function InterviewContent() {
   const searchParams = useSearchParams();
@@ -66,38 +66,46 @@ function InterviewContent() {
   }, 0);
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] flex flex-col pb-32 overflow-x-hidden relative">
-      <InterviewHeader />
+    <div className="min-h-screen bg-[var(--bg-base)] flex font-sans">
+      {/* Desktop Left Sidebar */}
+      <DashboardSidebar />
 
-      <main className="max-w-6xl mx-auto w-full p-4 sm:p-8 space-y-6">
-        <div className="relative group">
-          <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-            <Search className="w-4 h-4 text-[var(--text-muted)] group-focus-within:text-[var(--accent)] transition-colors" />
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-w-0 pb-28">
+        <InterviewHeader />
+
+        <main className="max-w-[1600px] w-full mx-auto px-4 sm:px-8 lg:px-10 py-6 sm:py-8 space-y-6">
+          <div className="relative group">
+            <div className="absolute inset-y-0 left-3.5 flex items-center pointer-events-none">
+              <Search className="w-4 h-4 text-[var(--text-muted)] group-focus-within:text-[var(--accent)] transition-colors" />
+            </div>
+            <input
+              type="text"
+              placeholder="Search interview topics..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full h-11 pl-10 pr-4 bg-white rounded-2xl text-[var(--text-primary)] font-medium text-xs outline-none transition-all border border-[var(--border)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10 shadow-xs placeholder:text-[var(--text-muted)]"
+            />
           </div>
-          <input
-            type="text"
-            placeholder="Search interview topics..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-12 pl-11 pr-4 bg-white rounded-md text-[var(--text-primary)] font-medium text-sm outline-none transition-all border border-[var(--border)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10 shadow-sm placeholder:text-[var(--text-muted)]"
-          />
-        </div>
 
-        <TopicGrid
-          topics={filteredTopics}
-          selectedTopics={selectedTopics}
-          onToggleTopic={toggleTopic}
-        />
-      </main>
+          <TopicGrid
+            topics={filteredTopics}
+            selectedTopics={selectedTopics}
+            onToggleTopic={toggleTopic}
+          />
+        </main>
+      </div>
 
       {selectedTopics.length > 0 && (
-        <div className="fixed bottom-[84px] sm:bottom-6 left-0 right-0 flex justify-center z-40 pointer-events-none px-4">
+        <div className="fixed bottom-24 sm:bottom-8 left-0 right-0 md:left-60 flex justify-center z-40 pointer-events-none px-4">
           <button
             onClick={() => setIsModalOpen(true)}
-            className="pointer-events-auto bg-[var(--text-primary)] text-white px-5 py-3 rounded-md shadow-[0_12px_32px_rgba(28,25,23,0.2)] font-bold text-xs tracking-wide flex items-center gap-2 hover:translate-y-[-1px] transition-transform"
+            className="pointer-events-auto inline-flex items-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white px-6 py-3.5 rounded-full shadow-xl font-bold text-xs uppercase tracking-wider hover:scale-105 active:scale-95 transition-all"
           >
             <Play size={14} fill="currentColor" />
-            Start session · {selectedTopics.length} deck{selectedTopics.length > 1 ? "s" : ""} · {totalSelectedQuestions} cards
+            <span>
+              Start Session ({selectedTopics.length} Topics • {totalSelectedQuestions} Cards)
+            </span>
           </button>
         </div>
       )}

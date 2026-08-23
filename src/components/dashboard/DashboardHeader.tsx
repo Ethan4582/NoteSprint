@@ -1,30 +1,42 @@
 "use client";
 
-export default function DashboardHeader() {
+import { Search } from "lucide-react";
+
+interface DashboardHeaderProps {
+  search: string;
+  setSearch: (val: string) => void;
+}
+
+export default function DashboardHeader({ search, setSearch }: DashboardHeaderProps) {
   return (
-    <div className="flex flex-row items-center justify-between gap-4">
-      <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-        <img
-          src="/logo.png"
-          alt="NoteSprint"
-          className="w-10 h-10 sm:w-11 sm:h-11 rounded-md object-cover border border-[var(--border)] shadow-xs shrink-0"
-        />
-        <div className="space-y-0.5 min-w-0">
-          <p className="text-[11px] font-extrabold tracking-wider uppercase text-[var(--accent)]">
-            Active Recall Library
-          </p>
-          <h1 className="text-2xl sm:text-3xl font-normal font-serif tracking-tight text-[var(--text-primary)]">
-            Master the Stack
-          </h1>
-          <p className="hidden sm:block text-xs text-[var(--text-secondary)]">
-            Tap any deck to start a drill — or select multiple to mix a custom session.
-          </p>
+    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-1">
+      <div className="space-y-1">
+        <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--accent)] tracking-wide">
+          <span>👋</span>
+          <span>Welcome back!</span>
         </div>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)]">
+          What do you want to learn today?
+        </h1>
+        <p className="text-xs sm:text-sm text-[var(--text-secondary)]">
+          Choose a topic and start mastering it with active recall flashcards.
+        </p>
       </div>
-      <div className="hidden sm:flex items-center gap-2 shrink-0">
-        <span className="text-xs px-3.5 py-1.5 rounded-md bg-white border border-[var(--border)] shadow-xs text-[var(--text-secondary)] font-medium">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block mr-1.5 align-middle animate-pulse" />
-          Offline Ready
+
+      {/* Desktop Quick Search Input */}
+      <div className="relative w-full md:w-80 shrink-0">
+        <div className="absolute inset-y-0 left-3.5 flex items-center pointer-events-none">
+          <Search className="w-4 h-4 text-[var(--text-muted)]" />
+        </div>
+        <input
+          type="text"
+          placeholder="Search topics..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full h-11 pl-10 pr-12 bg-white rounded-2xl text-[var(--text-primary)] text-xs font-medium outline-none border border-[var(--border)] shadow-xs focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10 transition-all placeholder:text-[var(--text-muted)]"
+        />
+        <span className="absolute right-3 top-3 text-[10px] font-mono text-[var(--text-muted)] px-1.5 py-0.5 rounded bg-[var(--bg-subtle)] border border-[var(--border)] pointer-events-none hidden sm:inline">
+          ⌘K
         </span>
       </div>
     </div>
