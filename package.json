@@ -8,8 +8,6 @@
     "build:next": "next build",
     "deploy": "opennextjs-cloudflare build && wrangler deploy",
     "lint": "eslint",
-    "worker:dev": "wrangler dev",
-    "worker:deploy": "wrangler deploy",
     "db:generate": "drizzle-kit generate",
     "migrate:questions": "tsx scripts/migrate-questions.ts",
     "migrate:articles": "tsx scripts/migrate-articles.ts",

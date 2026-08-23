@@ -1,16 +1,7 @@
 import { NextResponse } from "next/server";
-import { saveQuestionToSource } from "@/src/lib/question-persister";
-import { deleteQuestion } from "@/src/db";
+import { updateQuestion, deleteQuestion } from "@/src/db";
 
-export const dynamic = "force-static";
-
-export function generateStaticParams() {
-  const ids: { id: string }[] = [];
-  for (let i = 1; i <= 250; i++) {
-    ids.push({ id: String(i) });
-  }
-  return ids;
-}
+export const dynamic = "force-dynamic";
 
 export async function PUT(
   req: Request,
@@ -19,27 +10,23 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await req.json();
-    const topicId = Number(body.topicId) || 1;
-    const topicSlug = body.topicSlug || "interview_ai";
     const numId = parseInt(id, 10);
+    if (isNaN(numId)) {
+      return NextResponse.json({ error: "Invalid question id" }, { status: 400 });
+    }
 
-    await saveQuestionToSource(
-      topicSlug,
-      numId,
-      body.question || "",
-      body.answer || "",
-      body.imageUrl
-    );
-
-    return NextResponse.json({
-      id: numId,
-      topicId,
-      topicSlug,
+    const updated = await updateQuestion(numId, {
+      topicId: body.topicId ? Number(body.topicId) : undefined,
       question: body.question,
       answer: body.answer,
-      imageUrl: body.imageUrl || null,
-      updatedAt: new Date(),
+      imageUrl: body.imageUrl !== undefined ? body.imageUrl : undefined,
     });
+
+    if (!updated || updated.length === 0) {
+      return NextResponse.json({ error: "Question not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(updated[0]);
   } catch (err) {
     return NextResponse.json({ error: (err as Error).message }, { status: 500 });
   }
@@ -52,8 +39,16 @@ export async function DELETE(
   try {
     const { id } = await params;
     const numId = parseInt(id, 10);
-    await deleteQuestion(numId);
-    return NextResponse.json({ success: true, id: numId });
+    if (isNaN(numId)) {
+      return NextResponse.json({ error: "Invalid question id" }, { status: 400 });
+    }
+
+    const deleted = await deleteQuestion(numId);
+    if (!deleted || deleted.length === 0) {
+      return NextResponse.json({ error: "Question not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true, deleted: deleted[0] });
   } catch (err) {
     return NextResponse.json({ error: (err as Error).message }, { status: 500 });
   }
