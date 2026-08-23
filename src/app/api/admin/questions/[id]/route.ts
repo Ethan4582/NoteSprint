@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { updateQuestion, deleteQuestion } from "@/src/db";
 
+export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 export async function PUT(
@@ -9,7 +10,7 @@ export async function PUT(
 ) {
   try {
     const { id } = await params;
-    const body = await req.json();
+    const body = (await req.json()) as any;
     const numId = parseInt(id, 10);
     if (isNaN(numId)) {
       return NextResponse.json({ error: "Invalid question id" }, { status: 400 });

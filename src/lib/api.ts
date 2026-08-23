@@ -22,7 +22,8 @@ export async function fetchTopics(): Promise<TopicWithCount[]> {
         topicsCache = null;
         return [];
       }
-      return await res.json();
+      const data = (await res.json()) as TopicWithCount[];
+      return data || [];
     } catch {
       topicsCache = null;
       return [];
@@ -42,9 +43,8 @@ export async function fetchTopicQuestions(slug: string): Promise<{ topic: Topic;
         topicQuestionsCache.delete(slug);
         return null;
       }
-      const data = await res.json();
+      const data = (await res.json()) as { topic: Topic; questions: Question[] };
       if (data?.questions) {
-        // Pre-populate single questions cache
         data.questions.forEach((q: Question) => {
           singleQuestionCache.set(
             q.id,
@@ -79,7 +79,7 @@ export async function fetchQuestion(id: number): Promise<EnrichedQuestion | null
         singleQuestionCache.delete(id);
         return null;
       }
-      return await res.json();
+      return ((await res.json()) as EnrichedQuestion) || null;
     } catch {
       singleQuestionCache.delete(id);
       return null;
@@ -93,7 +93,6 @@ export async function fetchQuestion(id: number): Promise<EnrichedQuestion | null
 export async function fetchQuestions(ids: number[]): Promise<EnrichedQuestion[]> {
   if (!ids.length) return [];
 
-  // Check what's already cached
   const missingIds: number[] = [];
   const results: EnrichedQuestion[] = [];
 
@@ -113,15 +112,13 @@ export async function fetchQuestions(ids: number[]): Promise<EnrichedQuestion[]>
   try {
     const res = await fetch(`${API_BASE}/api/questions?ids=${missingIds.join(",")}`);
     if (res.ok) {
-      const fetched: EnrichedQuestion[] = await res.json();
+      const fetched: EnrichedQuestion[] = (await res.json()) as EnrichedQuestion[];
       fetched.forEach((q) => {
         singleQuestionCache.set(q.id, Promise.resolve(q));
         results.push(q);
       });
     }
-  } catch {
-    // fallback
-  }
+  } catch {}
 
   return results;
 }
@@ -143,9 +140,7 @@ export async function fetchQuestionByTopic(
         };
       }
     }
-  } catch {
-    // fallback
-  }
+  } catch {}
 
   return fetchQuestion(id);
 }
@@ -159,7 +154,8 @@ export async function fetchArticles(category?: string): Promise<Article[]> {
           articlesCache = null;
           return [];
         }
-        return await res.json();
+        const data = (await res.json()) as Article[];
+        return data || [];
       } catch {
         articlesCache = null;
         return [];
@@ -167,7 +163,7 @@ export async function fetchArticles(category?: string): Promise<Article[]> {
     })();
   }
 
-  const list = await articlesCache;
+  const list = (await articlesCache) || [];
   if (category && category !== "all") {
     return list.filter((a) => a.category === category);
   }
@@ -178,7 +174,7 @@ export async function fetchArticleBySlug(slug: string): Promise<Article | null> 
   try {
     const res = await fetch(`${API_BASE}/api/articles/${slug}`);
     if (!res.ok) return null;
-    return res.json();
+    return ((await res.json()) as Article) || null;
   } catch {
     return null;
   }

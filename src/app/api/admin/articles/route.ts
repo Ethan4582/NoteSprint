@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { insertArticle } from "@/src/db";
 
+export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const body = (await req.json()) as any;
     const category = body.category || "lld";
     const slug = (body.slug || "new-article")
       .toLowerCase()

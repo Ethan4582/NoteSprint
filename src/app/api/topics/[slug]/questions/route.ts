@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getTopicBySlug, getQuestionsByTopicId } from "@/src/db";
 
+export const runtime = "edge";
 export const revalidate = 3600;
 
 function resolveImageUrl(img?: string | null): string | null {

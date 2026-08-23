@@ -1,8 +1,8 @@
-import process from "node:process";
 import { NextResponse } from "next/server";
 import { getTopTopics, getDbStats } from "@/src/db";
 import type { AnalyticsData, TimeRange, TopTopic } from "@/src/components/admin/analytics/types";
 
+export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 function getCfCredentials() {
