@@ -6,10 +6,10 @@ import { fetchTopics, TopicWithCount } from "@/src/lib/api";
 import { DATA, getQuestions } from "@/src/lib/data";
 import BottomNav from "@/src/components/BottomNav";
 import DashboardSidebar from "@/src/components/dashboard/DashboardSidebar";
-import InterviewHeader from "@/src/components/interview/InterviewHeader";
+import DashboardHeader from "@/src/components/dashboard/DashboardHeader";
 import TopicGrid from "@/src/components/dashboard/TopicGrid";
 import SessionConfigModal from "@/src/components/dashboard/SessionConfigModal";
-import { Play, Search, Clock3, X } from "lucide-react";
+import { Play, Clock3, X } from "lucide-react";
 import { useRecentDecks } from "@/src/hooks/useRecentDecks";
 
 function InterviewContent() {
@@ -21,7 +21,6 @@ function InterviewContent() {
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [activeTab, setActiveTab] = useState("ALL");
   const { recent, clear } = useRecentDecks();
   const [hydrated, setHydrated] = useState(false);
 
@@ -39,43 +38,15 @@ function InterviewContent() {
     if (initialTopic) setSelectedTopics([initialTopic]);
   }, [initialTopic]);
 
-  const CATEGORY_MAP: Record<string, string[]> = {
-    Frontend: ["interview_react", "interview_javascript", "interview_typescript", "interview_nextjs"],
-    Backend: [
-      "interview_nodejs",
-      "interview_express",
-      "interview_mongodb",
-      "interview_postgresql",
-      "interview_redis",
-      "interview_docker",
-      "interview_aws",
-      "interview_python",
-      "interview_sql",
-    ],
-    Fundamentals: [
-      "interview_operating_systeam",
-      "interview_computer_network",
-      "interview_database_management",
-      "interview_oops",
-      "interview_c++",
-    ],
-    "System Design": ["interview_system_design", "interview_hld", "interview_lld"],
-  };
-
   const allAvailableTopics = useMemo(() => {
-    let list = dbTopics.length > 0
+    const list = dbTopics.length > 0
       ? dbTopics.map((t) => ({ topic: t.slug, qCount: t.questionCount }))
       : Object.keys(DATA)
           .filter((topic) => topic.startsWith("interview_"))
           .map((topic) => ({ topic, qCount: getQuestions([], topic).length }));
 
-    if (activeTab !== "ALL") {
-      const allowed = CATEGORY_MAP[activeTab] || [];
-      list = list.filter((t) => allowed.includes(t.topic));
-    }
-
     return list.filter((t) => t.qCount > 0).sort((a, b) => b.qCount - a.qCount);
-  }, [dbTopics, activeTab]);
+  }, [dbTopics]);
 
   const filteredTopics = useMemo(() => {
     if (!search) return allAvailableTopics;
@@ -95,52 +66,16 @@ function InterviewContent() {
     return sum + (matched?.qCount ?? getQuestions([], topic).length);
   }, 0);
 
-  const tabs = ["ALL", "Frontend", "Backend", "Fundamentals", "System Design"];
-
   return (
     <div className="min-h-screen bg-[var(--bg-base)] flex font-sans">
       {/* Desktop Left Sidebar */}
-      <DashboardSidebar />
+      <DashboardSidebar activeTab="Interview Sessions" />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 pb-28">
-        <InterviewHeader />
-
-        <main className="max-w-[1600px] w-full mx-auto px-4 sm:px-8 lg:px-10 py-6 sm:py-8 space-y-6">
-          {/* Controls: Sized-down Search Bar & Category Filters */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            {/* Search Input (tasteful max-w-md width) */}
-            <div className="relative w-full md:w-80 shrink-0">
-              <div className="absolute inset-y-0 left-3.5 flex items-center pointer-events-none">
-                <Search className="w-4 h-4 text-[var(--text-muted)]" />
-              </div>
-              <input
-                type="text"
-                placeholder="Search interview topics..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full h-10 pl-10 pr-4 bg-white rounded-[11px] text-[var(--text-primary)] font-medium text-xs outline-none transition-all border border-[var(--border)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/10 shadow-xs placeholder:text-[var(--text-muted)]"
-              />
-            </div>
-
-            {/* Filter Tabs */}
-            <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-1">
-              {tabs.map((tab) => (
-                <button
-                  key={tab}
-                  type="button"
-                  onClick={() => setActiveTab(tab)}
-                  className={`px-3.5 py-1.5 rounded-[10px] text-xs font-bold transition-all whitespace-nowrap active:scale-95 shrink-0 ${
-                    activeTab === tab
-                      ? "bg-[var(--accent)] text-white shadow-xs"
-                      : "bg-white text-[var(--text-secondary)] border border-[var(--border)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)]"
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
-          </div>
+        <main className="flex-1 w-full max-w-[1700px] mx-auto px-4 sm:px-8 lg:px-10 py-6 sm:py-8 space-y-6">
+          {/* Dashboard Header with Greeting & Search */}
+          <DashboardHeader search={search} setSearch={setSearch} />
 
           {/* Recently Viewed Shelf */}
           {hydrated && recent.filter((r) => r.startsWith("interview_")).length > 0 && !search && (
@@ -148,7 +83,7 @@ function InterviewContent() {
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-1.5">
                   <Clock3 size={13} />
-                  <span>Recently Viewed</span>
+                  <span>Recently Viewed Interview Decks</span>
                 </h2>
                 <button
                   onClick={clear}

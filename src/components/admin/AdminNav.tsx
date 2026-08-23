@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import ThemeToggle from "@/src/components/ThemeToggle";
 import { adminLogout } from "@/src/lib/admin-api";
 import { HelpCircle, FileText, LineChart, LogOut, ChevronDown } from "lucide-react";
 import { cn } from "@/src/lib/utils";
@@ -81,8 +80,6 @@ export default function AdminNav() {
 
         {/* Right Section */}
         <div className="flex items-center gap-2 sm:gap-3">
-          <ThemeToggle />
-
           {/* Mobile Section Switcher & Logout Dropdown */}
           <div className="md:hidden">
             <DropdownMenu>

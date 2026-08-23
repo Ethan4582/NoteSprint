@@ -12,8 +12,6 @@ import {
   Search,
   PanelLeftClose,
   PanelLeftOpen,
-  Sun,
-  Moon,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import SearchCommandDialog from "@/src/components/search/SearchCommandDialog";
@@ -27,12 +25,11 @@ export default function DashboardSidebar({ activeTab, onSelectTab }: DashboardSi
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("ns_sidebar_collapsed");
-      if (saved !== null) setCollapsed(saved === "true");
+      const savedCol = localStorage.getItem("ns_sidebar_collapsed");
+      if (savedCol !== null) setCollapsed(savedCol === "true");
     } catch {}
   }, []);
 
@@ -169,9 +166,9 @@ export default function DashboardSidebar({ activeTab, onSelectTab }: DashboardSi
           </nav>
         </div>
 
-        {/* Bottom Footer: Creator Link & Light/Dark Switcher */}
-        <div className="pt-3 border-t border-[var(--border)] w-full space-y-2">
-          <div className={cn("flex items-center justify-between", collapsed ? "flex-col gap-2" : "px-1")}>
+        {/* Bottom Footer: Creator Link */}
+        <div className="pt-3 border-t border-[var(--border)] w-full">
+          <div className={cn("flex items-center", collapsed ? "justify-center" : "px-1")}>
             <a
               href="https://twitter.com/Ethan"
               target="_blank"
@@ -188,15 +185,6 @@ export default function DashboardSidebar({ activeTab, onSelectTab }: DashboardSi
               </svg>
               {!collapsed && <span>Built by Ethan</span>}
             </a>
-
-            <button
-              type="button"
-              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-              className="p-1.5 rounded-[8px] text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] transition-colors"
-              title={`Switch to ${theme === "light" ? "Dark" : "Light"} mode`}
-            >
-              {theme === "light" ? <Moon size={14} /> : <Sun size={14} />}
-            </button>
           </div>
         </div>
       </aside>
