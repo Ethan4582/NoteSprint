@@ -14,64 +14,82 @@ interface TopicCardProps {
   onToggle?: () => void;
 }
 
-export default function TopicCard({ subject, topic, qCount, basePath = "/practice", isSelected, onToggle }: TopicCardProps) {
+const tintFor = (topic: string) => {
+  const h = [...topic].reduce((a, c) => a + c.charCodeAt(0), 0);
+  const tints: Array<{ bg: string; bd: string; dot: string }> = [
+    { bg: "var(--card-yellow)", bd: "var(--card-yellow-border)", dot: "var(--card-yellow-icon)" },
+    { bg: "var(--card-green)", bd: "var(--card-green-border)", dot: "var(--card-green-icon)" },
+    { bg: "var(--card-blue)", bd: "var(--card-blue-border)", dot: "var(--card-blue-icon)" },
+    { bg: "var(--card-purple)", bd: "var(--card-purple-border)", dot: "var(--card-purple-icon)" },
+    { bg: "var(--card-pink)", bd: "var(--card-pink-border)", dot: "var(--card-pink-icon)" },
+    { bg: "var(--card-peach)", bd: "var(--card-peach-border)", dot: "var(--text-secondary)" },
+  ];
+  return tints[h % tints.length];
+};
+
+export default function TopicCard({ topic, qCount, basePath = "/practice", isSelected, onToggle }: TopicCardProps) {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleStart = () => {
-    if (onToggle) {
-      onToggle();
-      return;
-    }
-    if (basePath === "/preview") {
-      router.push(`/preview/${topic}`);
-    } else {
-      setIsModalOpen(true);
-    }
+    if (onToggle) { onToggle(); return; }
+    if (basePath === "/preview") router.push(`/preview/${topic}`);
+    else setIsModalOpen(true);
   };
 
-  const cleanTopic = topic.startsWith('interview_') ? topic.replace('interview_', '') : topic;
-  const formattedTopic = cleanTopic.replace(/_/g, ' ');
+  const cleanTopic = topic.startsWith("interview_") ? topic.replace("interview_", "") : topic;
+  const formattedTopic = cleanTopic.replace(/_/g, " ");
   const capitalizedTopic = formattedTopic.charAt(0).toUpperCase() + formattedTopic.slice(1).toLowerCase();
+  const tint = tintFor(topic);
 
   return (
     <>
       <button
         onClick={handleStart}
-        className={`group relative flex items-center p-2.5 sm:p-2.5 bg-raised rounded-[12px] sm:rounded-[14px] transition-all duration-300 text-left active:scale-[0.98] overflow-hidden gap-4 sm:gap-3 w-full border border-[var(--border)] ${
-          isSelected ? "shadow-raised ring-1 ring-[var(--accent)]" : "shadow-raised-crisp"
+        aria-pressed={isSelected ? "true" : "false"}
+        className={`group relative flex items-center gap-3 p-3 bg-white rounded-[18px] border text-left w-full overflow-hidden transition-all duration-200 ${
+          isSelected
+            ? "border-[var(--accent)] shadow-[var(--shadow-card)] ring-1 ring-[var(--accent)]/20"
+            : "border-[var(--border)] shadow-sm hover:border-[var(--border-strong)] hover:shadow-[var(--shadow-soft)]"
         }`}
       >
-        <div className={`w-10 h-10 sm:w-10 sm:h-10 rounded-[10px] bg-raised flex items-center justify-center group-hover:scale-105 transition-transform duration-500 shrink-0 border border-[var(--border-strong)] ${
-          isSelected ? "shadow-inset-cavity" : "shadow-raised"
-        }`}>
-          <div className="scale-75 sm:scale-75">
-            {getTechIcon(topic)}
+        {/* folder-tab hint */}
+        <span
+          className="absolute -top-px left-4 h-[6px] w-10 rounded-b-lg border-x border-b hidden sm:block"
+          style={{ background: tint.bg, borderColor: tint.bd }}
+        />
+
+        <div
+          className="w-11 h-11 rounded-[12px] flex items-center justify-center shrink-0 border"
+          style={{ background: tint.bg, borderColor: tint.bd }}
+        >
+          <span className="scale-[0.9]">{getTechIcon(topic)}</span>
+        </div>
+
+        <div className="flex-1 min-w-0 pr-1">
+          <h3 className={`text-[13px] font-bold leading-tight tracking-tight truncate ${isSelected ? "text-[var(--accent)]" : "text-[var(--text-primary)]"}`}>
+            {capitalizedTopic}
+          </h3>
+          <div className="flex items-center gap-1.5 mt-0.5">
+            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--text-secondary)]">
+              <span className="w-1.5 h-1.5 rounded-full" style={{ background: tint.dot }} />
+              {qCount} cards
+            </span>
+            {isSelected && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[var(--accent-soft)] border border-[var(--accent-border)] text-[var(--accent)]">Selected</span>}
           </div>
         </div>
 
-        <div className="flex-1 space-y-0 min-w-0 pr-1">
-          <h3 className={`text-[12px] sm:text-[13px] font-bold leading-tight tracking-tight truncate ${isSelected ? "text-[var(--accent)] drop-shadow-[0_0_8px_rgba(255,69,0,0.4)]" : "text-[var(--text-primary)]"}`}>
-            {capitalizedTopic}
-          </h3>
-          <div className="flex items-center gap-1 opacity-60">
-            <span className="text-[9px] sm:text-[9px] font-black text-[var(--text-secondary)]">
-              {qCount}
-            </span>
-            <span className="text-[8px] sm:text-[8px] font-bold text-[var(--text-muted)] tracking-widest">
-              cards
-            </span>
-          </div>
-        </div>
+        <span
+          className={`hidden sm:grid place-items-center w-7 h-7 rounded-full border shrink-0 transition-colors ${
+            isSelected ? "bg-[var(--accent)] border-[var(--accent)] text-white" : "bg-[var(--bg-subtle)] border-[var(--border)] text-[var(--text-muted)] group-hover:bg-white"
+          }`}
+        >
+          <span className="text-[13px] leading-none">{isSelected ? "✓" : "+"}</span>
+        </span>
       </button>
 
       {!onToggle && (
-        <SessionConfigModal 
-          topic={topic}
-          totalAvailable={qCount}
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-        />
+        <SessionConfigModal topic={topic} totalAvailable={qCount} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       )}
     </>
   );

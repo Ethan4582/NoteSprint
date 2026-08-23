@@ -6,7 +6,6 @@ import { useBookmarks } from "@/src/hooks/useBookmarks";
 import { fetchQuestion } from "@/src/lib/api";
 import type { Question } from "@/src/db/schema";
 import BottomNav from "@/src/components/BottomNav";
-import ThemeToggle from "@/src/components/ThemeToggle";
 import BookmarkButton from "@/src/components/BookmarkButton";
 import ContentRenderer from "@/src/components/ContentRenderer";
 import { Input } from "@/src/components/ui/input";
@@ -92,45 +91,44 @@ export default function BookmarksPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] flex flex-col pb-32 font-sans selection:bg-[var(--accent)] selection:text-white">
+    <div className="min-h-screen bg-[var(--bg-base)] flex flex-col pb-32 font-sans">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-[var(--bg-base)]/85 backdrop-blur-xl border-b border-[var(--border)] px-4 sm:px-8 py-3.5">
-        <div className="max-w-[1200px] mx-auto flex items-center justify-between">
+      <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-xl border-b border-[var(--border)] px-4 sm:px-8 py-3.5">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-[var(--accent)]/15 border border-[var(--accent)]/25 text-[var(--accent)]">
-              <Bookmark className="h-4.5 w-4.5 fill-current" />
+            <div className="p-2 rounded-2xl bg-[var(--accent-subtle)] border border-[var(--accent)]/20 text-[var(--accent)]">
+              <Bookmark className="h-5 w-5 fill-current" />
             </div>
             <div>
-              <h1 className="text-lg sm:text-xl font-black tracking-tight text-[var(--text-primary)]">
+              <h1 className="text-base sm:text-lg font-extrabold tracking-tight text-[var(--text-primary)]">
                 Saved Bookmarks
               </h1>
-              <p className="text-[11px] text-[var(--text-secondary)]">
-                {questions.length} question{questions.length === 1 ? "" : "s"} bookmarked
+              <p className="text-xs text-[var(--text-muted)] font-medium">
+                {questions.length} question{questions.length === 1 ? "" : "s"} saved for review
               </p>
             </div>
           </div>
-          <ThemeToggle />
         </div>
       </header>
 
-      <main className="max-w-[1200px] mx-auto w-full p-4 sm:p-6 space-y-5 flex-1">
+      <main className="max-w-6xl mx-auto w-full p-4 sm:p-6 space-y-5 flex-1">
         {loading ? (
           <div className="py-24 flex flex-col items-center justify-center gap-3 text-xs text-[var(--text-muted)] font-mono">
             <Loader2 className="h-6 w-6 animate-spin text-[var(--accent)]" />
             <span>Loading bookmarks...</span>
           </div>
         ) : questions.length === 0 ? (
-          <div className="py-20 flex flex-col items-center justify-center text-center p-6 bg-raised rounded-2xl border border-[var(--border)] shadow-sm max-w-md mx-auto">
-            <div className="p-4 rounded-2xl bg-[var(--bg-subtle)] text-[var(--accent)] mb-4">
-              <Bookmark className="h-8 w-8 opacity-60" />
+          <div className="py-20 flex flex-col items-center justify-center text-center p-8 bg-white rounded-3xl border border-[var(--border)] shadow-sm max-w-md mx-auto">
+            <div className="p-4 rounded-full bg-[var(--accent-subtle)] text-[var(--accent)] mb-4">
+              <Bookmark className="h-8 w-8 opacity-75" />
             </div>
-            <h2 className="text-lg font-bold text-[var(--text-primary)]">No Bookmarks Saved</h2>
+            <h2 className="text-lg font-extrabold text-[var(--text-primary)]">No Bookmarks Saved</h2>
             <p className="text-xs text-[var(--text-muted)] mt-1.5 leading-relaxed">
-              Tap the bookmark icon on any flashcard or reading preview to save it for quick practice.
+              Tap the bookmark icon on any flashcard or question to save it for targeted practice.
             </p>
             <button
               onClick={() => router.push("/practice")}
-              className="mt-6 px-6 py-2.5 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all shadow-sm active:scale-95 flex items-center gap-2"
+              className="mt-6 px-6 py-2.5 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white text-xs font-bold uppercase tracking-wider rounded-full transition-all shadow-sm active:scale-95 flex items-center gap-2"
             >
               <span>Explore Topics</span>
               <ArrowRight size={14} />
@@ -138,15 +136,15 @@ export default function BookmarksPage() {
           </div>
         ) : (
           <>
-            {/* Filter & Search Bar - matching Admin layout */}
-            <div className="flex flex-row items-center gap-2 sm:gap-2.5 w-full">
+            {/* Filter & Search Bar */}
+            <div className="flex flex-row items-center gap-2 sm:gap-3 w-full">
               {topics.length > 1 && (
-                <div className="w-[120px] sm:w-48 shrink-0">
+                <div className="w-36 sm:w-48 shrink-0">
                   <Select value={selectedTopic} onValueChange={setSelectedTopic}>
-                    <SelectTrigger className="h-9 rounded-xl bg-raised border-[var(--border-strong)] text-xs font-semibold px-2.5 sm:px-3">
+                    <SelectTrigger className="h-10 rounded-2xl bg-white border-[var(--border)] text-xs font-semibold px-3 shadow-xs">
                       <SelectValue placeholder="All Topics" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-white border-[var(--border)] rounded-2xl shadow-xl">
                       <SelectItem value="all">All Topics</SelectItem>
                       {topics.map((t) => (
                         <SelectItem key={t} value={t}>
@@ -158,36 +156,36 @@ export default function BookmarksPage() {
                 </div>
               )}
 
-              <div className="relative flex-1 min-w-0 sm:max-w-md">
+              <div className="relative flex-1 min-w-0">
                 <Input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search bookmarks..."
-                  className="h-9 pl-8 sm:pl-9 pr-2 rounded-xl bg-raised border-[var(--border-strong)] text-xs placeholder:text-[var(--text-muted)] w-full truncate"
+                  className="h-10 pl-9 pr-3 rounded-2xl bg-white border-[var(--border)] text-xs placeholder:text-[var(--text-muted)] w-full shadow-xs focus:ring-2 focus:ring-[var(--accent)]/15"
                 />
-                <Search className="absolute left-2.5 sm:left-3 top-2.5 h-3.5 w-3.5 text-[var(--text-muted)]" />
+                <Search className="absolute left-3 top-3 h-4 w-4 text-[var(--text-muted)]" />
               </div>
 
               <button
                 onClick={startSession}
                 disabled={filteredQuestions.length === 0}
-                className="h-9 px-3.5 sm:px-4 bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-50 text-white rounded-xl font-bold text-xs uppercase tracking-wider transition-all shadow-sm active:scale-95 flex items-center justify-center gap-1.5 shrink-0 ml-auto"
+                className="h-10 px-4 bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-50 text-white rounded-full font-bold text-xs uppercase tracking-wider transition-all shadow-sm active:scale-95 flex items-center justify-center gap-1.5 shrink-0 ml-auto"
               >
                 <Play size={13} fill="currentColor" />
-                <span className="hidden sm:inline">Practice Bookmarks</span>
+                <span className="hidden sm:inline">Practice Deck</span>
                 <span className="sm:hidden">Practice</span>
                 <span>({filteredQuestions.length})</span>
               </button>
             </div>
 
-            {/* Questions Multi-Column Grid - matching Admin layout */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {/* Questions Multi-Column Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
               {filteredQuestions.map((q, idx) => {
                 const isExpanded = !!expandedIds[q.id];
                 return (
                   <div
                     key={q.id}
-                    className="rounded-2xl border border-[var(--border-strong)] bg-raised p-4 shadow-raised-crisp flex flex-col justify-between hover:border-[var(--accent)]/40 transition-all group"
+                    className="rounded-2xl border border-[var(--border)] bg-white p-4 shadow-sm flex flex-col justify-between hover:border-[var(--accent)]/40 hover:shadow-md transition-all group"
                   >
                     <div className="space-y-2 flex-1">
                       <div className="flex items-center justify-between gap-2">
@@ -196,7 +194,7 @@ export default function BookmarksPage() {
                             #{(idx + 1).toString().padStart(2, "0")}
                           </span>
                           {q.topicName && (
-                            <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[var(--bg-subtle)] text-[var(--text-muted)] border border-[var(--border)] truncate">
+                            <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[var(--bg-subtle)] text-[var(--text-secondary)] border border-[var(--border)] truncate">
                               {q.topicName}
                             </span>
                           )}

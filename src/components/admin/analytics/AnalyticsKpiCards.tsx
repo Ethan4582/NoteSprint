@@ -27,7 +27,7 @@ export default function AnalyticsKpiCards({ kpis }: { kpis: AnalyticsKpi[] }) {
         return (
           <div
             key={kpi.title}
-            className="rounded-2xl lg:rounded-xl border border-[var(--border-strong)] bg-raised p-3.5 lg:px-4 lg:py-3 shadow-raised-crisp flex flex-col lg:flex-row lg:items-center justify-between space-y-2.5 lg:space-y-0 lg:gap-3 group transition-all"
+            className="rounded-2xl border border-[var(--border)] bg-white p-4 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between space-y-2.5 lg:space-y-0 lg:gap-3 group transition-all hover:border-[var(--border-strong)]"
           >
             {/* Mobile Top Header / Desktop Left Group */}
             <div className="flex items-center justify-between lg:justify-start gap-1.5 lg:gap-3 min-w-0">

@@ -12,7 +12,7 @@ export default function DevicePlatformChart({
   const COLORS = ["var(--accent)", "var(--text-secondary)", "var(--border-strong)"];
 
   return (
-    <div className="rounded-2xl border border-[var(--border-strong)] bg-raised p-5 shadow-raised-crisp space-y-4 flex flex-col justify-between h-full">
+    <div className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-sm space-y-4 flex flex-col justify-between h-full">
       {/* Header */}
       <div className="flex items-center justify-between pb-2 border-b border-[var(--border)]">
         <div className="flex items-center gap-2.5">

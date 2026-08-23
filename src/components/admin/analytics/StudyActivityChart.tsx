@@ -34,7 +34,7 @@ export default function StudyActivityChart({
   data: StudyActivityPoint[];
 }) {
   return (
-    <div className="rounded-2xl border border-[var(--border-strong)] bg-raised p-5 shadow-raised-crisp space-y-4 flex flex-col justify-between">
+    <div className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-sm space-y-4 flex flex-col justify-between">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-[var(--border)]">
         <div className="flex items-center gap-2.5">

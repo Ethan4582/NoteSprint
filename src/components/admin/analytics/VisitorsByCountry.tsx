@@ -9,7 +9,7 @@ export default function VisitorsByCountry({
   countries: CountryVisitor[];
 }) {
   return (
-    <div className="rounded-2xl border border-[var(--border-strong)] bg-raised p-5 shadow-raised-crisp space-y-4 flex flex-col justify-between">
+    <div className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-sm space-y-4 flex flex-col justify-between">
       {/* Header */}
       <div className="flex items-center justify-between pb-2 border-b border-[var(--border)]">
         <div className="flex items-center gap-2.5">

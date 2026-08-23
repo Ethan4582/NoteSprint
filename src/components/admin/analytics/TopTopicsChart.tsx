@@ -12,7 +12,7 @@ export default function TopTopicsChart({
   const totalQuestions = topics.reduce((acc, t) => acc + t.visitors, 0);
 
   return (
-    <div className="rounded-2xl border border-[var(--border-strong)] bg-raised p-5 shadow-raised-crisp flex flex-col space-y-4">
+    <div className="rounded-2xl border border-[var(--border)] bg-white p-5 shadow-sm flex flex-col space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between pb-3 border-b border-[var(--border)]">
         <div className="flex items-center gap-2.5">

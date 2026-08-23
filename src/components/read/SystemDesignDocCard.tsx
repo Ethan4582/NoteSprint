@@ -1,11 +1,11 @@
-import { ChevronRight, Clock } from "lucide-react";
+import { ChevronRight, Clock, BookOpen } from "lucide-react";
 import { MarkdownMeta } from "@/src/lib/markdown";
 import { useRouter } from "next/navigation";
 
 interface SystemDesignDocCardProps {
   doc: MarkdownMeta;
   index: number;
-  type?: "lld" | "hld"; // defaults to doc.type
+  type?: "lld" | "hld";
 }
 
 export default function SystemDesignDocCard({ doc, index, type }: SystemDesignDocCardProps) {
@@ -15,33 +15,42 @@ export default function SystemDesignDocCard({ doc, index, type }: SystemDesignDo
   return (
     <button
       onClick={() => router.push(`/system-design/${docType}/${doc.slug}`)}
-      className="group relative flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 p-5 sm:p-6 bg-[var(--bg-surface)] border border-[var(--border-strong)] rounded-2xl hover:border-[var(--accent)] transition-all duration-300 text-left shadow-sm hover:shadow-md active:scale-[0.99] overflow-hidden w-full"
+      className="group relative flex items-start gap-4 p-4 sm:p-5 bg-white border border-[var(--border)] rounded-[18px] hover:border-[var(--border-strong)] hover:shadow-[var(--shadow-soft)] text-left w-full transition-all"
     >
-      <div className="w-10 h-10 rounded-xl bg-[var(--bg-base)] border border-[var(--border-inner)] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-500 hidden sm:flex">
-        <span className="text-xs font-bold text-[var(--text-secondary)]">{index + 1}</span>
-      </div>
-
-      <div className="flex-1 space-y-2 min-w-0 pr-8">
-        <h3 className="text-lg font-bold text-[var(--text-primary)] leading-tight tracking-tight truncate">
-          {doc.title}
-        </h3>
-        
-        <div className="flex items-center gap-4 pt-1">
-          <div className="flex items-center gap-1.5 text-[var(--text-secondary)]">
-            <Clock size={14} className="opacity-60" />
-            <span className="text-[11px] font-bold tracking-wider uppercase">{doc.readingTime} min read</span>
-          </div>
-          <div className="flex items-center gap-1 text-[var(--text-secondary)]" title={`Difficulty: ${doc.difficulty}`}>
-            <div className={`w-1 h-3 rounded-full ${doc.difficulty === 'Easy' ? 'bg-green-500' : doc.difficulty === 'Medium' ? 'bg-yellow-500' : 'bg-red-500'}`} />
-            <div className={`w-1 h-3 rounded-full ${(doc.difficulty === 'Medium' || doc.difficulty === 'Hard') ? (doc.difficulty === 'Medium' ? 'bg-yellow-500' : 'bg-red-500') : 'bg-[var(--border-strong)]'}`} />
-            <div className={`w-1 h-3 rounded-full ${doc.difficulty === 'Hard' ? 'bg-red-500' : 'bg-[var(--border-strong)]'}`} />
-          </div>
+      <span className="hidden sm:grid place-items-center w-9 h-9 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border)] text-xs font-bold text-[var(--text-secondary)] shrink-0">
+        {String(index + 1).padStart(2, "0")}
+      </span>
+      <div className="flex-1 min-w-0">
+        <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold tracking-wide px-2 py-1 rounded-full bg-[var(--bg-subtle)] border border-[var(--border)] text-[var(--text-secondary)] uppercase">
+            <BookOpen size={11} /> {docType.toUpperCase()}
+          </span>
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold tracking-wide px-2 py-1 rounded-full bg-white border border-[var(--border)] text-[var(--text-muted)]">
+            <Clock size={11} /> {doc.readingTime} min
+          </span>
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold tracking-wide px-2 py-1 rounded-full border"
+            style={{
+              background: doc.difficulty === "Easy" ? "var(--success-subtle)" : doc.difficulty === "Hard" ? "var(--error-subtle)" : "var(--warning-subtle)",
+              borderColor: doc.difficulty === "Easy" ? "var(--success-border)" : doc.difficulty === "Hard" ? "#FFC9C9" : "#FDE68A",
+              color: doc.difficulty === "Easy" ? "var(--success)" : doc.difficulty === "Hard" ? "var(--error)" : "#B45309",
+            }}
+          >
+            {doc.difficulty}
+          </span>
+        </div>
+        <h3 className="text-[15px] font-bold leading-tight tracking-tight text-[var(--text-primary)] line-clamp-2">{doc.title}</h3>
+        {doc.description && <p className="mt-1 text-xs leading-relaxed text-[var(--text-secondary)] line-clamp-2">{doc.description}</p>}
+        <div className="mt-2 flex flex-wrap gap-1">
+          {doc.tags?.slice(0, 3).map((t) => (
+            <span key={t} className="text-[11px] px-2 py-1 rounded-full bg-[var(--bg-subtle)] border border-[var(--border)] text-[var(--text-muted)]">
+              {t}
+            </span>
+          ))}
         </div>
       </div>
-
-      <div className="absolute right-6 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-[var(--accent-subtle)] border border-[var(--accent)]/20 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300">
-        <ChevronRight size={16} className="text-[var(--accent)]" />
-      </div>
+      <span className="hidden sm:grid place-items-center w-8 h-8 rounded-full bg-[var(--text-primary)] text-white shrink-0 group-hover:translate-x-0.5 transition-transform">
+        <ChevronRight size={14} />
+      </span>
     </button>
   );
 }

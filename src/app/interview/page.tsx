@@ -7,7 +7,6 @@ import { DATA, getQuestions } from "@/src/lib/data";
 import BottomNav from "@/src/components/BottomNav";
 import { Play, Search } from "lucide-react";
 
-// Interview components
 import InterviewHeader from "@/src/components/interview/InterviewHeader";
 import TopicGrid from "@/src/components/dashboard/TopicGrid";
 import SessionConfigModal from "@/src/components/dashboard/SessionConfigModal";
@@ -70,21 +69,21 @@ function InterviewContent() {
     <div className="min-h-screen bg-[var(--bg-base)] flex flex-col pb-32 overflow-x-hidden relative">
       <InterviewHeader />
 
-      <main className="max-w-[1600px] mx-auto w-full p-4 sm:p-10 space-y-8 sm:space-y-10">
+      <main className="max-w-6xl mx-auto w-full p-4 sm:p-8 space-y-6">
         <div className="relative group">
-          <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none z-10">
-            <Search className="w-4 h-4 sm:w-5 text-[var(--text-muted)] group-focus-within:text-[var(--accent)] transition-colors drop-shadow-md" />
+          <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+            <Search className="w-4 h-4 text-[var(--text-muted)] group-focus-within:text-[var(--accent)] transition-colors" />
           </div>
-          <input 
-            type="text" 
-            placeholder="Search interview topics..." 
+          <input
+            type="text"
+            placeholder="Search interview topics..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-12 sm:h-14 pl-11 sm:pl-14 pr-4 bg-[var(--bg-subtle)] rounded-2xl text-[var(--text-primary)] font-semibold text-base outline-none transition-all shadow-inset-cavity placeholder:text-[var(--text-muted)] placeholder:font-medium border border-[var(--border-inner)] focus:border-[var(--border-strong)]"
+            className="w-full h-12 pl-11 pr-4 bg-white rounded-2xl text-[var(--text-primary)] font-medium text-sm outline-none transition-all border border-[var(--border)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10 shadow-sm placeholder:text-[var(--text-muted)]"
           />
         </div>
 
-        <TopicGrid 
+        <TopicGrid
           topics={filteredTopics}
           selectedTopics={selectedTopics}
           onToggleTopic={toggleTopic}
@@ -92,18 +91,18 @@ function InterviewContent() {
       </main>
 
       {selectedTopics.length > 0 && (
-        <div className="fixed bottom-24 left-0 right-0 flex justify-center z-40 pointer-events-none px-4">
-          <button 
+        <div className="fixed bottom-[84px] sm:bottom-6 left-0 right-0 flex justify-center z-40 pointer-events-none px-4">
+          <button
             onClick={() => setIsModalOpen(true)}
-            className="pointer-events-auto bg-[var(--accent)] text-white px-6 py-3 rounded-full shadow-lg shadow-[var(--accent)]/30 font-bold tracking-widest uppercase text-xs flex items-center gap-2 hover:scale-105 active:scale-95 transition-all"
+            className="pointer-events-auto bg-[var(--text-primary)] text-white px-5 py-3 rounded-full shadow-[0_12px_32px_rgba(28,25,23,0.2)] font-bold text-xs tracking-wide flex items-center gap-2 hover:translate-y-[-1px] transition-transform"
           >
             <Play size={14} fill="currentColor" />
-            Configure Session ({selectedTopics.length})
+            Start session · {selectedTopics.length} deck{selectedTopics.length > 1 ? "s" : ""} · {totalSelectedQuestions} cards
           </button>
         </div>
       )}
 
-      <SessionConfigModal 
+      <SessionConfigModal
         topic={selectedTopics.join(",")}
         totalAvailable={totalSelectedQuestions}
         isOpen={isModalOpen}
@@ -117,7 +116,13 @@ function InterviewContent() {
 
 export default function InterviewPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[var(--bg-base)] flex items-center justify-center font-mono text-xs uppercase tracking-widest text-[var(--text-muted)]">Loading Config...</div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[var(--bg-base)] flex items-center justify-center font-mono text-xs uppercase tracking-widest text-[var(--text-muted)]">
+          Loading Config...
+        </div>
+      }
+    >
       <InterviewContent />
     </Suspense>
   );

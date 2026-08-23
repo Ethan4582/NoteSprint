@@ -12,20 +12,20 @@ interface TopicGridProps {
 
 export default function TopicGrid({ topics, basePath, selectedTopics = [], onToggleTopic }: TopicGridProps) {
   const sortedTopics = topics
-    .map(({ topic, qCount }) => ({
-      topic,
-      qCount: typeof qCount === "number" ? qCount : getQuestions([], topic).length,
-    }))
+    .map(({ topic, qCount }) => ({ topic, qCount: typeof qCount === "number" ? qCount : getQuestions([], topic).length }))
     .sort((a, b) => b.qCount - a.qCount);
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-[10px] font-black tracking-widest text-[var(--text-primary)] opacity-60 uppercase">Discovery topics</h2>
-        <div className="h-px flex-1 bg-[var(--border)] ml-6 opacity-30"></div>
+    <div className="space-y-3">
+      <div className="flex items-center gap-3">
+        <h2 className="text-[11px] font-black tracking-[0.14em] uppercase text-[var(--text-muted)]">Discovery decks</h2>
+        <span className="text-[11px] px-2 py-1 rounded-full bg-white border border-[var(--border)] text-[var(--text-secondary)] font-semibold">
+          {sortedTopics.length} topics
+        </span>
+        <div className="h-px flex-1 bg-[var(--border)] opacity-60 hidden sm:block" />
       </div>
-      
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4">
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-3.5">
         {sortedTopics.map(({ topic, qCount }) => (
           <TopicCard
             key={topic}
