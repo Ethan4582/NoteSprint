@@ -19,7 +19,7 @@ export default function DashboardSearch({ tabs, activeTab, setActiveTab }: Dashb
             className={`px-3.5 py-1.5 rounded-[10px] text-xs font-bold transition-all whitespace-nowrap active:scale-95 shrink-0 ${
               isActive
                 ? "bg-[var(--accent)] text-white shadow-xs"
-                : "bg-white text-[var(--text-secondary)] border border-[var(--border)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)]"
+                : "bg-white text-[var(--text-secondary)] border border-[var(--border)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text-primary)]"
             }`}
           >
             {tab}

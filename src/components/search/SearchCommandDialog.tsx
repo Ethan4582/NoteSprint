@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Search, BookOpen, Layers, X, Sparkles, Tag } from "lucide-react";
+import { Search, BookOpen, Layers, Sparkles, X } from "lucide-react";
 import { DATA } from "@/src/lib/data";
 import { fetchTopics, fetchArticles, TopicWithCount } from "@/src/lib/api";
 import type { Article } from "@/src/db/schema";
@@ -39,10 +39,11 @@ export default function SearchCommandDialog({ open, onOpenChange }: SearchComman
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open, onOpenChange]);
 
-  // Extract all articles and tags
+  const q = query.trim().toLowerCase();
+
+  // 1. System Design Articles
   const matchedArticles = articles.filter((art) => {
-    if (!query) return false;
-    const q = query.toLowerCase();
+    if (!q) return true;
     const matchTitle = art.title.toLowerCase().includes(q);
     let matchTag = false;
     try {
@@ -58,8 +59,14 @@ export default function SearchCommandDialog({ open, onOpenChange }: SearchComman
     return matchTitle || matchTag;
   });
 
+  // All topics list
   const allTopics = dbTopics.length > 0
-    ? dbTopics.map((t) => ({ slug: t.slug, name: t.name || t.slug.replace(/^interview_/, "").replace(/_/g, " "), count: t.questionCount, isInterview: t.slug.startsWith("interview_") }))
+    ? dbTopics.map((t) => ({
+        slug: t.slug,
+        name: t.name || t.slug.replace(/^interview_/, "").replace(/_/g, " "),
+        count: t.questionCount,
+        isInterview: t.slug.startsWith("interview_"),
+      }))
     : Object.keys(DATA).map((topic) => ({
         slug: topic,
         name: topic.replace(/^interview_/, "").replace(/_/g, " "),
@@ -67,9 +74,31 @@ export default function SearchCommandDialog({ open, onOpenChange }: SearchComman
         isInterview: topic.startsWith("interview_"),
       }));
 
-  const filteredTopics = allTopics.filter((t) =>
-    t.name.toLowerCase().includes(query.toLowerCase()) || t.slug.toLowerCase().includes(query.toLowerCase())
-  );
+  // 2. Interview Topics
+  const matchedInterviews = allTopics
+    .filter((t) => t.isInterview)
+    .filter((t) => !q || t.name.toLowerCase().includes(q) || t.slug.toLowerCase().includes(q));
+
+  // 3. Flashcard Topics
+  const matchedFlashcards = allTopics
+    .filter((t) => !t.isInterview)
+    .filter((t) => !q || t.name.toLowerCase().includes(q) || t.slug.toLowerCase().includes(q));
+
+  const displayedArticles = q ? matchedArticles : matchedArticles.slice(0, 2);
+  const displayedInterviews = q ? matchedInterviews : matchedInterviews.slice(0, 2);
+  const displayedFlashcards = q ? matchedFlashcards : matchedFlashcards.slice(0, 3);
+
+  const hasAnyResults =
+    displayedArticles.length > 0 ||
+    displayedInterviews.length > 0 ||
+    displayedFlashcards.length > 0;
+
+  const handleSelectArticle = (article: Article) => {
+    onOpenChange(false);
+    setQuery("");
+    const category = article.category === "lld" ? "lld" : "hld";
+    router.push(`/system-design/${category}/${article.slug}`);
+  };
 
   const handleSelectTopic = (topic: { slug: string; isInterview: boolean }) => {
     onOpenChange(false);
@@ -81,131 +110,142 @@ export default function SearchCommandDialog({ open, onOpenChange }: SearchComman
     }
   };
 
-  const handleSelectArticle = (article: Article) => {
-    onOpenChange(false);
-    setQuery("");
-    const category = article.category === "lld" ? "lld" : "hld";
-    router.push(`/system-design/${category}/${article.slug}`);
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-xl p-0 overflow-hidden bg-white border border-[var(--border)] rounded-[12px] shadow-2xl">
+      <DialogContent className="max-w-xl p-0 overflow-hidden bg-white border border-[var(--border)] rounded-[12px] shadow-2xl [&>button:last-child]:hidden">
         <DialogHeader className="sr-only">
-          <DialogTitle>Search Topics, Tags, and Reading Articles</DialogTitle>
+          <DialogTitle>Search System Design, Interview, and Flashcards</DialogTitle>
         </DialogHeader>
 
-        {/* Input Bar */}
-        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-[var(--border)] bg-[var(--bg-subtle)]/50">
+        {/* Clean Input Bar */}
+        <div className="flex items-center gap-3 px-4 py-3 border-b border-[var(--border)] bg-white">
           <Search className="w-4 h-4 text-[var(--text-muted)] shrink-0" />
           <input
             type="text"
-            placeholder="Search tags, reading articles, system design, flashcards..."
+            placeholder="Search system design, interview, flashcards..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="flex-1 bg-transparent text-xs sm:text-sm font-medium text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none"
             autoFocus
           />
-          {query && (
+          {query ? (
             <button
+              type="button"
               onClick={() => setQuery("")}
-              className="p-1 rounded-[6px] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+              className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer"
             >
-              <X size={14} />
+              <X size={15} />
             </button>
+          ) : (
+            <kbd
+              onClick={() => onOpenChange(false)}
+              className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-md bg-[var(--bg-subtle)] border border-[var(--border)] text-[var(--text-muted)] cursor-pointer select-none shadow-2xs"
+            >
+              ESC
+            </kbd>
           )}
-          <kbd className="hidden sm:inline-block text-[10px] font-mono px-1.5 py-0.5 rounded-[6px] bg-white border border-[var(--border)] text-[var(--text-muted)]">
-            ESC
-          </kbd>
         </div>
 
-        {/* Results List */}
-        <div className="max-h-80 overflow-y-auto p-2 divide-y divide-[var(--border)]/40 space-y-2">
-          {/* Article & Reading Tag Results (Routed directly to reading) */}
-          {matchedArticles.length > 0 && (
-            <div className="space-y-1 pb-1">
-              <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--accent)] flex items-center gap-1.5">
-                <Tag size={12} />
-                <span>Reading & System Design Articles ({matchedArticles.length})</span>
+        {/* Results Container with Hidden Scrollbar */}
+        <div className="max-h-[380px] overflow-y-auto scrollbar-hide p-3 space-y-4">
+          {/* Section 1: System Design */}
+          {displayedArticles.length > 0 && (
+            <div className="space-y-1">
+              <div className="px-2 py-1 text-xs font-bold uppercase tracking-wider text-[var(--accent)] flex items-center justify-between">
+                <span>System Design</span>
+                <span className="text-[10px] font-mono text-[var(--text-muted)] lowercase font-normal">reading</span>
               </div>
-              {matchedArticles.slice(0, 6).map((art) => (
-                <button
-                  key={art.slug}
-                  onClick={() => handleSelectArticle(art)}
-                  className="w-full flex items-center justify-between p-2.5 rounded-[10px] bg-[var(--accent-subtle)]/40 hover:bg-[var(--accent-subtle)] text-left transition-colors group"
-                >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="p-1.5 rounded-[8px] bg-white border border-[var(--accent)]/30 text-[var(--accent)] group-hover:bg-[var(--accent)] group-hover:text-white transition-colors">
-                      <BookOpen size={13} />
-                    </div>
-                    <div className="min-w-0">
-                      <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] truncate block">
+              <div className="space-y-0.5">
+                {displayedArticles.map((art) => (
+                  <button
+                    key={art.slug}
+                    onClick={() => handleSelectArticle(art)}
+                    className="w-full flex items-center justify-between p-2 rounded-[8px] hover:bg-[var(--bg-subtle)] text-left transition-colors group cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="p-1.5 rounded-[6px] bg-[var(--bg-subtle)] text-[var(--text-secondary)] group-hover:text-[var(--accent)] transition-colors shrink-0">
+                        <BookOpen size={13} />
+                      </div>
+                      <span className="text-xs font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent)] truncate">
                         {art.title}
                       </span>
-                      <span className="text-[10px] text-[var(--text-muted)] font-mono">
-                        {(art.category || "reading").toUpperCase()} · Read article
+                    </div>
+                    <span className="text-[10px] font-bold text-[var(--text-muted)] font-mono shrink-0 ml-2">
+                      {(art.category || "HLD").toUpperCase()}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Section 2: Interview Sessions */}
+          {displayedInterviews.length > 0 && (
+            <div className="space-y-1">
+              <div className="px-2 py-1 text-xs font-bold uppercase tracking-wider text-[var(--accent)] flex items-center justify-between">
+                <span>Interview Sessions</span>
+                <span className="text-[10px] font-mono text-[var(--text-muted)] lowercase font-normal">drills</span>
+              </div>
+              <div className="space-y-0.5">
+                {displayedInterviews.map((t) => (
+                  <button
+                    key={t.slug}
+                    onClick={() => handleSelectTopic(t)}
+                    className="w-full flex items-center justify-between p-2 rounded-[8px] hover:bg-[var(--bg-subtle)] text-left transition-colors group cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="p-1.5 rounded-[6px] bg-[var(--bg-subtle)] text-[var(--text-secondary)] group-hover:text-[var(--accent)] transition-colors shrink-0">
+                        <Sparkles size={13} />
+                      </div>
+                      <span className="text-xs font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent)] truncate capitalize">
+                        {t.name}
                       </span>
                     </div>
-                  </div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-[6px] bg-white border border-[var(--accent)]/30 text-[var(--accent)]">
-                    Reading
-                  </span>
-                </button>
-              ))}
+                    <span className="text-[10px] font-semibold text-[var(--text-muted)] font-mono shrink-0 ml-2">
+                      Interview
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
-          {/* Flashcards & Practice Topics */}
-          {filteredTopics.length > 0 && (
-            <div className="space-y-1 pt-1">
-              <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
-                Flashcard & Practice Decks ({filteredTopics.length})
+          {/* Section 3: Flashcards */}
+          {displayedFlashcards.length > 0 && (
+            <div className="space-y-1">
+              <div className="px-2 py-1 text-xs font-bold uppercase tracking-wider text-[var(--accent)] flex items-center justify-between">
+                <span>Flashcards</span>
+                <span className="text-[10px] font-mono text-[var(--text-muted)] lowercase font-normal">active recall</span>
               </div>
-              {filteredTopics.slice(0, 8).map((t) => (
-                <button
-                  key={t.slug}
-                  onClick={() => handleSelectTopic(t)}
-                  className="w-full flex items-center justify-between p-2.5 rounded-[10px] hover:bg-[var(--bg-subtle)] text-left transition-colors group"
-                >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="p-1.5 rounded-[8px] bg-white border border-[var(--border)] text-[var(--text-secondary)] group-hover:text-[var(--accent)] transition-colors">
-                      {t.isInterview ? <Sparkles size={13} /> : <Layers size={13} />}
+              <div className="space-y-0.5">
+                {displayedFlashcards.map((t) => (
+                  <button
+                    key={t.slug}
+                    onClick={() => handleSelectTopic(t)}
+                    className="w-full flex items-center justify-between p-2 rounded-[8px] hover:bg-[var(--bg-subtle)] text-left transition-colors group cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="p-1.5 rounded-[6px] bg-[var(--bg-subtle)] text-[var(--text-secondary)] group-hover:text-[var(--accent)] transition-colors shrink-0">
+                        <Layers size={13} />
+                      </div>
+                      <span className="text-xs font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent)] truncate capitalize">
+                        {t.name}
+                      </span>
                     </div>
-                    <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] truncate capitalize">
-                      {t.name}
+                    <span className="text-[10px] font-semibold text-[var(--text-muted)] font-mono shrink-0 ml-2">
+                      {t.count ? `${t.count} cards` : "Flashcards"}
                     </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-semibold text-[var(--text-muted)] font-mono">
-                      {t.isInterview ? "Interview" : "Flashcards"}
-                    </span>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
-
-          {matchedArticles.length === 0 && filteredTopics.length === 0 && (
-            <div className="py-12 text-center text-xs text-[var(--text-muted)]">
-              No matching tags, articles, or decks found for &quot;{query}&quot;
-            </div>
-          )}
-
-          {/* Quick Nav shortcut */}
-          <div className="pt-2">
-            <button
-              onClick={() => {
-                onOpenChange(false);
-                router.push(`/system-design/articles${query ? `?search=${encodeURIComponent(query)}` : ""}`);
-              }}
-              className="w-full flex items-center gap-2.5 p-2 rounded-[10px] hover:bg-[var(--bg-subtle)] text-left text-xs font-bold text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors"
-            >
-              <div className="p-1.5 rounded-[8px] bg-white border border-[var(--border)]">
-                <BookOpen size={13} />
+                  </button>
+                ))}
               </div>
-              <span>Search System Design Reading & Articles</span>
-            </button>
-          </div>
+            </div>
+          )}
+
+          {!hasAnyResults && (
+            <div className="py-12 text-center text-xs text-[var(--text-muted)]">
+              No matching results found for &quot;{query}&quot;
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>

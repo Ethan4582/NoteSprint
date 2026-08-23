@@ -122,14 +122,15 @@ export default function DashboardSidebar({ activeTab, onSelectTab }: DashboardSi
               "w-full flex items-center gap-2.5 p-2 rounded-[10px] bg-[var(--bg-subtle)] border border-[var(--border)] text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:border-[var(--border-strong)] transition-all",
               collapsed ? "justify-center px-0" : "px-3"
             )}
-            title="Search (⌘K)"
+            title="Search (⌘ K)"
           >
             <Search size={14} className="shrink-0 text-[var(--text-muted)]" />
             {!collapsed && (
               <>
                 <span className="flex-1 text-left font-medium truncate">Search topics...</span>
-                <kbd className="text-[10px] font-mono px-1.5 py-0.2 rounded-[4px] bg-white border border-[var(--border)] text-[var(--text-muted)]">
-                  ⌘K
+                <kbd className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold px-2 py-0.5 rounded-md bg-white border border-[var(--border)] text-[var(--text-muted)] leading-none select-none shadow-2xs">
+                  <span>⌘</span>
+                  <span>K</span>
                 </kbd>
               </>
             )}
@@ -170,7 +171,7 @@ export default function DashboardSidebar({ activeTab, onSelectTab }: DashboardSi
         <div className="pt-3 border-t border-[var(--border)] w-full">
           <div className={cn("flex items-center", collapsed ? "justify-center" : "px-1")}>
             <a
-              href="https://twitter.com/Ethan"
+              href="https://x.com/ashirwadsingh_"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-[11px] font-bold text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors group"
@@ -183,7 +184,7 @@ export default function DashboardSidebar({ activeTab, onSelectTab }: DashboardSi
               >
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
               </svg>
-              {!collapsed && <span>Built by Ethan</span>}
+              {!collapsed && <span>Built by Ashirwad</span>}
             </a>
           </div>
         </div>

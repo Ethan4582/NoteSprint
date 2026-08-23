@@ -33,11 +33,12 @@ export default function DashboardHeader({ search, setSearch }: DashboardHeaderPr
           placeholder="Search topics..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full h-11 pl-10 pr-12 bg-white rounded-[11px] text-[var(--text-primary)] text-xs font-medium outline-none border border-[var(--border)] shadow-xs focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/10 transition-all placeholder:text-[var(--text-muted)]"
+          className="w-full h-11 pl-10 pr-14 bg-white rounded-md text-[var(--text-primary)] text-xs font-medium outline-none border border-[var(--border)] shadow-xs hover:border-[var(--border-strong)] focus:border-[var(--border-strong)] transition-all placeholder:text-[var(--text-muted)]"
         />
-        <span className="absolute right-3 top-3 text-[10px] font-mono text-[var(--text-muted)] px-1.5 py-0.5 rounded-[8px] bg-[var(--bg-subtle)] border border-[var(--border)] pointer-events-none hidden sm:inline">
-          ⌘K
-        </span>
+        <kbd className="absolute right-2.5 top-2.5 inline-flex items-center gap-1 text-[10px] font-mono font-semibold text-[var(--text-muted)] px-2 py-0.5 rounded-md bg-[var(--bg-subtle)] border border-[var(--border)] pointer-events-none hidden sm:inline-flex select-none leading-none">
+          <span>⌘</span>
+          <span>K</span>
+        </kbd>
       </div>
     </div>
   );
