@@ -1,6 +1,7 @@
 import "./globals.css";
 import { Plus_Jakarta_Sans, Newsreader } from "next/font/google";
 import { Toaster } from "@/src/components/ui/sonner";
+import DevtoolsMeme from "@/src/components/DevtoolsMeme";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -40,6 +41,7 @@ export default function RootLayout({
       <body className={plusJakartaSans.className}>
         {children}
         <Toaster />
+        <DevtoolsMeme />
       </body>
     </html>
   );

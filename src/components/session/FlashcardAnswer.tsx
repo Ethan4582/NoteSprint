@@ -8,8 +8,8 @@ interface FlashcardAnswerProps {
   question: Question;
   currentIndex: number;
   totalQuestions: number;
-  showFeedback: boolean;
-  handleAnswer: (success: boolean) => void;
+  showFeedback?: boolean;
+  handleAnswer?: (success: boolean) => void;
   setActiveImage: (img: string) => void;
 }
 
@@ -17,8 +17,6 @@ export default function FlashcardAnswer({
   question,
   currentIndex,
   totalQuestions,
-  showFeedback,
-  handleAnswer,
   setActiveImage,
 }: FlashcardAnswerProps) {
   return (

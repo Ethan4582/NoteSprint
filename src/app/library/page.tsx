@@ -1,11 +1,11 @@
 import DashboardClient from "@/src/components/dashboard/DashboardClient";
-import { getAllArticles } from "@/src/db";
+import { getAllArticles, type Article } from "@/src/db";
 import type { MarkdownMeta } from "@/src/lib/markdown";
 
 export const revalidate = 3600;
 
 export default async function LibraryPage() {
-  let articles: any[] = [];
+  let articles: Article[] = [];
   try {
     articles = (await getAllArticles()) || [];
   } catch (err) {
@@ -19,13 +19,13 @@ export default async function LibraryPage() {
         tags = Array.isArray(a.tags) ? a.tags : JSON.parse(a.tags);
       }
     } catch {
-      tags = a.tags ? a.tags.split(",").map((t: string) => t.trim()) : [];
+      tags = a.tags ? a.tags.split(",").map((t) => t.trim()) : [];
     }
 
     const firstPara = a.content
       ? a.content
           .split(/\n\s*\n/)
-          .find((p: string) => p.trim() && !p.trim().startsWith("#"))
+          .find((p) => p.trim() && !p.trim().startsWith("#"))
           ?.trim() || ""
       : "";
 

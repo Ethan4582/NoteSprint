@@ -37,13 +37,15 @@ export interface OverallProgressStats {
 
 const STORAGE_KEY = "ns_user_progress_history";
 
+export const PROGRESS_EVENT_NAME = "notesprint_progress_change";
+
 export function getSessionHistory(): SessionRecord[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    return Array.isArray(parsed) ? (parsed as SessionRecord[]) : [];
   } catch {
     return [];
   }
@@ -64,6 +66,7 @@ export function saveSessionProgress(
       const history = getSessionHistory();
       const updated = [newRecord, ...history].slice(0, 100);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      window.dispatchEvent(new Event(PROGRESS_EVENT_NAME));
     } catch {}
   }
 
@@ -74,6 +77,7 @@ export function clearSessionHistory(): void {
   if (typeof window !== "undefined") {
     try {
       localStorage.removeItem(STORAGE_KEY);
+      window.dispatchEvent(new Event(PROGRESS_EVENT_NAME));
     } catch {}
   }
 }

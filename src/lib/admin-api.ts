@@ -1,5 +1,5 @@
 import { SignJWT } from "jose";
-import type { Question, Topic, Article } from "@/src/db/schema";
+import type { Question, Article } from "@/src/db/schema";
 
 const API_BASE = (typeof process !== "undefined" && process.env?.NEXT_PUBLIC_API_URL) || "";
 

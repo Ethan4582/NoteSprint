@@ -1,17 +1,19 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useSyncExternalStore, useCallback } from "react";
 
 const STORAGE_KEY = "notesprint_bookmarks";
 const EVENT_NAME = "notesprint_bookmarks_change";
 
+const emptyArray: number[] = [];
+
 export function getBookmarkedIds(): number[] {
-  if (typeof window === "undefined") return [];
+  if (typeof window === "undefined") return emptyArray;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
+    return raw ? (JSON.parse(raw) as number[]) : emptyArray;
   } catch {
-    return [];
+    return emptyArray;
   }
 }
 
@@ -29,25 +31,38 @@ export function toggleBookmarkId(id: number): boolean {
   }
 }
 
+function subscribe(callback: () => void) {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener(EVENT_NAME, callback);
+  window.addEventListener("storage", callback);
+  return () => {
+    window.removeEventListener(EVENT_NAME, callback);
+    window.removeEventListener("storage", callback);
+  };
+}
+
+let cachedRaw: string | null = null;
+let cachedSnapshot: number[] = emptyArray;
+
+function getSnapshot(): number[] {
+  if (typeof window === "undefined") return emptyArray;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw === cachedRaw) return cachedSnapshot;
+    cachedRaw = raw;
+    cachedSnapshot = raw ? (JSON.parse(raw) as number[]) : emptyArray;
+    return cachedSnapshot;
+  } catch {
+    return emptyArray;
+  }
+}
+
+function getServerSnapshot(): number[] {
+  return emptyArray;
+}
+
 export function useBookmarks() {
-  const [bookmarks, setBookmarks] = useState<number[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  useEffect(() => {
-    setBookmarks(getBookmarkedIds());
-    setIsLoaded(true);
-
-    const handleSync = () => {
-      setBookmarks(getBookmarkedIds());
-    };
-
-    window.addEventListener(EVENT_NAME, handleSync);
-    window.addEventListener("storage", handleSync);
-    return () => {
-      window.removeEventListener(EVENT_NAME, handleSync);
-      window.removeEventListener("storage", handleSync);
-    };
-  }, []);
+  const bookmarks = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   const toggle = useCallback((id: number) => {
     return toggleBookmarkId(id);
@@ -58,5 +73,5 @@ export function useBookmarks() {
     [bookmarks]
   );
 
-  return { bookmarks, isBookmarked, toggle, isLoaded };
+  return { bookmarks, isBookmarked, toggle, isLoaded: true };
 }

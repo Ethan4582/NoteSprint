@@ -1,11 +1,11 @@
-import { getAllArticles } from "@/src/db";
+import { getAllArticles, type Article } from "@/src/db";
 import type { MarkdownMeta } from "@/src/lib/markdown";
 import SystemDesignArticlesClient from "@/src/components/system-design/SystemDesignArticlesClient";
 
 export const revalidate = 3600;
 
 export default async function SystemDesignArticlesPage() {
-  let articles: any[] = [];
+  let articles: Article[] = [];
   try {
     articles = (await getAllArticles()) || [];
   } catch (err) {
@@ -23,7 +23,7 @@ export default async function SystemDesignArticlesPage() {
     const firstPara = a.content
       ? a.content
           .split(/\n\s*\n/)
-          .find((p: string) => p.trim() && !p.trim().startsWith("#"))
+          .find((p) => p.trim() && !p.trim().startsWith("#"))
           ?.trim() || ""
       : "";
 

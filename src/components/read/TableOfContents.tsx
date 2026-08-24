@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { ChevronRight } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
 
 interface TOCItem {
   id: string;
@@ -14,23 +13,24 @@ interface TableOfContentsProps {
 }
 
 export default function TableOfContents({ content }: TableOfContentsProps) {
-  const [headings, setHeadings] = useState<TOCItem[]>([]);
   const [activeId, setActiveId] = useState<string>("");
 
-  useEffect(() => {
-    // Parse headings from the markdown string (H2 only)
+  const headings = useMemo(() => {
     const regex = /^(##)\s+(.+)$/gm;
     const items: TOCItem[] = [];
     let match;
     while ((match = regex.exec(content)) !== null) {
       const level = match[1].length;
       const text = match[2].trim();
-      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
       items.push({ id, text, level });
     }
-    setHeadings(items);
+    return items;
+  }, [content]);
 
-    // Setup intersection observer
+  useEffect(() => {
+    if (headings.length === 0) return;
+
     const handleObserver = (entries: IntersectionObserverEntry[]) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -43,9 +43,8 @@ export default function TableOfContents({ content }: TableOfContentsProps) {
       rootMargin: "0px 0px -80% 0px",
     });
 
-    // We wait a tick to ensure elements are rendered
-    setTimeout(() => {
-      items.forEach((item) => {
+    const timer = setTimeout(() => {
+      headings.forEach((item) => {
         const element = document.getElementById(item.id);
         if (element) {
           observer.observe(element);
@@ -53,8 +52,11 @@ export default function TableOfContents({ content }: TableOfContentsProps) {
       });
     }, 500);
 
-    return () => observer.disconnect();
-  }, [content]);
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
+  }, [headings]);
 
   if (headings.length === 0) return null;
 

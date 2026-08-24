@@ -9,16 +9,9 @@ import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Card } from "@/src/components/ui/card";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/src/components/ui/dialog";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
 import {
@@ -28,19 +21,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/src/components/ui/select";
-import ContentRenderer from "@/src/components/ContentRenderer";
+import QuestionCard from "@/src/components/admin/questions/QuestionCard";
+import QuestionDialogs from "@/src/components/admin/questions/QuestionDialogs";
 import { toast } from "sonner";
 import {
   Plus,
   Search,
-  Edit2,
-  Trash2,
   HelpCircle,
   Loader2,
   ChevronLeft,
   ChevronRight,
-  MoreVertical,
-  BookOpen,
   SlidersHorizontal,
 } from "lucide-react";
 
@@ -194,60 +184,13 @@ export default function AdminQuestionsPage() {
         <div className="space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
             {paginatedQuestions.map((q) => (
-              <div
+              <QuestionCard
                 key={q.id}
-                className="rounded-lg border border-[var(--border)] bg-white p-4 shadow-sm flex flex-col justify-between hover:border-[var(--accent)]/40 hover:shadow-md transition-all group"
-              >
-                <div className="flex items-start gap-3">
-                  <span className="font-mono text-xs font-bold text-[var(--text-muted)] pt-0.5 min-w-[1.25rem]">
-                    {q.id}
-                  </span>
-
-                  <p className="text-xs sm:text-[13px] font-semibold text-[var(--text-primary)] line-clamp-2 leading-relaxed flex-1">
-                    {q.question}
-                  </p>
-
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button
-                        type="button"
-                        className="h-7 w-7 rounded-md flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] transition-colors flex-shrink-0"
-                      >
-                        <MoreVertical className="h-3.5 w-3.5" />
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-32 bg-white border-[var(--border)] rounded-md shadow-xl">
-                      <DropdownMenuItem asChild>
-                        <Link href={`/admin/questions/${q.id}/edit?topic=${selectedTopic}`} className="cursor-pointer">
-                          <Edit2 className="h-3.5 w-3.5 mr-2" /> Edit
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setPreviewQuestion(q)} className="cursor-pointer">
-                        <BookOpen className="h-3.5 w-3.5 mr-2" /> View
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        variant="destructive"
-                        onClick={() => setDeletingId(q.id)}
-                        className="cursor-pointer text-red-600 focus:text-red-600"
-                      >
-                        <Trash2 className="h-3.5 w-3.5 mr-2" /> Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-
-                <div className="mt-3 pt-2.5 border-t border-[var(--border)] flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-                  <span>Question #{q.id}</span>
-                  <button
-                    type="button"
-                    onClick={() => setPreviewQuestion(q)}
-                    className="text-[var(--accent)] font-bold hover:underline"
-                  >
-                    Preview
-                  </button>
-                </div>
-              </div>
+                question={q}
+                selectedTopic={selectedTopic}
+                onPreview={(question) => setPreviewQuestion(question)}
+                onDelete={(id) => setDeletingId(id)}
+              />
             ))}
           </div>
 
@@ -283,55 +226,15 @@ export default function AdminQuestionsPage() {
         </div>
       )}
 
-      {/* Delete Dialog */}
-      <Dialog open={!!deletingId} onOpenChange={(open) => !open && setDeletingId(null)}>
-        <DialogContent className="bg-white border-[var(--border)] rounded-[12px] shadow-2xl">
-          <DialogHeader>
-            <DialogTitle className="font-serif text-lg font-normal">Delete Question #{deletingId}</DialogTitle>
-          </DialogHeader>
-          <p className="text-xs text-[var(--text-secondary)]">
-            Are you sure you want to permanently delete this question? This action cannot be undone.
-          </p>
-          <div className="flex justify-end gap-2 pt-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setDeletingId(null)}
-              className="rounded-[10px] text-xs font-bold"
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="danger"
-              size="sm"
-              disabled={actionLoading}
-              onClick={handleDelete}
-              className="rounded-[10px] text-xs font-bold bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white"
-            >
-              {actionLoading ? "Deleting..." : "Confirm Delete"}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Preview Dialog */}
-      <Dialog open={!!previewQuestion} onOpenChange={(open) => !open && setPreviewQuestion(null)}>
-        <DialogContent className="max-w-2xl bg-white border-[var(--border)] rounded-[12px] shadow-2xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="font-serif text-lg font-normal text-[var(--text-primary)]">
-              {previewQuestion?.question}
-            </DialogTitle>
-          </DialogHeader>
-          {previewQuestion && (
-            <div className="space-y-4 pt-2">
-              <ContentRenderer
-                content={previewQuestion.answer}
-                image={previewQuestion.imageUrl || undefined}
-              />
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      {/* Dialogs */}
+      <QuestionDialogs
+        deletingId={deletingId}
+        setDeletingId={setDeletingId}
+        actionLoading={actionLoading}
+        onConfirmDelete={handleDelete}
+        previewQuestion={previewQuestion}
+        setPreviewQuestion={setPreviewQuestion}
+      />
     </div>
   );
 }

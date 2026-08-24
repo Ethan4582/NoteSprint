@@ -17,8 +17,10 @@ export interface Question {
   updatedAt?: Date;
 }
 
-export const DATA: Record<string, any> = {};
+export const DATA: Record<string, Question[]> = {};
 
-export function getQuestions(_subject: string | string[], _topic: string | string[]): Question[] {
+export function getQuestions(_subject?: string | string[], _topic?: string | string[]): Question[] {
+  void _subject;
+  void _topic;
   return [];
 }

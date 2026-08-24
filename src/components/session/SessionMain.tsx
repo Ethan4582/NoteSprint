@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
+import { Question } from "@/src/lib/data";
 import Flashcard from "@/src/components/Flashcard";
 import FlashcardAnswer from "@/src/components/session/FlashcardAnswer";
 import RevisionView from "@/src/components/session/RevisionView";
@@ -9,7 +10,7 @@ interface SessionMainProps {
   mode: "flashcard" | "notes";
   currentIndex: number;
   isFlipped: boolean;
-  questions: any[];
+  questions: Question[];
   handleAnswer: (success: boolean) => void;
   showFeedback: boolean;
   setIsFlipped: (val: boolean) => void;

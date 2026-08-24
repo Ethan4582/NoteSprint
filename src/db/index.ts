@@ -15,11 +15,28 @@ function getEnvVar(key: string): string {
 const defaultAccountId = "39c549d629e751c6bd6195081b2a88b8";
 const databaseId = "e867079a-d387-4c77-9304-4210a3f60fd4";
 
+interface CloudflareEnv {
+  DB?: D1Database;
+  IMAGES?: unknown;
+  R2_PUBLIC_URL?: string;
+  PASSWORD?: string;
+  JWT_SECRET?: string;
+}
+
+interface D1ApiResponse {
+  success: boolean;
+  errors?: Array<{ message: string }>;
+  result?: Array<{
+    results?: Array<Record<string, unknown> | unknown[]>;
+  }>;
+}
+
 export async function executeD1Remote(
   sql: string,
   params: unknown[] = [],
   _method: "run" | "all" | "values" | "get" = "all"
 ) {
+  void _method;
   const accountId = getEnvVar("CLOUDFLARE_ACCOUNT_ID") || defaultAccountId;
   const apiToken = getEnvVar("CLOUDFLARE_API_TOKEN");
 
@@ -42,7 +59,7 @@ export async function executeD1Remote(
       signal: controller.signal,
     });
 
-    const json = (await res.json()) as any;
+    const json = (await res.json()) as D1ApiResponse;
     if (!json.success || !json.result || !json.result[0]) {
       return { rows: [] };
     }
@@ -62,7 +79,7 @@ export async function executeD1Remote(
   }
 }
 
-export type AppDb = BaseSQLiteDatabase<"async", any, typeof schema>;
+export type AppDb = BaseSQLiteDatabase<"async", unknown, typeof schema>;
 
 export function createDb(d1?: D1Database): AppDb {
   let targetD1 = d1;
@@ -70,8 +87,9 @@ export function createDb(d1?: D1Database): AppDb {
   if (!targetD1) {
     try {
       const ctx = getRequestContext();
-      if ((ctx?.env as any)?.DB) {
-        targetD1 = (ctx.env as any).DB as D1Database;
+      const env = ctx?.env as CloudflareEnv | undefined;
+      if (env?.DB) {
+        targetD1 = env.DB;
       }
     } catch {
       // not in cloudflare pages context

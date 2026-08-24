@@ -1,4 +1,4 @@
-import { getArticleBySlug } from "@/src/db";
+import { getArticleBySlug, type Article } from "@/src/db";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Clock } from "lucide-react";
 import Link from "next/link";
@@ -14,7 +14,7 @@ export default async function MarkdownReaderPage({
 }) {
   const { type, slug } = await params;
 
-  let article = null;
+  let article: Article | null = null;
   try {
     article = await getArticleBySlug(slug);
   } catch (err) {

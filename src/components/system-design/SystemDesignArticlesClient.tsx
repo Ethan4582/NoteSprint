@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import DashboardSidebar from "@/src/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/src/components/dashboard/DashboardHeader";
@@ -22,13 +22,6 @@ function ArticlesContent({ systemDocs }: SystemDesignArticlesClientProps) {
   const [search, setSearch] = useState(initialSearch);
   const [activeTab, setActiveTab] = useState("ALL");
   const { recent, clear } = useRecentDecks();
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => setHydrated(true), []);
-
-  useEffect(() => {
-    if (initialSearch) setSearch(initialSearch);
-  }, [initialSearch]);
 
   const filteredDocs = systemDocs.filter((doc) => {
     if (activeTab !== "ALL" && doc.type !== activeTab.toLowerCase()) return false;
@@ -39,12 +32,9 @@ function ArticlesContent({ systemDocs }: SystemDesignArticlesClientProps) {
 
   const tabs = ["ALL", "HLD", "LLD"];
 
-  // Filter recent docs matching systemDocs
-  const recentArticles = hydrated
-    ? recent
-        .map((slug) => systemDocs.find((d) => d.slug === slug))
-        .filter((d): d is MarkdownMeta => Boolean(d))
-    : [];
+  const recentArticles = recent
+    .map((slug) => systemDocs.find((d) => d.slug === slug))
+    .filter((d): d is MarkdownMeta => Boolean(d));
 
   return (
     <div className="min-h-screen bg-[var(--bg-base)] flex font-sans">
