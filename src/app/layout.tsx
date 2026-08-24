@@ -18,9 +18,6 @@ const newsreader = Newsreader({
   display: "swap",
 });
 
-export const dynamic = "force-static";
-export const revalidate = false;
-
 export const metadata = {
   title: "NoteSprint · Dev Mastery & System Design",
   description: "Master technical engineering concepts at lightning speed with interactive card decks and system design guides.",

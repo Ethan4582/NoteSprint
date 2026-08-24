@@ -1,10 +1,12 @@
-"use client";
+import ArticleEditClient from "./ArticleEditClient";
 
-import { useParams } from "next/navigation";
-import ArticleEditClient from "@/src/app/admin/articles/[slug]/edit/ArticleEditClient";
+export const runtime = "edge";
 
-export default function EditArticlePage() {
-  const params = useParams();
-  const slug = (params?.slug as string) || "";
+export default async function EditArticlePage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
   return <ArticleEditClient slug={slug} />;
 }

@@ -1,11 +1,13 @@
-"use client";
+import QuestionEditClient from "./QuestionEditClient";
 
-import { useParams } from "next/navigation";
-import QuestionEditClient from "@/src/app/admin/questions/[id]/edit/QuestionEditClient";
+export const runtime = "edge";
 
-export default function EditQuestionPage() {
-  const params = useParams();
-  const idStr = (params?.id as string) || "1";
-  const id = parseInt(idStr, 10);
-  return <QuestionEditClient id={isNaN(id) ? 1 : id} />;
+export default async function EditQuestionPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const numId = parseInt(id, 10);
+  return <QuestionEditClient id={isNaN(numId) ? 1 : numId} />;
 }
