@@ -13,6 +13,7 @@ import Lightbox from "@/src/components/session/Lightbox";
 import SessionHeader from "@/src/components/session/SessionHeader";
 import SessionFooter from "@/src/components/session/SessionFooter";
 import SessionMain from "@/src/components/session/SessionMain";
+import SessionSkeleton from "@/src/components/session/SessionSkeleton";
 
 function SessionContent() {
   const router = useRouter();
@@ -161,11 +162,7 @@ function SessionContent() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[var(--bg-base)] flex items-center justify-center font-mono text-xs uppercase tracking-widest text-[var(--text-muted)]">
-        Preparing Session...
-      </div>
-    );
+    return <SessionSkeleton />;
   }
 
   if (questions.length === 0) {
@@ -244,7 +241,7 @@ function SessionContent() {
 
 export default function SessionPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[var(--bg-base)] flex items-center justify-center font-mono text-xs uppercase tracking-widest text-[var(--text-muted)]">Loading Session...</div>}>
+    <Suspense fallback={<SessionSkeleton />}>
       <SessionContent />
     </Suspense>
   );

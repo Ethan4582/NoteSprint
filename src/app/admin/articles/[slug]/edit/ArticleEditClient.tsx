@@ -16,6 +16,7 @@ import {
 } from "@/src/components/ui/select";
 import RichMarkdownEditor from "@/src/components/admin/RichMarkdownEditor";
 import UploadedMediaManager from "@/src/components/admin/UploadedMediaManager";
+import ArticleEditorSkeleton from "@/src/components/admin/ArticleEditorSkeleton";
 import { Loader2, ArrowLeft, Save } from "lucide-react";
 import { toast } from "sonner";
 
@@ -95,11 +96,7 @@ export default function ArticleEditClient({ slug }: { slug: string }) {
   };
 
   if (initialLoading) {
-    return (
-      <div className="py-32 flex justify-center items-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[var(--accent)]" />
-      </div>
-    );
+    return <ArticleEditorSkeleton />;
   }
 
   return (

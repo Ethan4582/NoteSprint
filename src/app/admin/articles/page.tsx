@@ -23,12 +23,12 @@ import {
 } from "@/src/components/ui/select";
 import AdminArticleCard from "@/src/components/admin/articles/AdminArticleCard";
 import ArticleDeleteDialog from "@/src/components/admin/articles/ArticleDeleteDialog";
+import { Skeleton } from "@/src/components/ui/skeleton";
 import { toast } from "sonner";
 import {
   Plus,
   Search,
   FileText,
-  Loader2,
   SlidersHorizontal,
   ChevronLeft,
   ChevronRight,
@@ -166,8 +166,25 @@ export default function AdminArticlesPage() {
 
       {/* Articles Grid */}
       {loading ? (
-        <div className="py-24 flex justify-center items-center">
-          <Loader2 className="h-7 w-7 animate-spin text-[var(--accent)]" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="rounded-lg border border-[var(--border)] bg-white p-4 shadow-sm space-y-3">
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-4 w-12 rounded" />
+                <Skeleton className="h-4 w-4 rounded" />
+              </div>
+              <Skeleton className="h-5 w-4/5" />
+              <Skeleton className="h-3 w-1/2" />
+              <div className="flex gap-1 pt-1">
+                <Skeleton className="h-4 w-12 rounded" />
+                <Skeleton className="h-4 w-14 rounded" />
+              </div>
+              <div className="pt-2 border-t border-[var(--border)] flex justify-between">
+                <Skeleton className="h-3 w-16" />
+                <Skeleton className="h-3 w-12" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : processedArticles.length === 0 ? (
         <Card className="py-16 text-center text-xs text-[var(--text-muted)] bg-white border-[var(--border)] rounded-lg shadow-sm">

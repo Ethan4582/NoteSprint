@@ -7,6 +7,7 @@ import DashboardHeader from "@/src/components/dashboard/DashboardHeader";
 import DashboardSearch from "@/src/components/dashboard/DashboardSearch";
 import BottomNav from "@/src/components/BottomNav";
 import SystemDesignDocCard from "@/src/components/read/SystemDesignDocCard";
+import ArticlesGridSkeleton from "@/src/components/system-design/ArticlesGridSkeleton";
 import type { MarkdownMeta } from "@/src/lib/markdown";
 import { Clock3, X } from "lucide-react";
 import { useRecentDecks } from "@/src/hooks/useRecentDecks";
@@ -107,7 +108,7 @@ function ArticlesContent({ systemDocs }: SystemDesignArticlesClientProps) {
 
 export default function SystemDesignArticlesClient({ systemDocs }: SystemDesignArticlesClientProps) {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[var(--bg-base)] flex items-center justify-center text-xs text-[var(--text-muted)] font-mono">Loading Articles...</div>}>
+    <Suspense fallback={<ArticlesGridSkeleton />}>
       <ArticlesContent systemDocs={systemDocs} />
     </Suspense>
   );

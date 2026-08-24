@@ -10,6 +10,7 @@ import ProgressStatsOverview from "./ProgressStatsOverview";
 import ProgressTrendChart from "./ProgressTrendChart";
 import TopicPerformanceGrid from "./TopicPerformanceGrid";
 import SessionHistoryList from "./SessionHistoryList";
+import ProgressSkeleton from "./ProgressSkeleton";
 
 export default function ProgressClient() {
   const { history, stats, isLoaded, resetAll } = useUserProgress();
@@ -33,9 +34,7 @@ export default function ProgressClient() {
           <DashboardSearch tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
 
           {!isLoaded ? (
-            <div className="py-20 text-center text-xs font-mono uppercase tracking-widest text-[var(--text-muted)]">
-              Loading Progress Data...
-            </div>
+            <ProgressSkeleton />
           ) : (
             <div className="space-y-6">
               {/* Overview Metrics Cards */}

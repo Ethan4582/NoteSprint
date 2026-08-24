@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { ArrowLeft, Clock, Loader2 } from "lucide-react";
+import { ArrowLeft, Clock } from "lucide-react";
 import Link from "next/link";
 import ClientMarkdownRenderer from "@/src/components/read/ClientMarkdownRenderer";
 import TableOfContents from "@/src/components/read/TableOfContents";
+import ArticleReaderSkeleton from "@/src/components/read/ArticleReaderSkeleton";
 import type { Article } from "@/src/db/schema";
 
 export default function MarkdownReaderPage() {
@@ -37,11 +38,7 @@ export default function MarkdownReaderPage() {
   }, [slug]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[var(--bg-base)] flex items-center justify-center">
-        <Loader2 className="w-6 h-6 animate-spin text-[var(--accent)]" />
-      </div>
-    );
+    return <ArticleReaderSkeleton />;
   }
 
   if (error || !article) {

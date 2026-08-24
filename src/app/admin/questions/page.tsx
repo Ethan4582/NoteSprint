@@ -23,12 +23,12 @@ import {
 } from "@/src/components/ui/select";
 import QuestionCard from "@/src/components/admin/questions/QuestionCard";
 import QuestionDialogs from "@/src/components/admin/questions/QuestionDialogs";
+import { Skeleton } from "@/src/components/ui/skeleton";
 import { toast } from "sonner";
 import {
   Plus,
   Search,
   HelpCircle,
-  Loader2,
   ChevronLeft,
   ChevronRight,
   SlidersHorizontal,
@@ -172,8 +172,23 @@ export default function AdminQuestionsPage() {
 
       {/* Questions Grid */}
       {loading ? (
-        <div className="py-24 flex justify-center items-center">
-          <Loader2 className="h-7 w-7 animate-spin text-[var(--accent)]" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="rounded-lg border border-[var(--border)] bg-white p-4 shadow-sm space-y-3">
+              <div className="flex items-start gap-3">
+                <Skeleton className="h-4 w-6 rounded" />
+                <div className="flex-1 space-y-1.5">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                </div>
+                <Skeleton className="h-5 w-5 rounded" />
+              </div>
+              <div className="pt-2.5 border-t border-[var(--border)] flex justify-between">
+                <Skeleton className="h-3 w-16" />
+                <Skeleton className="h-3 w-12" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : processedQuestions.length === 0 ? (
         <Card className="py-16 text-center text-xs text-[var(--text-muted)] bg-white border-[var(--border)] rounded-lg shadow-sm">

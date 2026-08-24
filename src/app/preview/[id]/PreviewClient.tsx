@@ -7,6 +7,7 @@ import { fetchTopicQuestions } from "@/src/lib/api";
 import ContentRenderer from "@/src/components/ContentRenderer";
 import { ArrowLeft, ChevronLeft, ChevronRight, Layers, Hash } from "lucide-react";
 import BookmarkButton from "@/src/components/BookmarkButton";
+import PreviewSkeleton from "@/src/components/preview/PreviewSkeleton";
 import { motion, AnimatePresence } from "framer-motion";
 
 const QUESTIONS_PER_PAGE = 15;
@@ -36,11 +37,7 @@ export default function PreviewClient({ id }: { id: string }) {
   );
 
   if (!mounted || loading) {
-    return (
-      <div className="min-h-screen bg-[var(--bg-base)] flex items-center justify-center font-mono text-xs uppercase tracking-widest text-[var(--text-muted)]">
-        Loading Questions...
-      </div>
-    );
+    return <PreviewSkeleton />;
   }
 
   if (questions.length === 0) {

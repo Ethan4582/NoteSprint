@@ -17,12 +17,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/src/components/ui/select";
+import { Skeleton } from "@/src/components/ui/skeleton";
 import {
   Bookmark,
   Play,
   Search,
   ChevronRight,
-  Loader2,
   ArrowRight,
   BookOpen,
 } from "lucide-react";
@@ -118,9 +118,27 @@ export default function BookmarksPage() {
 
         <main className="max-w-6xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-5 flex-1">
           {loading ? (
-            <div className="py-24 flex flex-col items-center justify-center gap-3 text-xs text-[var(--text-muted)] font-mono">
-              <Loader2 className="h-6 w-6 animate-spin text-[var(--accent)]" />
-              <span>Loading bookmarks...</span>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-10 w-44 rounded-[10px]" />
+                <Skeleton className="h-10 flex-1 rounded-[10px]" />
+                <Skeleton className="h-10 w-32 rounded-[10px]" />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div key={i} className="rounded-[11px] border border-[var(--border)] bg-white p-4 shadow-sm space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Skeleton className="h-4 w-20 rounded" />
+                      <Skeleton className="h-4 w-4 rounded" />
+                    </div>
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-4/5" />
+                    <div className="pt-2 border-t border-[var(--border)] flex justify-between">
+                      <Skeleton className="h-3 w-16" />
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           ) : questions.length === 0 ? (
             <div className="py-20 flex flex-col items-center justify-center text-center p-8 bg-white rounded-[12px] border border-[var(--border)] shadow-sm max-w-md mx-auto">

@@ -9,6 +9,7 @@ import DashboardSidebar from "@/src/components/dashboard/DashboardSidebar";
 import DashboardHeader from "@/src/components/dashboard/DashboardHeader";
 import TopicGrid from "@/src/components/dashboard/TopicGrid";
 import SessionConfigModal from "@/src/components/dashboard/SessionConfigModal";
+import DashboardPageSkeleton from "@/src/components/dashboard/DashboardPageSkeleton";
 import { Play, Clock3, X } from "lucide-react";
 import { useRecentDecks } from "@/src/hooks/useRecentDecks";
 
@@ -156,13 +157,7 @@ function InterviewContent() {
 
 export default function InterviewPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen bg-[var(--bg-base)] flex items-center justify-center font-mono text-xs uppercase tracking-widest text-[var(--text-muted)]">
-          Loading Config...
-        </div>
-      }
-    >
+    <Suspense fallback={<DashboardPageSkeleton />}>
       <InterviewContent />
     </Suspense>
   );
