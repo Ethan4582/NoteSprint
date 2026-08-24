@@ -1,8 +1,6 @@
 import ArticleEditClient from "./ArticleEditClient";
 
-export function generateStaticParams() {
-  return [];
-}
+export const runtime = "edge";
 
 export default async function EditArticlePage({
   params,

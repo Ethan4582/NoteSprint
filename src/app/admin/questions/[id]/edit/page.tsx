@@ -1,8 +1,6 @@
 import QuestionEditClient from "./QuestionEditClient";
 
-export function generateStaticParams() {
-  return [];
-}
+export const runtime = "edge";
 
 export default async function EditQuestionPage({
   params,

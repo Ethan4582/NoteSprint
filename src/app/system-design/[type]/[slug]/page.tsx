@@ -1,8 +1,6 @@
 import MarkdownReaderClient from "./MarkdownReaderClient";
 
-export function generateStaticParams() {
-  return [];
-}
+export const runtime = "edge";
 
 export default async function MarkdownReaderPage({
   params,
