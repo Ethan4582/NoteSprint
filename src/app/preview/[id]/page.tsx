@@ -1,6 +1,8 @@
 import PreviewClient from "./PreviewClient";
 
-export const runtime = "edge";
+export function generateStaticParams() {
+  return [];
+}
 
 export default async function PreviewPage({
   params,

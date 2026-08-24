@@ -1,8 +1,7 @@
-import { NextResponse } from "next/server";
+import { Hono } from "hono";
 import { getRequestContext } from "@cloudflare/next-on-pages";
 
-export const runtime = "edge";
-export const dynamic = "force-dynamic";
+const adminUploadRoute = new Hono();
 
 interface R2BucketBinding {
   put: (key: string, value: ArrayBuffer | Uint8Array, options?: { httpMetadata?: { contentType?: string } }) => Promise<unknown>;
@@ -34,13 +33,13 @@ function getR2BucketBinding(): R2BucketBinding | null {
   return null;
 }
 
-export async function POST(req: Request) {
+adminUploadRoute.post("/image", async (c) => {
   try {
-    const formData = await req.formData();
+    const formData = await c.req.formData();
     const file = formData.get("file") as File | null;
 
     if (!file) {
-      return NextResponse.json({ error: "No file provided" }, { status: 400 });
+      return c.json({ error: "No file provided" }, 400);
     }
 
     const arrayBuffer = await file.arrayBuffer();
@@ -55,27 +54,25 @@ export async function POST(req: Request) {
       await r2Binding.put(key, arrayBuffer, {
         httpMetadata: { contentType },
       });
-      return NextResponse.json({
+      return c.json({
         url: `${getR2PublicUrl()}/${key}`,
         key,
       });
     }
 
-    // Local / Dev Fallback: Return simulated upload URL
-    return NextResponse.json({
+    return c.json({
       url: `${getR2PublicUrl()}/${key}`,
       key,
     });
   } catch (err) {
-    return NextResponse.json({ error: (err as Error).message }, { status: 500 });
+    return c.json({ error: (err as Error).message }, 500);
   }
-}
+});
 
-export async function DELETE(req: Request) {
+adminUploadRoute.delete("/image", async (c) => {
   try {
-    const { searchParams } = new URL(req.url);
-    let key = searchParams.get("key") || "";
-    const url = searchParams.get("url") || "";
+    let key = c.req.query("key") || "";
+    const url = c.req.query("url") || "";
 
     if (!key && url) {
       if (url.includes("/uploads/")) {
@@ -87,7 +84,7 @@ export async function DELETE(req: Request) {
     }
 
     if (!key) {
-      return NextResponse.json({ error: "No image key or URL provided" }, { status: 400 });
+      return c.json({ error: "No image key or URL provided" }, 400);
     }
 
     const r2Binding = getR2BucketBinding();
@@ -95,8 +92,10 @@ export async function DELETE(req: Request) {
       await r2Binding.delete(key);
     }
 
-    return NextResponse.json({ success: true, key });
+    return c.json({ success: true, key });
   } catch (err) {
-    return NextResponse.json({ error: (err as Error).message }, { status: 500 });
+    return c.json({ error: (err as Error).message }, 500);
   }
-}
+});
+
+export default adminUploadRoute;

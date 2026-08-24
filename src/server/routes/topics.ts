@@ -1,8 +1,7 @@
-import { NextResponse } from "next/server";
-import { getTopicBySlug, getQuestionsByTopicId } from "@/src/db";
+import { Hono } from "hono";
+import { getAllTopics, getTopicBySlug, getQuestionsByTopicId } from "@/src/db";
 
-export const runtime = "edge";
-export const revalidate = 3600;
+const topicsRoute = new Hono();
 
 function resolveImageUrl(img?: string | null): string | null {
   if (!img) return null;
@@ -19,32 +18,32 @@ function normalizeContent(answer: string, imgUrl: string | null, code?: string):
     .replace(/<\/?em>/gi, "*")
     .replace(/<\/?i>/gi, "*");
 
-  if (code) {
-    text += `\n\n\`\`\`\n${code}\n\`\`\``;
-  }
-
+  if (code) text += `\n\n\`\`\`\n${code}\n\`\`\``;
   if (imgUrl && !text.includes(imgUrl) && !text.includes("![")) {
     text += `\n\n![diagram](${imgUrl})\n`;
   }
-
   return text;
 }
 
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ slug: string }> }
-) {
-  const { slug } = await params;
+topicsRoute.get("/", async (c) => {
+  try {
+    const d1Topics = await getAllTopics();
+    return c.json(d1Topics || [], 200, {
+      "Cache-Control": "public, max-age=60, s-maxage=3600, stale-while-revalidate=86400",
+    });
+  } catch (e) {
+    console.error("D1 topics query error:", e);
+    return c.json([], 500);
+  }
+});
 
+topicsRoute.get("/:slug/questions", async (c) => {
+  const slug = c.req.param("slug");
   try {
     const topic = await getTopicBySlug(slug);
-
-    if (!topic) {
-      return NextResponse.json({ error: "Topic not found" }, { status: 404 });
-    }
+    if (!topic) return c.json({ error: "Topic not found" }, 404);
 
     const qRows = await getQuestionsByTopicId(topic.id);
-
     const questions = (qRows || []).map((q) => {
       const imgUrl = resolveImageUrl(q.imageUrl);
       const answer = normalizeContent(q.answer || "", imgUrl);
@@ -60,16 +59,13 @@ export async function GET(
       };
     });
 
-    return NextResponse.json(
-      { topic, questions },
-      {
-        headers: {
-          "Cache-Control": "public, max-age=300, s-maxage=86400, stale-while-revalidate=604800",
-        },
-      }
-    );
+    return c.json({ topic, questions }, 200, {
+      "Cache-Control": "public, max-age=300, s-maxage=86400, stale-while-revalidate=604800",
+    });
   } catch (err) {
     console.error("D1 query error for topic questions:", err);
-    return NextResponse.json({ error: "Failed to fetch topic questions" }, { status: 500 });
+    return c.json({ error: "Failed to fetch topic questions" }, 500);
   }
-}
+});
+
+export default topicsRoute;

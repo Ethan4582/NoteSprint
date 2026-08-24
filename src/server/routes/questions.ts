@@ -1,8 +1,7 @@
-import { NextResponse } from "next/server";
-import { getQuestionsByIds } from "@/src/db";
+import { Hono } from "hono";
+import { getQuestionsByIds, getQuestionById } from "@/src/db";
 
-export const runtime = "edge";
-export const revalidate = 3600;
+const questionsRoute = new Hono();
 
 function resolveImageUrl(img?: string | null): string | null {
   if (!img) return null;
@@ -19,26 +18,19 @@ function normalizeContent(answer: string, imgUrl: string | null, code?: string):
     .replace(/<\/?em>/gi, "*")
     .replace(/<\/?i>/gi, "*");
 
-  if (code) {
-    text += `\n\n\`\`\`\n${code}\n\`\`\``;
-  }
-
+  if (code) text += `\n\n\`\`\`\n${code}\n\`\`\``;
   if (imgUrl && !text.includes(imgUrl) && !text.includes("![")) {
     text += `\n\n![diagram](${imgUrl})\n`;
   }
-
   return text;
 }
 
-export async function GET(req: Request) {
+questionsRoute.get("/", async (c) => {
   try {
-    const { searchParams } = new URL(req.url);
-    const idsParam = searchParams.get("ids");
+    const idsParam = c.req.query("ids");
     if (!idsParam) {
-      return NextResponse.json([], {
-        headers: {
-          "Cache-Control": "public, max-age=300, s-maxage=86400, stale-while-revalidate=604800",
-        },
+      return c.json([], 200, {
+        "Cache-Control": "public, max-age=300, s-maxage=86400, stale-while-revalidate=604800",
       });
     }
 
@@ -48,10 +40,8 @@ export async function GET(req: Request) {
       .filter((id) => !isNaN(id) && id > 0);
 
     if (ids.length === 0) {
-      return NextResponse.json([], {
-        headers: {
-          "Cache-Control": "public, max-age=300, s-maxage=86400, stale-while-revalidate=604800",
-        },
+      return c.json([], 200, {
+        "Cache-Control": "public, max-age=300, s-maxage=86400, stale-while-revalidate=604800",
       });
     }
 
@@ -76,13 +66,41 @@ export async function GET(req: Request) {
       };
     });
 
-    return NextResponse.json(questions, {
-      headers: {
-        "Cache-Control": "public, max-age=300, s-maxage=86400, stale-while-revalidate=604800",
-      },
+    return c.json(questions, 200, {
+      "Cache-Control": "public, max-age=300, s-maxage=86400, stale-while-revalidate=604800",
     });
   } catch (err) {
     console.error("D1 query error for /api/questions batch:", err);
-    return NextResponse.json({ error: "Failed to fetch questions" }, { status: 500 });
+    return c.json({ error: "Failed to fetch questions" }, 500);
   }
-}
+});
+
+questionsRoute.get("/:id", async (c) => {
+  try {
+    const id = parseInt(c.req.param("id"), 10);
+    if (isNaN(id)) return c.json({ error: "Invalid question id" }, 400);
+
+    const question = await getQuestionById(id);
+    if (!question) return c.json({ error: "Question not found" }, 404);
+
+    const imgUrl = resolveImageUrl(question.imageUrl);
+    const answer = normalizeContent(question.answer || "", imgUrl);
+
+    return c.json(
+      {
+        ...question,
+        answer,
+        imageUrl: imgUrl,
+      },
+      200,
+      {
+        "Cache-Control": "public, max-age=300, s-maxage=86400, stale-while-revalidate=604800",
+      }
+    );
+  } catch (err) {
+    console.error("D1 query error for /api/questions/:id:", err);
+    return c.json({ error: "Failed to fetch question" }, 500);
+  }
+});
+
+export default questionsRoute;

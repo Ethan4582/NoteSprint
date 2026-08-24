@@ -1,14 +1,14 @@
-import { NextResponse } from "next/server";
+import { Hono } from "hono";
 import { SignJWT } from "jose";
 import { getRequestContext } from "@cloudflare/next-on-pages";
+import { getDbStats } from "@/src/db";
 
-export const runtime = "edge";
-
+const adminAuthRoute = new Hono();
 const DEFAULT_SECRET = "notesprint-super-secret-key-production-2026";
 
-export async function POST(req: Request) {
+adminAuthRoute.post("/auth", async (c) => {
   try {
-    const body = ((await req.json().catch(() => ({}))) || {}) as any;
+    const body = (await c.req.json().catch(() => ({}))) || {};
     let envPassword = "";
     let envSecret = "";
 
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     const expectedPassword = envPassword || (typeof process !== "undefined" && process.env?.PASSWORD) || "Ash1420@";
 
     if (!body.password || body.password !== expectedPassword) {
-      return NextResponse.json({ error: "Incorrect password" }, { status: 401 });
+      return c.json({ error: "Incorrect password" }, 401);
     }
 
     const secretKey = new TextEncoder().encode(
@@ -35,8 +35,27 @@ export async function POST(req: Request) {
       .setExpirationTime("74h")
       .sign(secretKey);
 
-    return NextResponse.json({ token, success: true });
+    return c.json({ token, success: true });
   } catch (err) {
-    return NextResponse.json({ error: (err as Error).message }, { status: 500 });
+    return c.json({ error: (err as Error).message }, 500);
   }
-}
+});
+
+adminAuthRoute.get("/stats", async (c) => {
+  let totalTopics = 0;
+  let totalQuestions = 0;
+  let totalArticles = 0;
+
+  try {
+    const stats = await getDbStats();
+    totalTopics = stats.totalTopics;
+    totalQuestions = stats.totalQuestions;
+    totalArticles = stats.totalArticles;
+  } catch (err) {
+    console.warn("D1 stats fallback:", err);
+  }
+
+  return c.json({ totalTopics, totalQuestions, totalArticles });
+});
+
+export default adminAuthRoute;
