@@ -26,7 +26,7 @@ export default function AdminAnalyticsPage() {
     fetch(`/api/admin/analytics?${params.toString()}`)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP error ${res.status}`);
-        return res.json();
+        return res.json() as Promise<AnalyticsData>;
       })
       .then((data: AnalyticsData) => {
         if (data && data.kpis) {

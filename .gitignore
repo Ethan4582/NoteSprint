@@ -53,3 +53,4 @@ dist/
 cloudflare-env.d.ts
 drizzle/
 scripts/
+migration.md

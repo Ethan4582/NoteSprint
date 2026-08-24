@@ -1,9 +1,8 @@
-import process from "node:process";
 import { drizzle as drizzleD1 } from "drizzle-orm/d1";
 import { drizzle as drizzleProxy } from "drizzle-orm/sqlite-proxy";
 import type { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import type { D1Database } from "@cloudflare/workers-types";
-import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { getRequestContext } from "@cloudflare/next-on-pages";
 import * as schema from "./schema";
 
 function getEnvVar(key: string): string {
@@ -37,7 +36,7 @@ export async function executeD1Remote(
       signal: controller.signal,
     });
 
-    const json = await res.json();
+    const json = (await res.json()) as any;
     if (!json.success || !json.result || !json.result[0]) {
       throw new Error(json.errors?.[0]?.message || "D1 Query failed");
     }
@@ -62,12 +61,12 @@ export function createDb(d1?: D1Database): AppDb {
 
   if (!targetD1) {
     try {
-      const ctx = getCloudflareContext();
-      if ((ctx.env as any)?.DB) {
+      const ctx = getRequestContext();
+      if ((ctx?.env as any)?.DB) {
         targetD1 = (ctx.env as any).DB as D1Database;
       }
     } catch {
-      // not in cloudflare worker context
+      // not in cloudflare pages context
     }
   }
 

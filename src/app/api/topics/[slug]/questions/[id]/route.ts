@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { getQuestionById } from "@/src/db";
 
-export const dynamic = "force-dynamic";
+export const runtime = "edge";
+export const revalidate = 3600;
 
 function resolveImageUrl(img?: string | null): string | null {
   if (!img) return null;
@@ -45,19 +46,26 @@ export async function GET(
 
     const imgUrl = resolveImageUrl(found.imageUrl);
     const answer = normalizeContent(found.answer || "", imgUrl);
-    return NextResponse.json({
-      id: found.id,
-      topicId: found.topicId,
-      topicSlug: found.topicSlug,
-      topicName: found.topicName,
-      category: found.category,
-      question: found.question || "",
-      answer,
-      imageUrl: imgUrl,
-      sourceFile: found.sourceFile,
-      createdAt: found.createdAt || new Date(),
-      updatedAt: found.updatedAt || new Date(),
-    });
+    return NextResponse.json(
+      {
+        id: found.id,
+        topicId: found.topicId,
+        topicSlug: found.topicSlug,
+        topicName: found.topicName,
+        category: found.category,
+        question: found.question || "",
+        answer,
+        imageUrl: imgUrl,
+        sourceFile: found.sourceFile,
+        createdAt: found.createdAt || new Date(),
+        updatedAt: found.updatedAt || new Date(),
+      },
+      {
+        headers: {
+          "Cache-Control": "public, max-age=300, s-maxage=86400, stale-while-revalidate=604800",
+        },
+      }
+    );
   } catch (err) {
     console.error("D1 query error for question id:", err);
     return NextResponse.json({ error: "Failed to fetch question" }, { status: 500 });

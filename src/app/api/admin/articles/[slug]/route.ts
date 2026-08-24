@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { updateArticle, deleteArticle } from "@/src/db";
 
+export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 export async function PUT(
@@ -9,7 +10,7 @@ export async function PUT(
 ) {
   try {
     const { slug } = await params;
-    const body = await req.json();
+    const body = (await req.json()) as any;
     const tagsJson = typeof body.tags === "string" ? body.tags : JSON.stringify(body.tags || []);
 
     const updated = await updateArticle(slug, {

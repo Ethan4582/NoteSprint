@@ -1,14 +1,31 @@
-import process from "node:process";
 import { NextResponse } from "next/server";
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { getRequestContext } from "@cloudflare/next-on-pages";
 
+export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 const R2_BUCKET = "quiz-app-images";
 
 function getR2PublicUrl(): string {
-  const url = (typeof process !== "undefined" && process.env?.R2_PUBLC_URL) || "https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev";
+  try {
+    const ctx = getRequestContext();
+    if ((ctx?.env as any)?.R2_PUBLIC_URL) {
+      return (ctx.env as any).R2_PUBLIC_URL.replace(/\/$/, "");
+    }
+  } catch {}
+  const url = (typeof process !== "undefined" && (process.env?.R2_PUBLIC_URL || process.env?.R2_PUBLC_URL)) || "https://pub-b534e22f723c443c85a87484a6c795cc.r2.dev";
   return url.replace(/\/$/, "");
+}
+
+function getR2BucketBinding(): any {
+  try {
+    const ctx = getRequestContext();
+    if ((ctx?.env as any)?.IMAGES) {
+      return (ctx.env as any).IMAGES;
+    }
+  } catch {}
+  return null;
 }
 
 function getS3Client(): S3Client | null {
@@ -46,6 +63,17 @@ export async function POST(req: Request) {
     const cleanBaseName = file.name.replace(/\.[^/.]+$/, "").replace(/[^a-zA-Z0-9_-]/g, "_");
     const key = `uploads/${Date.now()}-${cleanBaseName}.${ext}`;
     const contentType = file.type || `image/${ext === "jpg" ? "jpeg" : ext}`;
+
+    const r2Binding = getR2BucketBinding();
+    if (r2Binding) {
+      await r2Binding.put(key, buffer, {
+        httpMetadata: { contentType },
+      });
+      return NextResponse.json({
+        url: `${getR2PublicUrl()}/${key}`,
+        key,
+      });
+    }
 
     const s3 = getS3Client();
     if (!s3) {
@@ -87,6 +115,12 @@ export async function DELETE(req: Request) {
 
     if (!key) {
       return NextResponse.json({ error: "No image key or URL provided" }, { status: 400 });
+    }
+
+    const r2Binding = getR2BucketBinding();
+    if (r2Binding) {
+      await r2Binding.delete(key);
+      return NextResponse.json({ success: true, key });
     }
 
     const s3 = getS3Client();
