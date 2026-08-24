@@ -1,28 +1,61 @@
-import { getArticleBySlug, type Article } from "@/src/db";
-import { notFound } from "next/navigation";
-import { ArrowLeft, Clock } from "lucide-react";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { ArrowLeft, Clock, Loader2 } from "lucide-react";
 import Link from "next/link";
 import ClientMarkdownRenderer from "@/src/components/read/ClientMarkdownRenderer";
 import TableOfContents from "@/src/components/read/TableOfContents";
+import type { Article } from "@/src/db/schema";
 
-export const runtime = "edge";
+export default function MarkdownReaderPage() {
+  const params = useParams();
+  const type = (params?.type as string) || "hld";
+  const slug = (params?.slug as string) || "";
 
-export default async function MarkdownReaderPage({
-  params,
-}: {
-  params: Promise<{ type: string; slug: string }>;
-}) {
-  const { type, slug } = await params;
+  const [article, setArticle] = useState<Article | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  let article: Article | null = null;
-  try {
-    article = await getArticleBySlug(slug);
-  } catch (err) {
-    console.warn("Error fetching article by slug:", err);
+  useEffect(() => {
+    if (!slug) return;
+    setLoading(true);
+    fetch(`/api/articles/${slug}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Article not found");
+        return res.json() as Promise<Article>;
+      })
+      .then((data: Article) => {
+        setArticle(data);
+      })
+      .catch(() => {
+        setError(true);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[var(--bg-base)] flex items-center justify-center">
+        <Loader2 className="w-6 h-6 animate-spin text-[var(--accent)]" />
+      </div>
+    );
   }
 
-  if (!article) {
-    notFound();
+  if (error || !article) {
+    return (
+      <div className="min-h-screen bg-[var(--bg-base)] flex flex-col items-center justify-center gap-4 text-center px-4">
+        <h1 className="text-xl font-bold">Article not found</h1>
+        <Link
+          href="/system-design/articles"
+          className="text-xs font-bold text-[var(--accent)] hover:underline flex items-center gap-1"
+        >
+          <ArrowLeft size={14} /> Back to Articles
+        </Link>
+      </div>
+    );
   }
 
   const content = article.content || "";
