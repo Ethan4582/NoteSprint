@@ -14,7 +14,13 @@ export default async function MarkdownReaderPage({
 }) {
   const { type, slug } = await params;
 
-  const article = await getArticleBySlug(slug);
+  let article = null;
+  try {
+    article = await getArticleBySlug(slug);
+  } catch (err) {
+    console.warn("Error fetching article by slug:", err);
+  }
+
   if (!article) {
     notFound();
   }

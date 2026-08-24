@@ -5,20 +5,25 @@ import SystemDesignArticlesClient from "@/src/components/system-design/SystemDes
 export const revalidate = 3600;
 
 export default async function SystemDesignArticlesPage() {
-  const articles = await getAllArticles();
+  let articles: any[] = [];
+  try {
+    articles = (await getAllArticles()) || [];
+  } catch (err) {
+    console.warn("Error fetching articles for SystemDesignArticlesPage:", err);
+  }
 
-  const systemDocs: MarkdownMeta[] = (articles || []).map((a) => {
+  const systemDocs: MarkdownMeta[] = articles.map((a) => {
     let tags: string[] = [];
     try {
       if (a.tags) tags = Array.isArray(a.tags) ? a.tags : JSON.parse(a.tags);
     } catch {
-      tags = a.tags ? a.tags.split(",").map((t) => t.trim()) : [];
+      tags = a.tags ? a.tags.split(",").map((t: string) => t.trim()) : [];
     }
 
     const firstPara = a.content
       ? a.content
           .split(/\n\s*\n/)
-          .find((p) => p.trim() && !p.trim().startsWith("#"))
+          .find((p: string) => p.trim() && !p.trim().startsWith("#"))
           ?.trim() || ""
       : "";
 

@@ -12,6 +12,7 @@ function getEnvVar(key: string): string {
   return "";
 }
 
+const defaultAccountId = "39c549d629e751c6bd6195081b2a88b8";
 const databaseId = "e867079a-d387-4c77-9304-4210a3f60fd4";
 
 export async function executeD1Remote(
@@ -19,8 +20,13 @@ export async function executeD1Remote(
   params: unknown[] = [],
   _method: "run" | "all" | "values" | "get" = "all"
 ) {
-  const accountId = getEnvVar("CLOUDFLARE_ACCOUNT_ID");
+  const accountId = getEnvVar("CLOUDFLARE_ACCOUNT_ID") || defaultAccountId;
   const apiToken = getEnvVar("CLOUDFLARE_API_TOKEN");
+
+  if (!apiToken) {
+    return { rows: [] };
+  }
+
   const url = `https://api.cloudflare.com/client/v4/accounts/${accountId}/d1/database/${databaseId}/query`;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
@@ -38,7 +44,7 @@ export async function executeD1Remote(
 
     const json = (await res.json()) as any;
     if (!json.success || !json.result || !json.result[0]) {
-      throw new Error(json.errors?.[0]?.message || "D1 Query failed");
+      return { rows: [] };
     }
 
     const rawResults = json.result[0].results || [];
@@ -49,6 +55,8 @@ export async function executeD1Remote(
     });
 
     return { rows };
+  } catch {
+    return { rows: [] };
   } finally {
     clearTimeout(timeout);
   }
